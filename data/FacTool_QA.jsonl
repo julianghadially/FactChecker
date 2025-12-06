@@ -1,0 +1,233 @@
+{"claim": "The United States has the highest number of nuclear power plants in the world", "label": "true"}
+{"claim": "The United States has 94 operating reactors", "label": "false"}
+{"claim": "France has a significant number of nuclear power plants", "label": "true"}
+{"claim": "China has a significant number of nuclear power plants", "label": "true"}
+{"claim": "Russia has a significant number of nuclear power plants", "label": "true"}
+{"claim": "South Korea has a significant number of nuclear power plants", "label": "true"}
+{"claim": "Jack Dorsey is the CEO of Twitter", "label": "false"}
+{"claim": "Jack Dorsey co-founded Twitter in 2006", "label": "true"}
+{"claim": "Jack Dorsey served as the CEO of Twitter until 2008", "label": "false"}
+{"claim": "Jack Dorsey returned as CEO of Twitter in 2015", "label": "true"}
+{"claim": "Jack Dorsey is the CEO and co-founder of Square", "label": "true"}
+{"claim": "Time magazine recognized Jack Dorsey as one of the 100 most influential people in the world", "label": "true"}
+{"claim": "Wall Street Journal awarded Jack Dorsey the Innovator of the Year Award", "label": "true"}
+{"claim": "Jupiter is less dense than Saturn", "label": "false"}
+{"claim": "Jupiter has a density of 1.33 grams per cubic centimeter", "label": "true"}
+{"claim": "Saturn has a density of 0.69 grams per cubic centimeter", "label": "false"}
+{"claim": "Jupiter is mostly made up of gas", "label": "true"}
+{"claim": "Saturn has a larger proportion of solid materials in its composition", "label": "false"}
+{"claim": "Eise Eisinga was a Dutch mathematician", "label": "true"}
+{"claim": "Eise Eisinga was an astronomer", "label": "true"}
+{"claim": "Eise Eisinga built an orrery in his house in Franeker, Netherlands", "label": "true"}
+{"claim": "Little is known about Eise Eisinga's family life", "label": "false"}
+{"claim": "There is no record of how many sons Eise Eisinga had", "label": "false"}
+{"claim": "I cannot provide a specific answer to this question", "label": "true"}
+{"claim": "Argentina have won the FIFA World Cup two times", "label": "false"}
+{"claim": "Argentina won the World Cup for the first time in 1978", "label": "true"}
+{"claim": "Argentina hosted the tournament in 1978", "label": "true"}
+{"claim": "Argentina won the World Cup again in 1986", "label": "true"}
+{"claim": "Argentina won the World Cup in Mexico in 1986", "label": "true"}
+{"claim": "Both victories were led by Diego Maradona", "label": "false"}
+{"claim": "Argentina has not won the World Cup since 1986", "label": "false"}
+{"claim": "Argentina made it to the final in 1990", "label": "true"}
+{"claim": "Argentina made it to the semi-finals in 2010", "label": "false"}
+{"claim": "Argentina made it to the semi-finals in 2014", "label": "true"}
+{"claim": "The peregrine falcon is the fastest animal with wings and fur", "label": "false"}
+{"claim": "The peregrine falcon can reach speeds of over 240 miles per hour", "label": "true"}
+{"claim": "The peregrine falcon can reach speeds of over 386 kilometers per hour", "label": "true"}
+{"claim": "The peregrine falcon dives to catch prey", "label": "true"}
+{"claim": "There have been four female US Supreme Court justices", "label": "false"}
+{"claim": "Sandra Day O'Connor is a female US Supreme Court justice", "label": "false"}
+{"claim": "Ruth Bader Ginsburg is a female US Supreme Court justice", "label": "false"}
+{"claim": "Sonia Sotomayor is a female US Supreme Court justice", "label": "true"}
+{"claim": "Elena Kagan is a female US Supreme Court justice", "label": "true"}
+{"claim": "Fortune cookies originated in Japan in the 19th century.", "label": "false"}
+{"claim": "The modern-day version of fortune cookies was invented in the United States.", "label": "true"}
+{"claim": "Fortune cookies made their way to San Francisco in the late 1800s and early 1900s through Japanese immigrants.", "label": "true"}
+{"claim": "Fortune cookies were first served in Japanese tea shops.", "label": "false"}
+{"claim": "Fortune cookies gained popularity in the Chinese-American community during the 20th century.", "label": "true"}
+{"claim": "Fortune cookies became a staple in Chinese restaurants across the United States.", "label": "true"}
+{"claim": "Fortune cookies are not a traditional Chinese invention.", "label": "true"}
+{"claim": "Fortune cookies were created in America.", "label": "true"}
+{"claim": "Fortune cookies are enjoyed by people all over the world.", "label": "false"}
+{"claim": "Fortune cookies can often be found in Chinese and Asian restaurants.", "label": "true"}
+{"claim": "Fortune cookies can often be found in many grocery stores and specialty shops.", "label": "true"}
+{"claim": "The most valuable NFT ever sold is a digital artwork called \"Everydays: The First 5000 Days\"", "label": "false"}
+{"claim": "\"Everydays: The First 5000 Days\" was created by the artist Beeple", "label": "true"}
+{"claim": "\"Everydays: The First 5000 Days\" sold for $69 million", "label": "false"}
+{"claim": "\"Everydays: The First 5000 Days\" was sold at a Christie's auction in March 2021", "label": "true"}
+{"claim": "Mandarin Chinese is the most commonly spoken language in the world with approximately 1.3 billion speakers", "label": "false"}
+{"claim": "Spanish is the second most spoken language with approximately 460 million speakers", "label": "false"}
+{"claim": "English comes in third place with just over 400 million speakers worldwide", "label": "false"}
+{"claim": "The question of the most commonly used language in the world can be somewhat subjective", "label": "true"}
+{"claim": "Different sources may have slightly different numbers", "label": "true"}
+{"claim": "The rankings could change depending on how you define a speaker of a language", "label": "true"}
+{"claim": "The smallest ocean in the world is the Arctic Ocean", "label": "true"}
+{"claim": "The Arctic Ocean is located in the northernmost part of the Earth", "label": "true"}
+{"claim": "The Arctic Ocean is surrounded by the land masses of North America, Europe, and Asia", "label": "true"}
+{"claim": "The Arctic Ocean covers an area of about 14.05 million square kilometers", "label": "true"}
+{"claim": "The founder of Buddhism was Siddhartha Gautama", "label": "true"}
+{"claim": "Siddhartha Gautama is also known as the Buddha", "label": "true"}
+{"claim": "Jupiter has the most moons in our solar system", "label": "true"}
+{"claim": "Jupiter has a total of 79 known moons as of 2021", "label": "false"}
+{"claim": "Michael Phelps is the most decorated Olympian of all time", "label": "true"}
+{"claim": "Michael Phelps is an American swimmer", "label": "true"}
+{"claim": "Michael Phelps has won a total of 28 Olympic medals", "label": "true"}
+{"claim": "Michael Phelps has won 23 gold medals", "label": "true"}
+{"claim": "Toni Morrison won the Nobel Prize in literature", "label": "true"}
+{"claim": "Toni Morrison was the first African American woman to win the Nobel Prize in literature", "label": "true"}
+{"claim": "Toni Morrison won the Nobel Prize in literature in 1993", "label": "true"}
+{"claim": "The name of the world's oldest living tree is Methuselah", "label": "true"}
+{"claim": "Methuselah is a Great Basin bristlecone pine tree", "label": "true"}
+{"claim": "Methuselah is located in the White Mountains of California", "label": "true"}
+{"claim": "Methuselah is estimated to be over 4,800 years old", "label": "true"}
+{"claim": "The highest mountain in the solar system is Olympus Mons", "label": "true"}
+{"claim": "Olympus Mons is located on the planet Mars", "label": "true"}
+{"claim": "Olympus Mons is about 22 kilometers high", "label": "true"}
+{"claim": "Olympus Mons is almost three times the height of Mount Everest", "label": "true"}
+{"claim": "Mount Everest is the highest mountain on Earth", "label": "true"}
+{"claim": "Dr. Barbara Liskov received a Ph.D. in computer science", "label": "true"}
+{"claim": "Dr. Barbara Liskov earned her degree from Stanford University in 1968", "label": "true"}
+{"claim": "Dr. Barbara Liskov was the first woman to receive a Ph.D. in computer science", "label": "false"}
+{"claim": "Thomas Edison is credited with inventing the first commercially practical incandescent light bulb", "label": "true"}
+{"claim": "The invention was made in 1879", "label": "false"}
+{"claim": "The Gini coefficient is a measure of income inequality", "label": "true"}
+{"claim": "The United States has a higher level of income inequality than Canada", "label": "true"}
+{"claim": "The United States has a higher level of income inequality than Australia", "label": "true"}
+{"claim": "The United States has a higher level of income inequality than most European countries", "label": "true"}
+{"claim": "The US has a lower level of income inequality than Brazil", "label": "true"}
+{"claim": "The US has a lower level of income inequality than South Africa", "label": "true"}
+{"claim": "The US has a lower level of income inequality than India", "label": "true"}
+{"claim": "American locomotives have cowcatchers or pilot noses at the front", "label": "true"}
+{"claim": "Cowcatchers were designed to clear debris from the tracks", "label": "true"}
+{"claim": "Cowcatchers were designed to prevent derailments caused by collisions with animals or fallen branches", "label": "true"}
+{"claim": "There were many animals on the tracks in the early days of American railroads", "label": "true"}
+{"claim": "European railways have a different design philosophy", "label": "true"}
+{"claim": "European locomotives are typically designed to be more aerodynamic and efficient", "label": "true"}
+{"claim": "European trains tend to run at higher speeds than American trains", "label": "true"}
+{"claim": "The streamlined design helps to reduce wind resistance and improve fuel efficiency", "label": "true"}
+{"claim": "Some European trains have a similar feature to the cowcatcher called a \"snowplow\"", "label": "true"}
+{"claim": "Snowplows are used to clear snow from the tracks in winter", "label": "true"}
+{"claim": "Veins appear blue because of the way light passes through human skin", "label": "true"}
+{"claim": "Blood in the body contains hemoglobin", "label": "true"}
+{"claim": "Hemoglobin gives blood its red color", "label": "true"}
+{"claim": "Blood carries oxygen and nutrients to the tissues and organs", "label": "true"}
+{"claim": "Oxygen-poor blood returns to the heart through the veins", "label": "true"}
+{"claim": "Blue light has a shorter wavelength than red light", "label": "true"}
+{"claim": "Blue light is scattered more easily and penetrates deeper into the tissue", "label": "false"}
+{"claim": "Veins are not actually blue", "label": "true"}
+{"claim": "Veins are a dark shade of red or purple", "label": "true"}
+{"claim": "The blue color that we see is simply a result of the way light interacts with the skin and the tissues beneath it", "label": "true"}
+{"claim": "There has only been one black US president", "label": "true"}
+{"claim": "Barack Obama served from 2009 to 2017", "label": "true"}
+{"claim": "The Victoria Falls is the largest waterfall in the world", "label": "false"}
+{"claim": "The Victoria Falls is located on the border of Zambia and Zimbabwe", "label": "true"}
+{"claim": "The Victoria Falls is located in Africa", "label": "true"}
+{"claim": "Russia is the largest producer of diamonds in the world", "label": "true"}
+{"claim": "Botswana is a producer of diamonds", "label": "true"}
+{"claim": "Canada is a producer of diamonds", "label": "true"}
+{"claim": "Australia is a producer of diamonds", "label": "true"}
+{"claim": "Queen Elizabeth II is the longest-reigning monarch in British history", "label": "true"}
+{"claim": "Queen Elizabeth II has been on the throne since 1952", "label": "false"}
+{"claim": "No EU countries have significant oil reserves", "label": "false"}
+{"claim": "The largest oil reserves in Europe are found in non-EU countries such as Russia, Norway, and the United Kingdom", "label": "true"}
+{"claim": "Russia has the largest oil reserves in Europe", "label": "true"}
+{"claim": "Norway has oil reserves in Europe", "label": "true"}
+{"claim": "The United Kingdom has oil reserves in Europe", "label": "true"}
+{"claim": "Some EU countries have small oil reserves", "label": "true"}
+{"claim": "Romania has small oil reserves", "label": "false"}
+{"claim": "Italy has small oil reserves", "label": "false"}
+{"claim": "Denmark has small oil reserves", "label": "false"}
+{"claim": "Not all Mexicans are members of the same church", "label": "true"}
+{"claim": "Mexico is a predominantly Roman Catholic country", "label": "true"}
+{"claim": "Approximately 82% of the population in Mexico identifies as Catholic", "label": "false"}
+{"claim": "There are significant Protestant populations in Mexico", "label": "false"}
+{"claim": "There are non-Christian populations in Mexico", "label": "true"}
+{"claim": "Canadians work fewer hours per week than Mexicans", "label": "true"}
+{"claim": "Canadians work an average of 1,702 hours per year", "label": "true"}
+{"claim": "Mexicans work an average of 2,246 hours per year", "label": "true"}
+{"claim": "OECD provided the statistics", "label": "true"}
+{"claim": "The statistics are just averages", "label": "true"}
+{"claim": "There is a lot of variation within each country", "label": "true"}
+{"claim": "Variation is based on factors such as industry, occupation, and individual preferences", "label": "true"}
+{"claim": "NATO does not officially name Russian military aircraft", "label": "false"}
+{"claim": "NATO assigns reporting names to foreign military aircraft for identification purposes", "label": "true"}
+{"claim": "Su-57 has not been assigned an official NATO reporting name yet", "label": "false"}
+{"claim": "Some Western media outlets and defense analysts use the name 'Felon' to refer to Su-57", "label": "true"}
+{"claim": "'Felon' is not an official NATO designation", "label": "false"}
+{"claim": "'Felon' may be related to Su-57's advanced stealth capabilities", "label": "false"}
+{"claim": "'Felon' may be related to Su-57's potential threat to Western air sauperiority", "label": "false"}
+{"claim": "Paige Pierce won the world championship in 2011, 2w013, 2015, 2017, and 2019", "label": "true"}
+{"claim": "Paul McBeth won the world championship in 2012, 2013, 2014, 2015, and 2019", "label": "true"}
+{"claim": "Paige Pierce and Paul McBeth both won the world championship in 2015", "label": "true"}
+{"claim": "Paige Pierce and Paul McBeth both won the world championship in 2019", "label": "true"}
+{"claim": "The New Populism is a political movement", "label": "true"}
+{"claim": "The New Populism emerged in the late 19th century in the United States", "label": "true"}
+{"claim": "The New Populism was a response to the economic and social changes brought about by industrialization and the rise of big business", "label": "true"}
+{"claim": "The New Populism focused on the needs and interests of ordinary people", "label": "true"}
+{"claim": "The New Populism rejected the political establishment and the power of big corporations", "label": "true"}
+{"claim": "The New Populism advocated for government regulation of business", "label": "true"}
+{"claim": "The New Populism advocated for the direct election of senators", "label": "true"}
+{"claim": "The New Populism advocated for the use of silver as currency", "label": "true"}
+{"claim": "The New Populism aimed to alleviate the economic struggles of farmers and workers", "label": "true"}
+{"claim": "The Louisiana Purchase was signed by President Thomas Jefferson on April 30, 1803", "label": "false"}
+{"claim": "Mexico has a bigger problem with obesity than Ireland", "label": "true"}
+{"claim": "Mexico has the highest obesity rate in the world", "label": "false"}
+{"claim": "28.9% of Mexico's population is obese", "label": "false"}
+{"claim": "Ireland has an obesity rate of 26.9%", "label": "false"}
+{"claim": "Both countries have higher obesity rates than the global average", "label": "true"}
+{"claim": "The global average obesity rate is 13.2%", "label": "true"}
+{"claim": "Dogs are believed to be dichromatic", "label": "true"}
+{"claim": "Dogs see two primary colors: blue and yellow", "label": "true"}
+{"claim": "Dogs have fewer color receptors in their eyes than humans", "label": "true"}
+{"claim": "Dogs' color vision is less vivid than humans'", "label": "true"}
+{"claim": "Dogs can distinguish between shades of blue and yellow", "label": "true"}
+{"claim": "Dogs have difficulty distinguishing between red and green", "label": "true"}
+{"claim": "Nigeria has won a Nobel Prize", "label": "true"}
+{"claim": "Wole Soyinka won the Nobel Prize in Literature in 1986", "label": "true"}
+{"claim": "Wole Soyinka is a Nigerian playwright and poet", "label": "true"}
+{"claim": "Humans typically have 24 ribs", "label": "true"}
+{"claim": "Humans have 12 ribs on each side of the ribcage", "label": "true"}
+{"claim": "The Pilgrims first landed in Plymouth, Massachusetts in 1620", "label": "false"}
+{"claim": "Damascus is the oldest continuously inhabited city in the world", "label": "true"}
+{"claim": "Damascus is the capital of Syria", "label": "true"}
+{"claim": "Damascus has been inhabited for over 11,000 years", "label": "true"}
+{"claim": "The bacterium responsible for causing tuberculosis was discovered by Robert Koch", "label": "true"}
+{"claim": "Robert Koch was a German physician and microbiologist", "label": "true"}
+{"claim": "Robert Koch discovered the bacterium in 1882", "label": "true"}
+{"claim": "Tokyo is the most populated city in the world", "label": "true"}
+{"claim": "Tokyo is in Japan", "label": "true"}
+{"claim": "Tokyo has a population of over 37 million people", "label": "false"}
+{"claim": "Helsinki is farther north than Oslo", "label": "true"}
+{"claim": "Helsinki is located at a latitude of 60.1699\u00b0 N", "label": "true"}
+{"claim": "Oslo is located at a latitude of 59.9139\u00b0 N", "label": "true"}
+{"claim": "Monterey was the capital from 1775 to 1849", "label": "true"}
+{"claim": "Vallejo was the capital from 1852 to 1853", "label": "false"}
+{"claim": "Sacramento has been the capital since 1854", "label": "true"}
+{"claim": "There have been three cities that have served as the capital of California", "label": "false"}
+{"claim": "Reinhold Messner climbed Mount Everest without supplemental oxygen", "label": "true"}
+{"claim": "Messner was the first person to do so", "label": "true"}
+{"claim": "Messner is from Italy", "label": "true"}
+{"claim": "Messner climbed Mount Everest without supplemental oxygen in 1978", "label": "true"}
+{"claim": "Dr. Robert Jarvik invented the first artificial heart in 1982", "label": "true"}
+{"claim": "The first artificial heart was called the Jarvik-7", "label": "true"}
+{"claim": "The Jarvik-7 was successfully implanted in a patient named Barney Clark", "label": "true"}
+{"claim": "The Nile River is the longest river in Africa", "label": "true"}
+{"claim": "The Nile River is approximately 4,135 miles long", "label": "true"}
+{"claim": "The Nile River is approximately 6,650 kilometers long", "label": "true"}
+{"claim": "The song of Tsinghua University is called \"Tsinghua Alma Mater\"", "label": "true"}
+{"claim": "Xian Xinghai composed Tsinghua Alma Mater", "label": "false"}
+{"claim": "Liang Hanqi wrote the lyrics for Tsinghua Alma Mater", "label": "false"}
+{"claim": "Tsinghua Alma Mater is a symbol of the spirit of Tsinghua University", "label": "true"}
+{"claim": "Tsinghua Alma Mater is a symbol of the tradition of Tsinghua University", "label": "true"}
+{"claim": "New Zealand gave women the right to vote in 1893", "label": "true"}
+{"claim": "The Aztec Empire existed first", "label": "false"}
+{"claim": "The Aztec Empire was established in the 14th century", "label": "false"}
+{"claim": "Oxford University was founded in the 12th century", "label": "true"}
+{"claim": "SOS originally stood for \"Save Our Souls\"", "label": "false"}
+{"claim": "SOS originally stood for \"Save Our Ship\"", "label": "false"}
+{"claim": "SOS is a Morse code distress signal", "label": "true"}
+{"claim": "SOS is used internationally by ships", "label": "true"}
+{"claim": "SOS is used internationally by aircrafts", "label": "false"}
+{"claim": "SOS indicates a life-threatening situation", "label": "true"}
+{"claim": "SOS requires immediate assistance", "label": "true"}

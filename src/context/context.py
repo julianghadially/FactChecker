@@ -1,0 +1,3 @@
+import os
+openai_key = os.getenv("OPENAI_AGENTJUDGEJG_KEY")
+serper_key = os.getenv("SERPER_KEY")
