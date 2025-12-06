@@ -17,9 +17,20 @@ Build a compound AI system using DSPy that performs multi-hop fact verification 
 - **Metrics**: Accuracy, Precision of positive label, precision of negative label
 - **Output**: Comparison report showing FactChecker performance against hover label
 
-## Factchecker Agent
-- **input** Accepts HOVER claim
-- **output** Classifies the claim as Supported or Not supported or Incorrect
+## Factchecker compound AI system
+- **Input** Accepts language model statements
+- **Output** Classifies claims as supported or not_supported or refuted
+- **Nodes**
+    - **Claim Extractor Module:** Extracts a list of claims from a statement 
+    - **FIRE Judge:** Iterative fact judge that classifies a claim or generates a search query 
+    - **Research Agent** Iteratively picks a page from the search results to visit, and continues to visit once evidence supports or refutes the claim. limited to 3 page visits per search query. Produces a summary 
+    - **Aggregator** Take the factual correctness output for each claim, and determines if the overall statement is supported, "contains unsupported claims," or "contains refuted claims." (Note: 1 refuted claim instantly causes the statement to say: "contains refuted claims, even if unsupported claims exist)
+
+## Requirements for Searching and Fetching Web Results
+- We require a Web search and page fetching system that is somewhat cost conscious. 
+- A language model should intelligently filter out unnecessary page visits
+- The scaffolding should allow us to reap efficiency gains in the future
+- Implementation of page fetching can either be via MCP server tool or internal function. 
 
 ## Architecture Constraints
 - Use DSPy signatures for fact-checking logic
