@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "WebFetch(domain:arxiv.org)"
+      "WebFetch(domain:arxiv.org)",
+      "Bash(tree:*)",
+      "WebFetch(domain:dspy.ai)"
     ],
     "deny": [],
     "ask": []

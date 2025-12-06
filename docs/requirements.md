@@ -17,7 +17,7 @@ Build a compound AI system using DSPy that performs multi-hop fact verification 
 - **Metrics**: Accuracy, Precision of positive label, precision of negative label
 - **Output**: Comparison report showing FactChecker performance against hover label
 
-## Factchecker compound AI system
+## Factchecker compound AI system architecture
 - **Input** Accepts language model statements
 - **Output** Classifies claims as supported or not_supported or refuted
 - **Nodes**
