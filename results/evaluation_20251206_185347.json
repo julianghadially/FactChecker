@@ -1,0 +1,109 @@
+{
+  "timestamp": "2025-12-06T18:53:47.953511",
+  "sample_size": 5,
+  "label_schema": "FacToolLabelSchema",
+  "labels": [
+    "SUPPORTED",
+    "REFUTED"
+  ],
+  "factchecker": {
+    "accuracy": 0.4,
+    "total_examples": 5,
+    "valid_examples": 5,
+    "error_count": 0,
+    "per_class_precision": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 0.0
+    },
+    "per_class_recall": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 0.0
+    },
+    "confusion_matrix": {
+      "SUPPORTED": {
+        "SUPPORTED": 2,
+        "REFUTED": 0
+      },
+      "REFUTED": {
+        "SUPPORTED": 0,
+        "REFUTED": 0
+      }
+    }
+  },
+  "baseline": {
+    "accuracy": 1.0,
+    "total_examples": 5,
+    "valid_examples": 5,
+    "error_count": 0,
+    "per_class_precision": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 1.0
+    },
+    "per_class_recall": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 1.0
+    },
+    "confusion_matrix": {
+      "SUPPORTED": {
+        "SUPPORTED": 4,
+        "REFUTED": 0
+      },
+      "REFUTED": {
+        "SUPPORTED": 0,
+        "REFUTED": 1
+      }
+    }
+  },
+  "detailed_results": [
+    {
+      "uid": "example_0",
+      "claim": "The United States has the highest number of nuclear power plants in the world",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "example_1",
+      "claim": "The United States has 94 operating reactors",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "example_2",
+      "claim": "France has a significant number of nuclear power plants",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "example_3",
+      "claim": "China has a significant number of nuclear power plants",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "example_4",
+      "claim": "Russia has a significant number of nuclear power plants",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    }
+  ]
+}
