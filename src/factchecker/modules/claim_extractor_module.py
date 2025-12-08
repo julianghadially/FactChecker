@@ -1,7 +1,7 @@
 """Claim extractor module for extracting factual claims from statements."""
 
 import dspy
-from ..signatures.claim_extractor import ClaimExtractor
+from src.factchecker.signatures.claim_extractor import ClaimExtractor
 
 
 class ClaimExtractorModule(dspy.Module):

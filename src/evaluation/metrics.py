@@ -101,6 +101,23 @@ def calculate_metrics(
     )
 
 
+def get_f1(metrics: EvaluationMetrics, label: str) -> float:
+    """Calculate F1 score for a specific class.
+
+    Args:
+        metrics: EvaluationMetrics object.
+        label: Class label to calculate F1 for.
+
+    Returns:
+        F1 score as float.
+    """
+    precision = metrics.per_class_precision.get(label, 0.0)
+    recall = metrics.per_class_recall.get(label, 0.0)
+    if precision + recall == 0:
+        return 0.0
+    return 2 * precision * recall / (precision + recall)
+
+
 def print_metrics(metrics: EvaluationMetrics, name: str = "Model") -> None:
     """Print metrics in a formatted way."""
     print(f"\n{'='*60}")
@@ -111,13 +128,40 @@ def print_metrics(metrics: EvaluationMetrics, name: str = "Model") -> None:
     print(f"Errors:          {metrics.error_count}")
     print(f"Accuracy:        {metrics.accuracy:.1%}")
     print()
+    
+    # Highlight key metrics for FacTool evaluation
+    print("=" * 60)
+    print("KEY METRICS (Focus Areas)")
+    print("=" * 60)
+    
+    # Precision of SUPPORTED
+    if "SUPPORTED" in metrics.per_class_precision:
+        supported_precision = metrics.per_class_precision["SUPPORTED"]
+        print(f"Precision of SUPPORTED: {supported_precision:.1%} ⭐")
+    
+    # Precision of REFUTED
+    if "REFUTED" in metrics.per_class_precision:
+        refuted_precision = metrics.per_class_precision["REFUTED"]
+        print(f"Precision of REFUTED:   {refuted_precision:.1%} ⭐")
+    
+    # Recall of REFUTED
+    if "REFUTED" in metrics.per_class_recall:
+        refuted_recall = metrics.per_class_recall["REFUTED"]
+        print(f"Recall of REFUTED:      {refuted_recall:.1%} ⭐")
+    
+    print()
+    print("=" * 60)
+    print("ALL METRICS")
+    print("=" * 60)
     print("Per-class Precision:")
     for label, precision in metrics.per_class_precision.items():
-        print(f"  {label}: {precision:.1%}")
+        marker = " ⭐" if label in ["SUPPORTED", "REFUTED"] else ""
+        print(f"  {label}: {precision:.1%}{marker}")
     print()
     print("Per-class Recall:")
     for label, recall in metrics.per_class_recall.items():
-        print(f"  {label}: {recall:.1%}")
+        marker = " ⭐" if label == "REFUTED" else ""
+        print(f"  {label}: {recall:.1%}{marker}")
     print()
     print("Confusion Matrix (rows=truth, cols=pred):")
     labels = list(metrics.confusion_matrix.keys())

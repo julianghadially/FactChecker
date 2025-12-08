@@ -1,13 +1,13 @@
 """Fact checker pipeline module orchestrating the complete fact-checking flow."""
 
 import dspy
-from ..models.data_types import FactCheckResult
+from src.factchecker.models.data_types import FactCheckResult
 from .claim_extractor_module import ClaimExtractorModule
 from .fire_judge_module import FireJudgeModule
 from .research_agent_module import ResearchAgentModule
 from .aggregator_module import AggregatorModule
-from services.serper_service import SerperService
-from services.firecrawl_service import FirecrawlService
+from src.services.serper_service import SerperService
+from src.services.firecrawl_service import FirecrawlService
 
 
 class FactCheckerPipeline(dspy.Module):
@@ -26,8 +26,6 @@ class FactCheckerPipeline(dspy.Module):
 
     def __init__(
         self,
-        serper_api_key: str,
-        firecrawl_api_key: str,
         max_judge_iterations: int = 3,
         max_page_visits: int = 3
     ):
@@ -41,16 +39,11 @@ class FactCheckerPipeline(dspy.Module):
         """
         super().__init__()
 
-        # Initialize services
-        serper_service = SerperService(serper_api_key)
-        firecrawl_service = FirecrawlService(firecrawl_api_key)
-
+        
         # Initialize modules
         self.claim_extractor = ClaimExtractorModule()
         self.research_agent = ResearchAgentModule(
-            serper_service,
-            firecrawl_service,
-            max_page_visits
+            max_page_visits=max_page_visits
         )
         self.fire_judge = FireJudgeModule(
             self.research_agent,
@@ -58,7 +51,7 @@ class FactCheckerPipeline(dspy.Module):
         )
         self.aggregator = AggregatorModule()
 
-    def forward(self, statement: str) -> FactCheckResult:
+    def forward(self, statement: str) -> dspy.Prediction:
         """Execute the full fact-checking pipeline.
 
         Args:
@@ -91,7 +84,7 @@ class FactCheckerPipeline(dspy.Module):
             claim_verdicts=claim_verdicts
         )
 
-        return FactCheckResult(
+        return dspy.Prediction(
             statement=statement,
             claims=claims,
             claim_results=claim_results,

@@ -2,8 +2,9 @@
 
 from dataclasses import dataclass
 from typing import Optional
-from firecrawl import FirecrawlApp
-
+from firecrawl import Firecrawl
+from src.context_.context import firecrawl_key
+from src.tools.general_tools import clean_llm_outputted_url
 
 @dataclass
 class ScrapedPage:
@@ -22,13 +23,13 @@ class FirecrawlService:
         client: Firecrawl client instance.
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self):
         """Initialize the Firecrawl service.
 
         Args:
             api_key: Firecrawl API key.
         """
-        self.client = FirecrawlApp(api_key=api_key)
+        self.client = Firecrawl(api_key=firecrawl_key)
 
     def scrape(
         self,
@@ -45,9 +46,10 @@ class FirecrawlService:
             ScrapedPage with markdown content or error information.
         """
         try:
-            result = self.client.scrape_url(url, params={"formats": ["markdown"]})
-            markdown = result.get("markdown", "")
-
+            url = clean_llm_outputted_url(url)
+            result = self.client.scrape(url, formats=["markdown"])
+            #result = client.scrape(url, formats=["markdown"])
+            markdown = result.markdown
             # Truncate if needed to manage token costs
             if len(markdown) > max_length:
                 markdown = markdown[:max_length] + "\n\n[Content truncated...]"
@@ -55,7 +57,7 @@ class FirecrawlService:
             return ScrapedPage(
                 url=url,
                 markdown=markdown,
-                title=result.get("metadata", {}).get("title"),
+                title=result.metadata.title,
                 success=True
             )
         except Exception as e:

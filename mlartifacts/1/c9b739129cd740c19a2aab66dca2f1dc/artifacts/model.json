@@ -1,0 +1,238 @@
+{
+  "claim_extractor.extractor.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract the claims from the statement(s).",
+      "fields": [
+        {
+          "prefix": "Statement:",
+          "description": "the statements to extract claims from"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Claims:",
+          "description": "A list of distinct claims"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.judge.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "FIRE (Fact-checking with Iterative Research and Evaluation) Judge.\n\nEvaluate a single factual claim given accumulated evidence from web research.\nEither produce a final verdict if sufficient evidence exists, or generate\na search query to gather more information.\n\nDecision logic:\n- If evidence clearly supports the claim -> verdict=\"supported\"\n- If evidence clearly contradicts the claim -> verdict=\"refuted\"\n- If evidence is insufficient but a useful search is possible -> next_search=<query>\n- If no more useful searches and evidence is inconclusive -> verdict=\"not_supported\"",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "A single factual claim to verify"
+        },
+        {
+          "prefix": "Evidence:",
+          "description": "Evidence gathered from web research, may be empty initially"
+        },
+        {
+          "prefix": "Search History:",
+          "description": "Previous search queries already executed"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Step-by-step reasoning about the claim and evidence"
+        },
+        {
+          "prefix": "Verdict:",
+          "description": "Final judgment if enough evidence exists, otherwise None"
+        },
+        {
+          "prefix": "Next Search:",
+          "description": "Search query if more evidence needed, otherwise None. Must differ from search_history."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "aggregator.aggregator.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are given:\n- An `original_statement`: a natural-language statement that may contain one or more factual claims.\n- A list of `claim_verdicts`: each item is a dictionary with:\n  - `claim`: a (sub)claim extracted from the original statement\n  - `verdict`: one of {\"supported\", \"not_supported\", \"refuted\"}\n  - `evidence_summary`: a (possibly empty) text summary of the evidence used to judge that claim\n\nYour task is to aggregate the individual claim verdicts into a single overall verdict for the original statement, and to explain your reasoning briefly.\n\n## Core task\n\n1. Read all entries in `claim_verdicts`.\n2. Apply this **priority logic** to determine the `overall_verdict`:\n\n   1. If **any** claim has `verdict: \"refuted\"`  \n      → `overall_verdict = \"CONTAINS_REFUTED_CLAIMS\"` (highest priority).\n\n   2. Else, if **any** claim has `verdict: \"not_supported\"`  \n      → `overall_verdict = \"CONTAINS_UNSUPPORTED_CLAIMS\"`.\n\n   3. Else, if **all** claims have `verdict: \"supported\"`  \n      → `overall_verdict = \"SUPPORTED\"`.\n\n   There are no other allowed values for `overall_verdict`.\n\n3. Produce:\n   - `reasoning`: a concise explanation of how you applied the above rules to the given `claim_verdicts`.\n   - `overall_verdict`: exactly one of:\n     - `CONTAINS_REFUTED_CLAIMS`\n     - `CONTAINS_UNSUPPORTED_CLAIMS`\n     - `SUPPORTED`\n   - `confidence`: a numeric value in [0, 1], representing how confident you are that you applied the aggregation logic correctly.\n     - Use high confidence (e.g., 0.9–1.0) when the mapping from claim verdicts to overall verdict is straightforward.\n     - Only lower the confidence if there is genuine ambiguity about how to interpret the given claim verdicts, **not** based on the underlying world knowledge.\n\n## Interpretation details\n\n- Treat `claim_verdicts` as already-fact-checked units. Do **not** redo fact-checking or search for new evidence; your job is purely to aggregate.\n- The semantics of individual verdicts:\n  - `\"supported\"`: Evidence backs the claim.\n  - `\"not_supported\"`: There is insufficient or inconclusive evidence to confirm the claim; it is not necessarily false, just not backed by the available evidence.\n  - `\"refuted\"`: Evidence contradicts the claim.\n- The original statement may be a single claim or a conjunction of multiple claims. Your aggregation is always over the `claim_verdicts` list, not by re-parsing `original_statement`.\n\n## Style and formatting\n\n- Output in exactly this key structure (order can be as below, but key names must match):\n\n  - `reasoning`\n  - `overall_verdict`\n  - `confidence`\n\n- `reasoning`:\n  - Be concise and task-focused.\n  - Explicitly mention:\n    - How many claims are supported / not_supported / refuted.\n    - Which rule from the priority logic determined the outcome.\n  - Do not repeat the full evidence summaries; you may refer to them conceptually (e.g., “based on the evidence summaries, both claims are supported”).\n\n- `overall_verdict`:\n  - Must be one of the three exact strings above.\n  - Make sure it matches the priority logic even if it conflicts with any intuitive impression of the original statement.\n\n- `confidence`:\n  - Use a single floating-point number (e.g., `1.0`, `0.8`).\n  - For clean, unambiguous inputs like the provided examples, `1.0` is appropriate.\n\n## Examples of correct aggregation\n\n- If you receive:\n  - One claim with `verdict: \"supported\"`  \n    → `overall_verdict = \"SUPPORTED\"`.\n- If you receive:\n  - One or more claims with `verdict: \"not_supported\"` and none with `\"refuted\"`  \n    → `overall_verdict = \"CONTAINS_UNSUPPORTED_CLAIMS\"`.\n- If you receive:\n  - At least one claim with `verdict: \"refuted\"` (regardless of any supported or not_supported claims)  \n    → `overall_verdict = \"CONTAINS_REFUTED_CLAIMS\"`.\n\nFollow this aggregation logic strictly and deterministically.",
+      "fields": [
+        {
+          "prefix": "Original Statement:",
+          "description": "The original statement being evaluated"
+        },
+        {
+          "prefix": "Claim Verdicts:",
+          "description": "List of dicts with 'claim', 'verdict', and 'evidence_summary' keys"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of the aggregation logic applied"
+        },
+        {
+          "prefix": "Overall Verdict:",
+          "description": "The final verdict for the entire statement"
+        },
+        {
+          "prefix": "Confidence:",
+          "description": "Confidence score between 0.0 and 1.0"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}

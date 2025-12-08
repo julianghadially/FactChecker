@@ -6,3 +6,5 @@ env/*
 .DS_Store
 .env
 venv/*
+*.sqlite
+results/*

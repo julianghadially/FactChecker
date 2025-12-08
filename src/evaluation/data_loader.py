@@ -104,9 +104,51 @@ class ThreeClassLabelSchema(LabelSchema):
         return ["SUPPORTED", "REFUTED", "NOT_ENOUGH_INFO"]
 
 
+class FacToolLabelSchema(LabelSchema):
+    """FacTool dataset uses true/false labels mapped to SUPPORTED/REFUTED."""
+
+    GROUND_TRUTH_MAP = {
+        "true": "SUPPORTED",
+        "false": "REFUTED",
+        "True": "SUPPORTED",
+        "False": "REFUTED",
+    }
+
+    PREDICTION_MAP = {
+        # Pipeline aggregator outputs
+        "SUPPORTED": "SUPPORTED",
+        "CONTAINS_UNSUPPORTED_CLAIMS": "UNKNOWN",  # Treat unsupported as refuted for FacTool
+        "CONTAINS_REFUTED_CLAIMS": "REFUTED",
+        # Individual claim verdicts (lowercase)
+        "supported": "SUPPORTED",
+        "not_supported": "UNKNOWN",  # Treat unsupported as refuted for FacTool
+        "refuted": "REFUTED",
+        # Baseline model outputs
+        "NOT_ENOUGH_INFO": "UNKNOWN",  # Treat as refuted for FacTool
+        "REFUTED": "REFUTED",
+        # Error handling
+        "ERROR": "ERROR",
+    }
+
+    @classmethod
+    def normalize_ground_truth(cls, label: str) -> str:
+        return cls.GROUND_TRUTH_MAP.get(label, label)
+
+    @classmethod
+    def normalize_prediction(cls, verdict: str) -> str:
+        return cls.PREDICTION_MAP.get(verdict, verdict)
+
+    @classmethod
+    def get_labels(cls) -> list[str]:
+        return ["SUPPORTED", "REFUTED"]
+
+
 def detect_label_schema(labels: set[str]) -> type[LabelSchema]:
     """Auto-detect the label schema based on labels present in dataset."""
-    if "REFUTED" in labels or "NOT_ENOUGH_INFO" in labels:
+    # Check for FacTool format (true/false)
+    if "true" in labels or "false" in labels or "True" in labels or "False" in labels:
+        return FacToolLabelSchema
+    elif "REFUTED" in labels or "NOT_ENOUGH_INFO" in labels:
         return ThreeClassLabelSchema
     elif "NOT_SUPPORTED" in labels:
         return HoverLabelSchema
@@ -134,14 +176,14 @@ class DatasetWithSchema:
     schema: type[LabelSchema]
 
 
-def load_hover_dataset(
+def load_dataset(
     path: str = "data/hover_dev_release_v1.1.json",
     limit: Optional[int] = None
 ) -> DatasetWithSchema:
-    """Load HOVER dataset from JSON file.
+    """Load dataset from JSON or JSONL file.
 
     Args:
-        path: Path to the JSON file (relative to project root).
+        path: Path to the JSON/JSONL file (relative to project root).
         limit: Optional limit on number of examples to load.
 
     Returns:
@@ -155,8 +197,27 @@ def load_hover_dataset(
     if not file_path.exists():
         raise FileNotFoundError(f"Dataset not found at {path}")
 
-    with open(file_path, "r") as f:
-        data = json.load(f)
+    # Check if JSONL format (one JSON object per line)
+    is_jsonl = path.endswith(".jsonl")
+    
+    if is_jsonl:
+        data = []
+        with open(file_path, "r") as f:
+            for line_num, line in enumerate(f, 1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    data.append(json.loads(line))
+                except json.JSONDecodeError as e:
+                    raise json.JSONDecodeError(
+                        f"Invalid JSON on line {line_num} of {path}: {e.msg}",
+                        e.doc,
+                        e.pos
+                    )
+    else:
+        with open(file_path, "r") as f:
+            data = json.load(f)
 
     # Detect label schema from data
     all_labels = set(item["label"] for item in data)
@@ -165,13 +226,22 @@ def load_hover_dataset(
     print(f"Labels in dataset: {all_labels}")
 
     examples = []
-    for item in data:
+    for idx, item in enumerate(data):
+        # Handle different dataset formats
+        uid = item.get("uid", f"example_{idx}")
+        claim = item.get("claim", item.get("statement", ""))
+        label = item["label"]
+        
+        # HOVER format has supporting_facts and num_hops, FacTool doesn't
+        supporting_facts = item.get("supporting_facts", [])
+        num_hops = item.get("num_hops", 0)
+        
         examples.append(HoverExample(
-            uid=item["uid"],
-            claim=item["claim"],
-            label=item["label"],
-            supporting_facts=[(sf[0], sf[1]) for sf in item["supporting_facts"]],
-            num_hops=item["num_hops"]
+            uid=uid,
+            claim=claim,
+            label=label,
+            supporting_facts=[(sf[0], sf[1]) if isinstance(sf, (list, tuple)) and len(sf) >= 2 else ("", 0) for sf in supporting_facts],
+            num_hops=num_hops
         ))
 
     if limit:

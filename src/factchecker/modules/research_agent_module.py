@@ -1,10 +1,10 @@
 """Research agent module for web-based evidence gathering."""
 
 import dspy
-from ..signatures.page_selector import PageSelector
-from ..signatures.evidence_summarizer import EvidenceSummarizer
-from services.serper_service import SerperService
-from services.firecrawl_service import FirecrawlService
+from src.factchecker.signatures.page_selector import PageSelector
+from src.factchecker.signatures.evidence_summarizer import EvidenceSummarizer
+from src.services.serper_service import SerperService
+from src.services.firecrawl_service import FirecrawlService
 
 
 class ResearchAgentModule(dspy.Module):
@@ -21,8 +21,6 @@ class ResearchAgentModule(dspy.Module):
 
     def __init__(
         self,
-        serper_service: SerperService,
-        firecrawl_service: FirecrawlService,
         max_page_visits: int = 3
     ):
         """Initialize the research agent module.
@@ -33,8 +31,8 @@ class ResearchAgentModule(dspy.Module):
             max_page_visits: Maximum pages to visit per query (default 3).
         """
         super().__init__()
-        self.serper = serper_service
-        self.firecrawl = firecrawl_service
+        self.serper = SerperService()
+        self.firecrawl = FirecrawlService()
         self.max_page_visits = max_page_visits
         self.page_selector = dspy.ChainOfThought(PageSelector)
         self.evidence_summarizer = dspy.ChainOfThought(EvidenceSummarizer)
@@ -80,7 +78,6 @@ class ResearchAgentModule(dspy.Module):
 
             # Scrape the selected page
             scraped = self.firecrawl.scrape(selection.selected_url)
-
             if not scraped.success:
                 all_evidence.append(
                     f"[Failed to scrape {selection.selected_url}: {scraped.error}]"

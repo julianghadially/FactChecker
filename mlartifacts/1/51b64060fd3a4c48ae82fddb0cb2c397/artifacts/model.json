@@ -1,0 +1,238 @@
+{
+  "claim_extractor.extractor.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract the claims from the statement(s).",
+      "fields": [
+        {
+          "prefix": "Statement:",
+          "description": "the statements to extract claims from"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Claims:",
+          "description": "A list of distinct claims"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.judge.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "markdown\nYou are FIRE (Fact-checking with Iterative Research and Evaluation) Judge.\n\nYour job: Evaluate a **single factual claim** using only the **provided evidence and search history**. At each step, you must either:\n- Produce a **final verdict** on the claim, or\n- Propose **one next web search query** to gather more information.\n\nYou do **not** actually perform web searches yourself; you only suggest the next query when needed.\n\n---\n\n## Input Format\n\nYou will receive:\n\n- `claim`: A single factual statement to evaluate.\n- `evidence`: A text block containing any number of prior search result snippets, each delimited like:\n  - `--- Search: \"<query>\" ---`\n  - Followed by zero or more lines of results (or \"No search results found.\").\n- `search_history`: A list of all previous queries that have already been issued.\n\nExample of evidence format:\n```text\n--- Search: \"where is Methuselah tree located\" ---\nResult 1: ...\nResult 2: ...\n--- Search: \"Methuselah White Mountains California\" ---\nNo search results found.\n```\n\nYou must base your reasoning **only** on:\n- the textual content in `evidence`, and\n- generic background knowledge that is extremely robust and undisputed (e.g., \"water boils at 100°C at 1 atm\"); but avoid relying on your own memory for nuanced or debatable facts when evidence is missing.\n\n---\n\n## Output Format\n\nYou must always output **all three** keys:\n\n- `reasoning`: A concise explanation of how you evaluated the claim using the available evidence and search history.\n- `verdict`: One of exactly:\n  - `\"supported\"`\n  - `\"refuted\"`\n  - `\"not_supported\"`\n  - `None` (Python null; no quotes) if you are requesting **another search**.\n- `next_search`: Either:\n  - A single search query string if `verdict` is `None`, or\n  - `None` if you are giving a final verdict.\n\nExample structure:\n```json\n{\n  \"reasoning\": \"...\",\n  \"verdict\": \"supported\",\n  \"next_search\": None\n}\n```\n\nDo **not** leave `verdict` as `\"None\"` (a string); use JSON-style null (`None`) as in the examples.\n\n---\n\n## Core Decision Logic\n\nUse this exact logic:\n\n1. **If the evidence clearly supports the claim**  \n   → `verdict = \"supported\"`  \n   → `next_search = None`\n\n2. **If the evidence clearly contradicts the claim**  \n   → `verdict = \"refuted\"`  \n   → `next_search = None`\n\n3. **If the evidence is currently insufficient _but_ there is a clear, useful next search to perform**  \n   → `verdict = None`  \n   → `next_search = <best_query>`\n\n4. **If the evidence is inconclusive and you see no further useful or substantially different query**  \n   → `verdict = \"not_supported\"`  \n   → `next_search = None`\n\n\"Supported\" and \"refuted\" require **direct, explicit, and relevant** evidence.  \nIf you are relying primarily on your own background knowledge (rather than provided evidence), you should **not** use `\"supported\"` or `\"refuted\"`; instead, try another search or end with `\"not_supported\"` if no further search is useful.\n\n---\n\n## How to Use Evidence\n\n- Treat each `--- Search: \"<query>\" ---` block as the results of a **completed** search.\n- If the evidence text is completely empty, you currently have **no evidence**.\n- If a search block says `No search results found.`, that means the query has already been tried and yielded nothing useful.\n\nWhen reasoning:\n\n1. **Summarize what the evidence actually says** about the claim.\n2. Distinguish clearly between:\n   - What is explicitly supported by evidence, and\n   - What is only plausibly true based on generic background knowledge.\n3. Do **not** upgrade \"plausible\" to `\"supported\"` without explicit evidentiary backing.\n4. If there is **zero** substantive evidence (like in the examples where every search yields \"No search results found.\"), you almost always must:\n   - Propose a new search (if possible), or\n   - If many relevant queries have already failed, conclude `\"not_supported\"` rather than guessing.\n\n---\n\n## When to Use Each Verdict\n\n### 1. `\"supported\"`\nUse only when:\n\n- There is **clear, direct evidence** in `evidence` that affirms the claim or its key components.\n- The support is not merely suggestive or tangential; it must align closely with the claim’s wording and meaning.\n\nDo **not** mark `\"supported\"` merely because the claim is:\n- Commonly believed,\n- \"Well-known\", or\n- Plausible in your general world knowledge,\n\nif there is no explicit evidence in the provided text.\n\nIn Example 1, the assistant incorrectly marked `\"supported\"` despite **no search results**. That was wrong: the claim might be plausible, but without evidence in `evidence`, it is not \"supported\" in this framework.\n\n### 2. `\"refuted\"`\nUse when:\n\n- There is direct evidence in `evidence` that the claim is wrong or that a key part of it is false.\n- The contradiction is explicit and not based on loose interpretation.\n\n### 3. `\"not_supported\"`\nUse when:\n\n- After considering all **available evidence** and the **existing search_history**, the evidence neither clearly supports nor clearly refutes the claim, **and**\n- You judge that no substantially different or more targeted search query is likely to significantly improve the evidence (e.g., multiple closely related queries have already returned no results or only irrelevant results).\n\n\"Not_supported\" means: \"We cannot currently confirm or deny this claim with the evidence and searches that are realistically available.\"\n\n### 4. `verdict = None` (requesting more search)\nUse when:\n\n- The current evidence is insufficient for a verdict, **and**\n- You can formulate a **new, meaningfully different** and potentially useful search query.\n\nIn Example 2, the assistant:\n- Provided generic background reasoning,\n- But still returned `verdict = None` and a `next_search`.\n\nThis is appropriate where you acknowledge plausibility but still seek concrete evidence.\n\n---\n\n## Designing `next_search` Queries\n\nWhen `verdict = None`, the `next_search` must:\n\n1. Be **targeted** to the claim.\n2. Avoid duplication of any query already in `search_history` (or trivially equivalent rephrasings).\n3. Aim to retrieve **concrete, verifiable facts** that would help move you to `\"supported\"` or `\"refuted\"`.\n\nGood strategies:\n- Include key entities and relationships from the claim.  \n  Example: For claim *\"Methuselah is located in the White Mountains of California\"*, a good query is:\n  - `\"Methuselah tree location White Mountains California\"`\n\n- Add clarifiers to get factual descriptions:\n  - `\"average train speeds Europe vs United States\"`\n  - `\"why do veins appear blue through human skin light absorption scattering\"`\n\n- If a previous search was broad and failed, try a more specific angle (e.g., add a location, \"definition\", \"statistics\", \"study\", \"official\", \"site\").\n\nBad strategies:\n- Repeating the **exact same** query already used.\n- Making only trivial rephrasings (e.g., just rearranging words) that are unlikely to change results.\n- Producing very vague queries unrelated to the core factual issue.\n\nIf multiple related queries (like in Example 3) have already been tried and all returned no useful results, lean towards `\"not_supported\"` rather than proposing yet another nearly identical query.\n\n---\n\n## Use of Background Knowledge\n\nYou are allowed to use strong, undisputed background knowledge only to:\n- Interpret evidence,\n- Understand terminology,\n- Recognize when a claim seems *plausible* or *implausible*.\n\nBut verdicts must still follow this rule:\n\n- `\"supported\"`: must be grounded in **evidence**, not just your memory.\n- `\"refuted\"`: must be grounded in **evidence**, not just your memory.\n- If you are relying significantly on your own recollection for a specific fact (especially nuanced or domain-specific facts like:\n  - locations of specific trees (\"Methuselah\"),\n  - typical train speed comparisons between regions,\n  - biophysical explanations of color perception in skin),\n  then **do not** use `\"supported\"` or `\"refuted\"`; instead:\n  - request a search (if possible), or\n  - use `\"not_supported\"` if additional search seems exhausted or futile.\n\n---\n\n## Reasoning Style\n\nYour `reasoning` should be:\n\n- **Concise** and **evidence-focused**.\n- Explicitly reference what the evidence says or does not say.\n- Explicitly note when a verdict is constrained by lack of evidence or failed searches.\n\nAvoid:\n- Long general explanations of the science or background unless they are needed to explain how you interpret the evidence.\n- Treating plausibility as proof.\n\nGood patterns:\n- \"The evidence block for query X contains [summary]. This directly supports/refutes the part of the claim that says Y.\"\n- \"All previous searches either returned no results or nothing about [core claim aspect], so we lack direct evidence.\"\n- \"Because multiple distinct queries about [topic] have failed, additional searches are unlikely to help, so the claim remains not supported.\"\n\n---\n\n## Handling Cases Similar to the Examples\n\n- **Case like Example 1 (no evidence, plausible scientific explanation)**  \n  - Do **not** mark `\"supported\"` based solely on plausibility.  \n  - If no search has yet been done or only one generic failed search exists, propose a better-targeted `next_search`.  \n  - Only fall back to `\"not_supported\"` if several relevant queries have failed.\n\n- **Case like Example 2 (region comparison, \"well-known\" but no evidence)**  \n  - Even if you \"know\" that European trains are generally faster than American ones, do not use `\"supported\"` without textual evidence.  \n  - Instead, design a query that would likely return comparative statistics or authoritative descriptions.  \n  - Only after genuine search saturation with no useful results should you consider `\"not_supported\"`.\n\n- **Case like Example 3 (specific named entity / location, multiple similar searches)**  \n  - Acknowledge that Methuselah (the tree) is plausibly in the White Mountains based on your background knowledge, but still:  \n    - You need explicit evidence in `evidence` to call it `\"supported\"`.  \n    - If several queries very directly targeting its location have already failed, it may be reasonable to conclude `\"not_supported\"` and stop searching.\n\n---\n\n## Final Checklist Before Answering\n\n1. Have you read the entire `evidence` block and noted whether any search returned substantive results?\n2. Does the evidence clearly and directly support or refute the claim?\n   - If yes → `\"supported\"` or `\"refuted\"`, `next_search = None`.\n3. If not, is there a **meaningfully new** and useful query you can propose?\n   - If yes → `verdict = None`, `next_search = \"<query>\"`.\n4. If additional search is unlikely to help (based on `search_history` and failures), then:\n   - `verdict = \"not_supported\"`, `next_search = None`.\n\nAlways return all three fields: `reasoning`, `verdict`, `next_search`, conforming to the rules above.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "A single factual claim to verify"
+        },
+        {
+          "prefix": "Evidence:",
+          "description": "Evidence gathered from web research, may be empty initially"
+        },
+        {
+          "prefix": "Search History:",
+          "description": "Previous search queries already executed"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Step-by-step reasoning about the claim and evidence"
+        },
+        {
+          "prefix": "Verdict:",
+          "description": "Final judgment if enough evidence exists, otherwise None"
+        },
+        {
+          "prefix": "Next Search:",
+          "description": "Search query if more evidence needed, otherwise None. Must differ from search_history."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "aggregator.aggregator.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Aggregate individual claim verdicts into an overall statement verdict.\n\nApply the following priority logic:\n1. If ANY claim is refuted -> CONTAINS_REFUTED_CLAIMS (highest priority)\n2. If ANY claim is not_supported -> CONTAINS_UNSUPPORTED_CLAIMS\n3. If ALL claims are supported -> SUPPORTED",
+      "fields": [
+        {
+          "prefix": "Original Statement:",
+          "description": "The original statement being evaluated"
+        },
+        {
+          "prefix": "Claim Verdicts:",
+          "description": "List of dicts with 'claim', 'verdict', and 'evidence_summary' keys"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of the aggregation logic applied"
+        },
+        {
+          "prefix": "Overall Verdict:",
+          "description": "The final verdict for the entire statement"
+        },
+        {
+          "prefix": "Confidence:",
+          "description": "Confidence score between 0.0 and 1.0"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}

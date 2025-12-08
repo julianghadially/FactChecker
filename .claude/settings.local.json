@@ -4,7 +4,8 @@
       "WebSearch",
       "WebFetch(domain:arxiv.org)",
       "Bash(tree:*)",
-      "WebFetch(domain:dspy.ai)"
+      "WebFetch(domain:dspy.ai)",
+      "Bash(python -m py_compile:*)"
     ],
     "deny": [],
     "ask": []

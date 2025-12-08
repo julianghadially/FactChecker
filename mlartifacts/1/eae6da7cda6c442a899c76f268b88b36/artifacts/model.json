@@ -1,0 +1,238 @@
+{
+  "claim_extractor.extractor.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract the claims from the statement(s).",
+      "fields": [
+        {
+          "prefix": "Statement:",
+          "description": "the statements to extract claims from"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Claims:",
+          "description": "A list of distinct claims"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are given:\n- A factual claim (a short sentence).\n- The scraped content of a single web page (often long, noisy HTML-to-text output).\n- The source URL of that page.\n\nYour task is to help verify the claim by extracting and summarizing evidence from the given page content only.\n\nYou must produce three fields:\n1. reasoning\n2. relevant_evidence\n3. evidence_stance\n\nFollow these detailed instructions:\n\n-------------------------\n1. OVERALL GOAL\n-------------------------\nGiven the claim and the page_content:\n- Read the page_content carefully.\n- Identify any specific facts on the page that are directly relevant to the claim.\n- Use those facts to determine whether the page supports, refutes, or does not address the claim.\n- Provide a concise explanation and quote relevant text with proper attribution.\n\nYou are NOT judging whether the claim is true in the real world; you are judging whether this specific page’s content supports or refutes the claim.\n\n-------------------------\n2. UNDERSTAND THE INPUT FORMAT\n-------------------------\nInputs include:\n- claim: A short natural-language statement that may or may not be true.\n- page_content: Scraped text from a web page. It may include:\n  - Article text, list items, headings.\n  - Navigation links, comments, ads, “related stories”, boilerplate.\n  - Truncated content.\n- source_url: The URL of the scraped page.\n\nThe answer must be based SOLELY on page_content. Do not use external knowledge or the URL/domain reputation to decide the stance.\n\n-------------------------\n3. EVIDENCE EXTRACTION\n-------------------------\n3.1 What counts as relevant evidence\n- Text that explicitly mentions the entities, concepts, or relationships in the claim.\n- Factual statements (not speculation or rhetorical questions) that:\n  - Directly confirm the claim.\n  - Directly contradict the claim.\n  - Provide precise values (dates, locations, numbers) that can be compared to those in the claim.\n- Prefer concise segments that capture the core fact, not large surrounding blocks.\n\n3.2 What to ignore\n- Navigation menus, footers, site boilerplate, login prompts.\n- Comments unrelated to the claim.\n- Purely promotional or stylistic text without factual content (e.g., “Well written content 👍”).\n- “Related stories” links and their titles unless they themselves contain a clear factual statement about the claim; even then, be cautious that they may refer to different contexts or times.\n- Image alt text and captions unless they contain specific factual statements relevant to the claim.\n\n3.3 Multiple mentions\n- If several sentences on the page repeat essentially the same fact, you may quote just one clear instance.\n- If there is conflicting information on the same page, note the conflict in the reasoning and choose evidence that clearly shows the conflict.\n\n-------------------------\n4. DETERMINING STANCE\n-------------------------\nYour evidence_stance must be one of:\n- \"supports\"\n- \"refutes\"\n- \"not_enough_info\"\n\nUse these definitions:\n\n4.1 supports\nChoose \"supports\" when:\n- The page content contains at least one clear factual statement that, taken at face value, makes the claim very likely true.\n- The key components of the claim (e.g., entity, property, relation) match the statement on the page.\n\nExample pattern:\n- Claim: “X is located in Y.”\n- Page: “X is located in Y.” or “X is in Y.”\n→ evidence_stance: supports\n\n4.2 refutes\nChoose \"refutes\" when:\n- The page content contains at least one clear factual statement that contradicts the claim.\n- The page states that some critical part of the claim is false or gives a mutually exclusive alternative.\n\nExample pattern:\n- Claim: “X is located in Y.”\n- Page: “X is located in Z.” (where Y and Z cannot both be correct in this context).\n→ evidence_stance: refutes\n\n4.3 not_enough_info\nChoose \"not_enough_info\" when:\n- The page does not mention the key entity or fact in the claim at all.\n- The page mentions related topics but does not address the specific relationship or detail in the claim.\n- The page is too truncated or vague to establish support or contradiction.\n\nDo NOT guess based on general world knowledge; rely only on what appears in page_content.\n\n-------------------------\n5. FIELD-BY-FIELD OUTPUT SPECIFICATION\n-------------------------\n\n5.1 reasoning\n- Write a short, clear explanation (2–4 sentences is usually enough).\n- Explicitly:\n  - Identify the main elements of the claim (entities, relationships).\n  - State whether and how the page content addresses those elements.\n  - Conclude why that leads to \"supports\", \"refutes\", or \"not_enough_info\".\n- Base the reasoning only on page_content; do not bring in outside facts.\n- Be specific rather than generic (e.g., “The article explicitly states that Methuselah is located in the White Mountains of California, matching the claim’s location.” is better than “The article agrees with the claim.”).\n\n5.2 relevant_evidence\n- Provide one or more direct quotes from page_content that are most relevant to assessing the claim.\n- When quoting, keep the text exact and unaltered, including punctuation, but you may trim irrelevant surrounding text.\n- Clearly attribute the quote to the source, typically in the format:\n  - `\"Quoted sentence.\" (source: [short site name or source_url])`\n- If you include multiple pieces of evidence, separate them clearly (e.g., as bullet points or with line breaks).\n- Ensure every piece of evidence is genuinely relevant to the claim; avoid generic site or article descriptions.\n\nExample (for the Methuselah claim):\n- relevant_evidence:\n  `\"Methuselah ... It’s Located in the White Mountains of California, in Inyo National Forest.\" (source: Jagranjosh)`\n\nIf there is truly no relevant evidence on the page:\n- Set relevant_evidence to an empty string or a short statement like:\n  - `\"No relevant factual statement about this claim found in the provided page content.\"`\n\n5.3 evidence_stance\n- Output exactly one of: \"supports\", \"refutes\", \"not_enough_info\".\n- Ensure it is consistent with both your reasoning and the quoted evidence.\n\n-------------------------\n6. PRACTICAL DECISION RULES\n-------------------------\n- If the page clearly restates the claim or a logically equivalent fact → supports.\n- If the page clearly states the opposite or an incompatible fact → refutes.\n- If the page does not address the crucial fact, or is ambiguous or incomplete → not_enough_info.\n\nWhen in doubt between \"supports/refutes\" and \"not_enough_info\":\n- Check whether you could justify the decision by pointing to a specific sentence that directly matches or contradicts the claim. If you cannot, choose \"not_enough_info\".\n\n-------------------------\n7. STYLE AND FORMAT REQUIREMENTS\n-------------------------\n- Respond in plain text or simple markdown.\n- Provide exactly these top-level keys in your answer:\n  - reasoning\n  - relevant_evidence\n  - evidence_stance\n- Do NOT include any additional sections, metadata, or commentary.\n- Keep the response concise and focused on the factual verification task.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.judge.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "FIRE (Fact-checking with Iterative Research and Evaluation) Judge.\n\nEvaluate a single factual claim given accumulated evidence from web research.\nEither produce a final verdict if sufficient evidence exists, or generate\na search query to gather more information.\n\nDecision logic:\n- If evidence clearly supports the claim -> verdict=\"supported\"\n- If evidence clearly contradicts the claim -> verdict=\"refuted\"\n- If evidence is insufficient but a useful search is possible -> next_search=<query>\n- If no more useful searches and evidence is inconclusive -> verdict=\"not_supported\"",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "A single factual claim to verify"
+        },
+        {
+          "prefix": "Evidence:",
+          "description": "Evidence gathered from web research, may be empty initially"
+        },
+        {
+          "prefix": "Search History:",
+          "description": "Previous search queries already executed"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Step-by-step reasoning about the claim and evidence"
+        },
+        {
+          "prefix": "Verdict:",
+          "description": "Final judgment if enough evidence exists, otherwise None"
+        },
+        {
+          "prefix": "Next Search:",
+          "description": "Search query if more evidence needed, otherwise None. Must differ from search_history."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "aggregator.aggregator.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Aggregate individual claim verdicts into an overall statement verdict.\n\nApply the following priority logic:\n1. If ANY claim is refuted -> CONTAINS_REFUTED_CLAIMS (highest priority)\n2. If ANY claim is not_supported -> CONTAINS_UNSUPPORTED_CLAIMS\n3. If ALL claims are supported -> SUPPORTED",
+      "fields": [
+        {
+          "prefix": "Original Statement:",
+          "description": "The original statement being evaluated"
+        },
+        {
+          "prefix": "Claim Verdicts:",
+          "description": "List of dicts with 'claim', 'verdict', and 'evidence_summary' keys"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of the aggregation logic applied"
+        },
+        {
+          "prefix": "Overall Verdict:",
+          "description": "The final verdict for the entire statement"
+        },
+        {
+          "prefix": "Confidence:",
+          "description": "Confidence score between 0.0 and 1.0"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}

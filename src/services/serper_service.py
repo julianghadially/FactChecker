@@ -3,6 +3,7 @@
 import requests
 from dataclasses import dataclass
 from typing import Optional
+from src.context_.context import serper_key
 
 
 @dataclass
@@ -23,13 +24,13 @@ class SerperService:
 
     BASE_URL = "https://google.serper.dev/search"
 
-    def __init__(self, api_key: str):
+    def __init__(self):
         """Initialize the Serper service.
 
         Args:
             api_key: Serper API key.
         """
-        self.api_key = api_key
+        self.api_key = serper_key
 
     def search(
         self,

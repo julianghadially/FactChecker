@@ -2,11 +2,12 @@
 
 import argparse
 import dspy
+import mlflow
 
-from context.context import openai_key, serper_key, firecrawl_key
-from factchecker.modules.fact_checker_pipeline import FactCheckerPipeline
-from baseline.baseline_model import BaselineModel
-from evaluation.evaluate import run_evaluation
+from src.context_.context import openai_key, serper_key, firecrawl_key
+from src.factchecker.modules.fact_checker_pipeline import FactCheckerPipeline
+from src.baseline.baseline_model import BaselineModel
+from src.evaluation.evaluate import run_evaluation
 
 
 def configure_dspy(model: str = "openai/gpt-4o-mini"):
@@ -64,10 +65,7 @@ def run_benchmark(sample_size: int, model: str):
     """
     configure_dspy(model)
 
-    fact_checker = FactCheckerPipeline(
-        serper_api_key=serper_key,
-        firecrawl_api_key=firecrawl_key
-    )
+    fact_checker = FactCheckerPipeline()
     baseline = BaselineModel()
 
     run_evaluation(
@@ -102,11 +100,28 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default="openai/gpt-4o-mini",
-        help="Model to use (e.g., 'openai/gpt-4o-mini', 'anthropic/claude-3-sonnet')"
+        default="openai/gpt-5-mini",
+        help="Model to use (e.g., 'openai/gpt-5-mini', 'anthropic/claude-4.5-sonnet')"
+    )
+    parser.add_argument(
+        "--mlflow",
+        type=bool,
+        default=False,
+        help="Enable MLflow tracking (default: False)"
     )
 
     args = parser.parse_args()
+
+    if args.mlflow:
+        print("Enabling MLflow tracking")
+        mlflow.dspy.autolog(
+            log_compiles=True,
+            log_evals=True,
+            log_traces_from_compile=True
+        )
+        # Configure MLflow tracking
+        mlflow.set_tracking_uri("http://localhost:5000")
+        mlflow.set_experiment("DSPy-Optimization")
 
     if args.mode == "check":
         if not args.statement:

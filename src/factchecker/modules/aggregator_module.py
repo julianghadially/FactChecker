@@ -1,8 +1,8 @@
 """Aggregator module for combining claim verdicts into overall statement verdict."""
 
 import dspy
-from ..signatures.aggregator import Aggregator
-from ..models.data_types import AggregationResult
+from src.factchecker.signatures.aggregator import Aggregator
+from src.factchecker.models.data_types import AggregationResult
 
 
 class AggregatorModule(dspy.Module):
@@ -23,7 +23,7 @@ class AggregatorModule(dspy.Module):
         self,
         original_statement: str,
         claim_verdicts: list[dict]
-    ) -> AggregationResult:
+    ) -> dspy.Prediction:
         """Aggregate claim verdicts into overall verdict.
 
         Args:
@@ -38,7 +38,7 @@ class AggregatorModule(dspy.Module):
             claim_verdicts=claim_verdicts
         )
 
-        return AggregationResult(
+        return dspy.Prediction(
             verdict=result.overall_verdict,
             confidence=result.confidence,
             reasoning=result.reasoning,

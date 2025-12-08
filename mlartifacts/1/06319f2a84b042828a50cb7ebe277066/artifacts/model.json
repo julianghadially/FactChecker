@@ -1,0 +1,238 @@
+{
+  "claim_extractor.extractor.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract the claims from the statement(s).",
+      "fields": [
+        {
+          "prefix": "Statement:",
+          "description": "the statements to extract claims from"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Claims:",
+          "description": "A list of distinct claims"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are an assistant that, given a claim being fact‑checked, a list of search results, a list of already visited URLs, and any current evidence, must select the single most promising next page to visit for evidence gathering.\n\nYour output must be:\n1) A short explanation of your reasoning in natural language under the key `reasoning`.\n2) The URL you choose under the key `selected_url`.\n\nExample output format:\n### reasoning\n[your explanation here]\n\n### selected_url\n\"[one URL from search_results['link']]\"\n\nDo not output anything else.\n\n--------------------------------\nTASK DETAILS\n--------------------------------\n\nYou are working inside a multi-step fact‑checking pipeline. Your specific role is to choose which search result link should be opened *next* in order to most effectively gather evidence for or against a given claim.\n\nInputs:\n\n- `claim`: A natural‑language statement whose truthfulness is being checked.\n- `search_results`: A list of dictionaries, each with at least:\n  - `title`: Page title (may be noisy or informal).\n  - `link`: URL string.\n  - `snippet`: Short text snippet from that page.\n- `visited_urls`: A list of URL strings that have already been opened in previous steps. These should NOT be selected again.\n- `current_evidence`: A list or text description of evidence that has already been collected, including past scraping failures. Use this to avoid retrying broken or non-scrapable pages when possible.\n\nYour job is **not** to fact‑check the claim directly, but to decide which one *unvisited* search result is the best candidate to open next, based on:\n\n1. **Relevance to the claim**  \n   - The page should be about the *topic and entity* named in the claim, and as close as possible to the *specific question* the claim raises.\n   - Prefer results where the title/snippet directly mentions:\n     - The main entity or concept in the claim (e.g., “Methuselah” as a tree vs. a star, company, etc.).\n     - The specific aspect being checked (e.g., location, date, quantity, event).\n   - Be careful with ambiguous terms:\n     - “Methuselah” can refer to:\n       - an ancient tree in California (relevant for geographic/location claims about the tree),\n       - a star/planet, often in cluster M4, constellation Scorpius (irrelevant for tree-related location claims),\n       - a company (irrelevant),\n       - other metaphorical or brand uses (irrelevant).\n     - Use the snippet to disambiguate which sense the page is using; select only pages matching the claim’s sense.\n\n2. **Authoritativeness and likely reliability**\n   - Prefer:\n     - Reputable news outlets.\n     - Government or official institutional sites (.gov, .edu, large NGOs, known science/encyclopedic sites).\n     - Well‑known reference sites (major encyclopedias, respected scientific organizations, established educational platforms).\n   - De‑prioritize:\n     - Random personal social media posts (e.g., Facebook posts, generic YouTube shorts) unless all other options are clearly worse.\n     - Thin quiz or slide‑deck pages that only show multiple‑choice options or superficial statements without sources.\n     - Corporate profile pages irrelevant to the factual claim.\n   - When multiple pages are relevant, prefer the one that seems better sourced or more detailed from its snippet and title.\n\n3. **Potential to provide *decisive* supporting or refuting evidence**\n   - Prefer pages that:\n     - Look like they give a direct statement of the fact being checked (e.g., “Where is Methuselah located? Methuselah is located in Inyo National Forest in California…”).\n     - Discuss the specific property under dispute (location, date, number, etc.) rather than just mentioning the entity in passing.\n     - Contain explanatory or descriptive content rather than just a question in a quiz.\n   - A page whose snippet already suggests it has the *exact* answer, or a very close formulation, is often a strong candidate.\n\n4. **Avoiding redundancy and previously visited/failed sources**\n   - Never select a URL that appears in `visited_urls`.\n   - Check `current_evidence` for notes about scraping failures or inaccessible pages (e.g., a recurring error like “Failed to scrape ...: 'Firecrawl' object has no attribute 'scrape_url'” for a specific URL).  \n     - If a page failed before, do *not* choose it again unless:\n       - It is the only clearly relevant source, and\n       - There is a plausible reason it might succeed on a new attempt (rare; in most cases, assume repeat failures).\n   - If multiple unvisited pages look nearly identical in function (e.g., two trivial quizzes asking the same question) and one appears more authoritative or complete, select that one and ignore the others.\n\n--------------------------------\nSELECTION STRATEGY\n--------------------------------\n\nFollow this general decision process:\n\n1. **Filter out clearly irrelevant topics**\n   - From `search_results`, discard links whose snippets clearly concern a different meaning of the main entity than the one relevant to the claim.\n   - Example (from the Methuselah case):\n     - If the claim is about the *tree* Methuselah’s location, then:\n       - A result saying “Methuselah is in the core of a star cluster called M4… in Scorpius” is about an astronomical object and should be considered irrelevant.\n       - A corporate profile “Methuselah - 2025 Company Profile” is also irrelevant.\n   - Only keep results that plausibly address the same entity and fact type as the claim.\n\n2. **Exclude visited URLs**\n   - From the remaining list, remove any whose `link` appears in `visited_urls` (exact string match).\n   - Do *not* reselect a visited URL even if it looks useful—that work is already (or has attempted to be) done.\n\n3. **Check for known scraping failures**\n   - Scan `current_evidence` for explicit failure messages tied to specific URLs.\n   - If a URL is known to fail (e.g., you see an error message quoting that URL), consider it a “last resort” option that you only choose if all other unvisited options are clearly irrelevant.\n\n4. **Rank the remaining candidates**\n   Among the unvisited, relevant, and likely accessible URLs, rank them roughly by:\n   - How directly the title/snippet addresses the claim’s core question.\n   - Expected reliability/authority of the site.\n   - Likelihood of containing explicit, quotable evidence.\n\n   For instance, in a claim “Methuselah is located in the White Mountains of California”:\n   - A snippet saying “Where is Methuselah located? Methuselah is located in Inyo National Forest in California…” is closer to a direct factual statement, but if that URL already failed to scrape or is visited, you must skip it.\n   - A quiz page snippet like “… Where is Methuselah located? A) Great Basin B) Yosemite National Park C) White Mountains of California D) Sierra Nevada.” shows the location is *mentioned* but the page may not give explanatory context; it can still be used if better sources are not available.\n   - A Facebook photo post discussing “science update on oldest tree living… where is Methuselah located?” is social media and should be lower priority than a more formal article on the same topic, but higher than obviously irrelevant topics (like star cluster M4).\n\n5. **Break ties**\n   - If two or more pages appear equally promising, choose the one with:\n     - More descriptive snippet that seems to include an explicit declarative answer (rather than just a question).\n     - A more authoritative or established domain.\n   - If no page seems clearly superior, choose the one that *most directly* appears to answer the claim’s specific factual point.\n\n--------------------------------\nRESPONSE REQUIREMENTS\n--------------------------------\n\n- Your `reasoning` should:\n  - Explicitly reference the claim and how the selected page’s snippet/title relate to it.\n  - Mention why you *did not* choose other obvious but flawed candidates if relevant (e.g., “Another result refers to Methuselah as a star in cluster M4, which is irrelevant to the tree location claim.” or “The Jagranjosh page seems ideal but has already failed to scrape, so I prefer this quiz page which still mentions the White Mountains.”).\n  - Be concise (2–5 sentences is usually sufficient) but concrete.\n\n- Your `selected_url` must:\n  - Be exactly one of the `link` values from `search_results`.\n  - Not be any URL in `visited_urls`.\n\nDo not fabricate URLs, and do not attempt to resolve or correct the claim yourself; your role is solely to choose the *next best* page to visit for evidence, given the current state.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.judge.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "FIRE (Fact-checking with Iterative Research and Evaluation) Judge.\n\nEvaluate a single factual claim given accumulated evidence from web research.\nEither produce a final verdict if sufficient evidence exists, or generate\na search query to gather more information.\n\nDecision logic:\n- If evidence clearly supports the claim -> verdict=\"supported\"\n- If evidence clearly contradicts the claim -> verdict=\"refuted\"\n- If evidence is insufficient but a useful search is possible -> next_search=<query>\n- If no more useful searches and evidence is inconclusive -> verdict=\"not_supported\"",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "A single factual claim to verify"
+        },
+        {
+          "prefix": "Evidence:",
+          "description": "Evidence gathered from web research, may be empty initially"
+        },
+        {
+          "prefix": "Search History:",
+          "description": "Previous search queries already executed"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Step-by-step reasoning about the claim and evidence"
+        },
+        {
+          "prefix": "Verdict:",
+          "description": "Final judgment if enough evidence exists, otherwise None"
+        },
+        {
+          "prefix": "Next Search:",
+          "description": "Search query if more evidence needed, otherwise None. Must differ from search_history."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "aggregator.aggregator.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Aggregate individual claim verdicts into an overall statement verdict.\n\nApply the following priority logic:\n1. If ANY claim is refuted -> CONTAINS_REFUTED_CLAIMS (highest priority)\n2. If ANY claim is not_supported -> CONTAINS_UNSUPPORTED_CLAIMS\n3. If ALL claims are supported -> SUPPORTED",
+      "fields": [
+        {
+          "prefix": "Original Statement:",
+          "description": "The original statement being evaluated"
+        },
+        {
+          "prefix": "Claim Verdicts:",
+          "description": "List of dicts with 'claim', 'verdict', and 'evidence_summary' keys"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of the aggregation logic applied"
+        },
+        {
+          "prefix": "Overall Verdict:",
+          "description": "The final verdict for the entire statement"
+        },
+        {
+          "prefix": "Confidence:",
+          "description": "Confidence score between 0.0 and 1.0"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}

@@ -1,8 +1,8 @@
 """Fire Judge module for iterative claim evaluation with web research."""
 
 import dspy
-from ..signatures.fire_judge import FireJudge
-from ..models.data_types import JudgmentResult
+from src.factchecker.signatures.fire_judge import FireJudge
+from src.factchecker.models.data_types import JudgmentResult
 from .research_agent_module import ResearchAgentModule
 
 
@@ -33,7 +33,7 @@ class FireJudgeModule(dspy.Module):
         self.research_agent = research_agent
         self.max_iterations = max_iterations
 
-    def forward(self, claim: str) -> JudgmentResult:
+    def forward(self, claim: str) -> dspy.Prediction:
         """Evaluate a claim with iterative research.
 
         Args:
@@ -72,7 +72,7 @@ class FireJudgeModule(dspy.Module):
                 evidence += f"\n\n--- Search: {result.next_search} ---\n{new_evidence}"
 
         # Exhausted iterations without verdict - default to not_supported
-        return JudgmentResult(
+        return dspy.Prediction(
             claim=claim,
             verdict="not_supported",
             evidence_summary=evidence,
