@@ -5,8 +5,6 @@ with optional secondary metric for precision of SUPPORTED class.
 
 Usage:
     python -m src.optimizer.gepa_optimize --mlflow --auto light 
-    options:
-        --trainset-limit 20 --testset-limit 10
 """
 
 import argparse
@@ -69,7 +67,7 @@ def evaluate_program(program: dspy.Module, examples: list[dspy.Example], name: s
 
     for ex in tqdm(examples, desc=f"Evaluating {name}"):
         try:
-            pred = program(statement=ex.claim)
+            pred = program(statement=ex.statement)
             predictions.append(pred.overall_verdict if hasattr(pred, 'overall_verdict') else str(pred))
         except Exception as e:
             print(f"Error: {e}")
@@ -83,9 +81,8 @@ def evaluate_program(program: dspy.Module, examples: list[dspy.Example], name: s
 
 def run_optimization(
     auto: str = "light",
-    trainset_limit: Optional[int] = None,
-    testset_limit: Optional[int] = None,
-    reflection_model: str = "openai/gpt-5.1",
+    reflection_model: str = "openai/gpt-5-mini",
+    model: str = "openai/gpt-5-mini",
     output_dir: str = "results/optimization",
     num_threads: int = 5, #firecrawl concurrency limit is 5
     use_mlflow: bool = False
@@ -94,7 +91,7 @@ def run_optimization(
     # MLflow setup
     if use_mlflow:
         print("Enabling MLflow tracking...")
-        mlflow.dspy.autolog(log_compiles=True, log_evals=True, log_traces_from_compile=True)
+        mlflow.dspy.autolog(log_compiles=False, log_evals=True, log_traces_from_compile=True)
         mlflow.set_tracking_uri("http://localhost:5000")
         mlflow.set_experiment("GEPA-Optimization")
 
@@ -103,16 +100,16 @@ def run_optimization(
     print("=" * 60)
 
     # Configure DSPy
-    dspy.configure(lm=dspy.LM("openai/gpt-4o-mini", api_key=openai_key))
+    dspy.configure(lm=dspy.LM(model, api_key=openai_key))
 
     # Load datasets
     print("\nLoading datasets...")
-    all_train = load_dspy_examples("data/FacTool_QA_train.jsonl", limit=trainset_limit)
+    all_train = load_dspy_examples("data/FacTool_QA_train.jsonl")
     random.seed(42)
     random.shuffle(all_train)
     split_idx = max(10, len(all_train) // 5)
     valset, trainset = all_train[:split_idx], all_train[split_idx:]
-    testset = load_dspy_examples("data/FacTool_QA_test.jsonl", limit=testset_limit)
+    testset = load_dspy_examples("data/FacTool_QA_test.jsonl")
 
     print(f"Train: {len(trainset)}, Val: {len(valset)}, Test: {len(testset)}")
 
@@ -127,7 +124,7 @@ def run_optimization(
 
     # GEPA optimization
     print("\n" + "=" * 60)
-    print(f"GEPA OPTIMIZATION (auto={auto}, reflection={reflection_model})")
+    print(f"GEPA OPTIMIZATION (auto={auto}, reflection={reflection_model}, model={model})")
     print("=" * 60)
 
     optimizer = dspy.GEPA(
@@ -199,21 +196,19 @@ def run_optimization(
 def main():
     parser = argparse.ArgumentParser(description="GEPA Optimizer for FactChecker")
     parser.add_argument("--auto", choices=["light", "medium", "heavy"], default="light")
-    parser.add_argument("--trainset-limit", type=int, default=None)
-    parser.add_argument("--testset-limit", type=int, default=None)
-    parser.add_argument("--reflection-model", type=str, default="openai/gpt-5.1")
+    parser.add_argument("--reflection-model", type=str, default="openai/gpt-5-mini")
+    parser.add_argument("--model", type=str, default="openai/gpt-5-mini")
     parser.add_argument("--output-dir", type=str, default="results/optimization")
-    parser.add_argument("--num-threads", type=int, default=4)
+    parser.add_argument("--numthreads", type=int, default=4)
     parser.add_argument("--mlflow", action="store_true")
 
     args = parser.parse_args()
     run_optimization(
         auto=args.auto,
-        trainset_limit=args.trainset_limit,
-        testset_limit=args.testset_limit,
         reflection_model=args.reflection_model,
+        model=args.model,
         output_dir=args.output_dir,
-        num_threads=args.num_threads,
+        num_threads=args.numthreads,
         use_mlflow=args.mlflow
     )
 

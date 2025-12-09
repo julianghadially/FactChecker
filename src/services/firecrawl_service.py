@@ -1,8 +1,9 @@
 """Firecrawl API service for web page scraping."""
-
+import time
 from dataclasses import dataclass
 from typing import Optional
 from firecrawl import Firecrawl
+from firecrawl.v2.types import PDFParser
 from src.context_.context import firecrawl_key
 from src.tools.general_tools import clean_llm_outputted_url
 
@@ -34,7 +35,9 @@ class FirecrawlService:
     def scrape(
         self,
         url: str,
-        max_length: int = 10000
+        max_length: int = 10000,
+        max_pdf_pages: int = 30,
+        skip_pdfs: bool = True
     ) -> ScrapedPage:
         """Scrape a URL and return markdown content.
 
@@ -45,15 +48,24 @@ class FirecrawlService:
         Returns:
             ScrapedPage with markdown content or error information.
         """
+        start_time = time.time()
         try:
             url = clean_llm_outputted_url(url)
+            if url.lower().endswith(".pdf") and skip_pdfs:
+                #result = client.scrape(url, formats=["markdown"], parsers = [PDFParser(type= "pdf", max_pages = 1)])
+                return ScrapedPage(
+                    url=url,
+                    markdown="PDF scraping is temporarily unavailable.",
+                    title=None,
+                    success=False
+                )
             result = self.client.scrape(url, formats=["markdown"])
             #result = client.scrape(url, formats=["markdown"])
             markdown = result.markdown
             # Truncate if needed to manage token costs
             if len(markdown) > max_length:
                 markdown = markdown[:max_length] + "\n\n[Content truncated...]"
-
+            print(f"URL scrape time. Url: {url}. \nTime: {time.time() - start_time:.2f} seconds")
             return ScrapedPage(
                 url=url,
                 markdown=markdown,

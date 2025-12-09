@@ -31,7 +31,7 @@ class BaselineModel(dspy.Module):
         super().__init__()
         self.predictor = dspy.ChainOfThought(BaselineFactCheck)
 
-    def forward(self, claim: str) -> dict:
+    def forward(self, statement: str) -> dict:
         """Evaluate a claim using only LLM knowledge.
 
         Args:
@@ -40,6 +40,8 @@ class BaselineModel(dspy.Module):
         Returns:
             Dict with 'claim', 'verdict', and 'reasoning' keys.
         """
+        # technically could convert statement to claims for a full baseline, But the data sets are one claim at a time so it's OK.
+        claim = statement
         result = self.predictor(claim=claim)
         return {
             "claim": claim,

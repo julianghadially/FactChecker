@@ -1,6 +1,7 @@
 """Fact checker pipeline module orchestrating the complete fact-checking flow."""
 
 import dspy
+import time
 from src.factchecker.models.data_types import FactCheckResult
 from .claim_extractor_module import ClaimExtractorModule
 from .fire_judge_module import FireJudgeModule
@@ -60,12 +61,13 @@ class FactCheckerPipeline(dspy.Module):
         Returns:
             FactCheckResult with all details including claim-level results.
         """
+        start_time = time.time()
         # Step 1: Extract claims
         claims = self.claim_extractor(statement=statement)
-
+        claims_prediction_obj = self.claim_extractor(statement=statement)
         # Step 2: Evaluate each claim
         claim_results = []
-        for claim in claims:
+        for claim in claims_prediction_obj.claims:
             result = self.fire_judge(claim=claim)
             claim_results.append(result)
 
@@ -83,7 +85,8 @@ class FactCheckerPipeline(dspy.Module):
             original_statement=statement,
             claim_verdicts=claim_verdicts
         )
-
+        
+        print(f"overal verdict: {aggregation.verdict}. \n~~~Time taken: {time.time() - start_time:.2f} seconds")
         return dspy.Prediction(
             statement=statement,
             claims=claims,

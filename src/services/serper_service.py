@@ -4,6 +4,7 @@ import requests
 from dataclasses import dataclass
 from typing import Optional
 from src.context_.context import serper_key
+import time
 
 
 @dataclass
@@ -61,9 +62,9 @@ class SerperService:
             "gl": country
         }
 
+        start_time = time.time()
         response = requests.post(self.BASE_URL, json=payload, headers=headers)
         response.raise_for_status()
-
         data = response.json()
         results = []
 
@@ -75,4 +76,5 @@ class SerperService:
                 position=i + 1
             ))
 
+        print(f"Serper search time. Query: {query}. \nTime: {time.time() - start_time:.2f} seconds")
         return results

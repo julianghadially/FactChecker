@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from tqdm import tqdm
+import dspy
 
 from .data_loader import load_dataset
 from .metrics import calculate_metrics, print_metrics
@@ -14,7 +15,8 @@ def run_evaluation(
     baseline_model,
     sample_size: int = 100,
     output_dir: str = "results",
-    dataset_path: str = "data/FacTool_QA.jsonl"
+    dataset_path: str = "data/FacTool_QA_test.jsonl",
+    num_threads: int = 5 #firecrawl concurrency limit is 5
 ) -> dict:
     """Run evaluation comparing FactChecker vs Baseline.
 
@@ -36,39 +38,78 @@ def run_evaluation(
     print(f"\nUsing label schema: {schema.__name__}")
     print(f"Valid labels: {schema.get_labels()}")
 
+    # Define accuracy metric using the detected schema
+    def accuracy_metric(example: dspy.Example, prediction) -> float:
+        """Simple accuracy metric for dspy.Evaluate using the detected schema."""
+        # Extract ground truth label
+        gold_label = example.label
+        
+        # Extract prediction label (FactChecker has overall_verdict, Baseline has verdict in dict)
+        if hasattr(prediction, 'overall_verdict') and prediction.overall_verdict is not None:
+            pred_label = prediction.overall_verdict
+        elif isinstance(prediction, dict):
+            pred_label = prediction.get('verdict', 'ERROR')
+        else:
+            pred_label = str(prediction) if prediction is not None else 'ERROR'
+        
+        # Normalize both labels using the detected schema
+        normalized_gold = schema.normalize_ground_truth(gold_label)
+        normalized_pred = schema.normalize_prediction(pred_label)
+        
+        # Return 1.0 if match, 0.0 otherwise
+        return 1.0 if normalized_gold == normalized_pred else 0.0
+
     # Collect predictions
     fc_predictions = []
     baseline_predictions = []
     ground_truth = []
     detailed_results = []
 
-    for example in tqdm(dataset, desc="Evaluating"):
-        ground_truth.append(example.label)
+    examples = [
+        dspy.Example(statement=ex.claim, label=ex.label).with_inputs("statement")
+        for ex in dataset
+    ]
 
-        # FactChecker prediction
-        try:
-            fc_result = fact_checker(statement=example.claim)
-            fc_predictions.append(fc_result.overall_verdict)
-        except Exception as e:
-            fc_predictions.append("ERROR")
-            print(f"FactChecker error on {example.uid}: {e}")
+    # Create evaluator with devset and accuracy metric
+    evaluator = dspy.Evaluate(
+        devset=examples,  # Required keyword argument
+        metric=accuracy_metric,  # Accuracy metric function
+        num_threads=num_threads,
+        display_progress=True,
+        disable_cache=True
+    )
 
-        # Baseline prediction
-        try:
-            bl_result = baseline_model(claim=example.claim)
-            baseline_predictions.append(bl_result["verdict"])
-        except Exception as e:
-            baseline_predictions.append("ERROR")
-            print(f"Baseline error on {example.uid}: {e}")
+    # Call evaluator with the program
+    print("Evaluating FactChecker with threading...")
+    fc_result = evaluator(fact_checker)  # Returns EvaluationResult
 
+    # Extract predictions from result.results (list of (example, prediction, score) tuples)
+    fc_predictions = [
+        pred.overall_verdict if hasattr(pred, 'overall_verdict') else str(pred)
+        for _, pred, _ in fc_result.results
+    ]
+
+    # Same for baseline
+    print("Evaluating Baseline with threading...")
+    baseline_result = evaluator(baseline_model)
+    baseline_predictions = [
+        pred["verdict"] if isinstance(pred, dict) else (pred.verdict if hasattr(pred, 'verdict') else str(pred))
+        for _, pred, _ in baseline_result.results
+    ]
+
+
+    ground_truth = [ex.label for ex in dataset]
+
+    detailed_results = []
+    for i, example in enumerate(dataset):
         detailed_results.append({
             "uid": example.uid,
             "claim": example.claim,
             "ground_truth": example.label,
-            "factchecker_prediction": fc_predictions[-1],
-            "factchecker_normalized": schema.normalize_prediction(fc_predictions[-1]),
-            "baseline_prediction": baseline_predictions[-1],
-            "baseline_normalized": schema.normalize_prediction(baseline_predictions[-1]),
+            "factchecker_prediction": fc_predictions[i],
+            "factchecker_normalized": schema.normalize_prediction(fc_predictions[i]),
+            "baseline_prediction": baseline_predictions[i],
+            "baseline_normalized": schema.normalize_prediction(baseline_predictions[i]),
             "num_hops": example.num_hops
         })
 

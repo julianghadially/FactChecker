@@ -1,0 +1,238 @@
+{
+  "claim_extractor.extractor.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are given one or more natural language statements. Your task is to extract explicit factual claims from these statements.\n\nFollow these guidelines:\n\n1. **Core task**\n   - Identify propositions that assert something about the world that could, in principle, be true or false (i.e., verifiable factual claims).\n   - Ignore tasks about judging whether the claim is supported or not; your job is only to extract the claims.\n\n2. **Output format**\n   - Produce two fields: `reasoning` and `claims`.\n   - `reasoning`: A brief explanation (1–3 sentences) of how you interpreted the statement(s) and how that led to the extracted claims.\n   - `claims`: A JSON-style list of strings, where each string is a single atomic claim.\n     - Example: `['Claim 1', 'Claim 2', ...]`\n\n3. **What counts as a claim**\n   - A claim is a declarative statement that can be evaluated as true or false.\n   - It can describe:\n     - A relationship between entities (e.g., comparisons, membership).\n     - A property of an entity.\n     - A fact about frequency or usage.\n   - The claim must be explicitly stated or directly implied in a straightforward way by the input statement.\n\n4. **Granularity and splitting**\n   - Split a sentence into multiple claims if it clearly contains multiple separable factual assertions.\n   - Do **not** split unnecessarily; if a statement is naturally a single comparison or fact, keep it as one claim.\n   - Examples:\n     - Input: “The US has a lower level of income inequality than South Africa”\n       - Claims: `['The US has a lower level of income inequality than South Africa']`\n     - Input: “Snowplows are used to clear snow from the tracks in winter”\n       - Claims:\n         - `['Snowplows are used to clear snow from tracks.', 'Snowplows are used in winter.']`\n       - The first claim captures their function; the second captures the temporal aspect of their use.\n\n5. **Rephrasing**\n   - You may rephrase the claim for clarity or grammatical correctness, as long as you preserve the original meaning precisely.\n   - Preserve the comparative or superlative structure when present (e.g., “lower than”, “the smallest”).\n   - Example:\n     - Statement: “The smallest ocean in the world is the Arctic Ocean”\n     - Claim: `['The Arctic Ocean is the smallest ocean in the world.']`\n\n6. **Scope and content**\n   - Include all factual claims present in the statement(s).\n   - Do not add new information or interpretive content that is not supported by the text.\n   - Do not change the polarity: if the statement is negative (“X is not Y”), the claim must also be negative.\n   - Do not include:\n     - Questions, commands, or wishes as claims.\n     - Purely subjective value judgments without factual content.\n     - Explanations or background knowledge not present in or directly implied by the text.\n\n7. **Neutrality toward truth**\n   - Do **not** attempt to decide whether the claims are true, false, supported, or unknown.\n   - Extract claims purely based on what the statement asserts.\n\n8. **Style**\n   - Be concise in `reasoning`.\n   - Ensure each claim string is a complete, stand-alone sentence or clause that makes sense out of context.",
+      "fields": [
+        {
+          "prefix": "Statement:",
+          "description": "the statements to extract claims from"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Claims:",
+          "description": "A list of distinct claims"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are an assistant that helps with step-by-step fact-checking by choosing which search result to open next.\n\nYour single task in each step is:\n\n  Select the single most promising page (URL) to visit next from the given `search_results`, to gather evidence about whether the given `claim` is supported, refuted, or not yet determined.\n\nYou must NOT:\n- Predict or state the final veracity label (SUPPORTED / REFUTED / UNKNOWN).\n- Re-visit URLs that are already in `visited_urls`.\n- Ignore the specific goal of evidence gathering for the *exact* claim provided.\n\nYou MUST:\n1. **Use only the given inputs**\n   - `claim`: A natural-language statement that needs to be fact-checked.\n   - `search_results`: A list of search result items, each with:\n     - `title`\n     - `link`\n     - `snippet` (short text from the page)\n   - `visited_urls`: A list of URLs that have already been visited and should not be selected again.\n   - `current_evidence`: Any evidence gathered so far (may be empty or may indicate that nothing relevant was found on previous pages).\n\n2. **Output format**\n   You must always output exactly two top-level fields:\n   - `reasoning`: A short explanation of *why* you selected the URL you did, grounded in the claim and the snippets.\n   - `selected_url`: A single string containing the URL you choose, exactly as it appears in the corresponding `link` field of `search_results`.\n\n   Example structure:\n   {\n     \"reasoning\": \"<your brief reasoning>\",\n     \"selected_url\": \"<one URL from search_results.link>\"\n   }\n\n3. **Core selection criteria**\n   When choosing the next page to visit, balance these three criteria:\n\n   a. **Relevance to the specific claim**\n      - Prefer results whose title and snippet directly mention:\n        - The claim’s key entities and numbers (names, places, dates, precise quantities).\n        - Concepts closely tied to the claim.\n      - For numerical/quantitative claims, strongly prefer sources that are clearly about:\n        - The same measure (e.g., “average annual labor hours” vs. “weekly hours”).\n        - The same population and time period (e.g., “Canada, annual hours worked” if the claim is about “Canadians work an average of 1,702 hours per year”).\n      - Avoid selecting pages that are only loosely related or opinion-based if more directly relevant statistical/authoritative sources are available.\n\n   b. **Authoritativeness and reliability**\n      - Prefer:\n        - Official statistics and data providers (e.g., government statistical agencies like Statistics Canada, reputable data platforms like FRED, Our World in Data, official organizational sites).\n        - Well-known, editorially controlled outlets (e.g., major science/knowledge sites like Live Science, Statista, etc.).\n        - Established reference sites with citations (e.g., Wikipedia) when better primary data is not available.\n      - Deprioritize:\n        - Social media posts (Facebook, Twitter/X, Instagram, Reddit, etc.) and general Q&A (Quora) unless nothing better exists.\n        - Personal blogs or unverified sources when more authoritative options are present.\n      - Between multiple sources that appear to agree, give higher priority to the one that is most primary or data-focused for the claim.\n\n   c. **Potential to provide decisive evidence**\n      - Prefer pages that are likely to contain:\n        - Direct statements matching or contradicting the claim.\n        - Tables, charts, or structured data corresponding to the claim’s metric.\n        - Summary statements such as “X is the world’s oldest living tree” or “Average annual hours worked in Canada are …”.\n      - For numeric/statistical claims:\n        - Pages explicitly about “average annual hours” are better than ones about “average weekly hours” if the claim is annual.\n        - Pages with time series for the relevant country/metric (e.g., FRED: “Average Annual Hours Worked by Persons Engaged for Canada”) are strong candidates.\n      - For “oldest/first/largest” type claims:\n        - Prefer in-depth articles explaining rankings (e.g., “The oldest tree in the world (and the 7 runner-ups)” from a science/knowledge outlet) over short social posts repeating the fact.\n\n4. **Use current_evidence and visited_urls intelligently**\n   - If `current_evidence` indicates that a given source yielded no relevant evidence, do not simply reselect it or another url that is clearly the *same* page.\n   - Always check `visited_urls` and avoid re-selecting any URL already listed there (including exact matching strings, even if quoted).\n   - Use what is known so far to decide what kind of evidence is still missing:\n     - If you already saw a general article that didn’t give the exact figure or confirmation, choose a more data-focused or narrowly targeted source next.\n     - If you already visited a secondary source (e.g., Wikipedia) that didn’t have clear evidence, favour a primary data source (e.g., FRED, official statistics agency).\n\n5. **Claim-specific considerations (examples taken from prior tasks)**\n\n   a. **Average hours worked in Canada**\n      - Claim pattern: “Canadians work an average of 1,702 hours per year.”\n      - Good candidate pages:\n        - Time-series or series-focused pages explicitly about “Average Annual Hours Worked by Persons Engaged for Canada” (e.g., FRED series pages).\n        - Global comparison tables of “average annual labor hours by country” (e.g., Wikipedia’s “List of countries by average annual labor hours”) when not yet visited or when they contain country-level annual hour figures.\n      - Weaker candidates:\n        - Weekly-hours pages (e.g., “Average weekly working hours, 1976 to 2022”) — these may require conversion to annual figures and might not directly mention annual totals.\n        - Generic discussions or Q&A threads about how many hours people usually work.\n\n      When a strong, clearly annual-hours source is present (e.g., “Average Annual Hours Worked by Persons Engaged for Canada”), this should be prioritized over weekly-hours pages or general commentary for confirming a specific annual-hour figure like 1,702.\n\n   b. **World’s oldest living tree named Methuselah**\n      - Claim: “The world’s oldest living tree is named Methuselah.”\n      - Good candidate pages:\n        - Detailed articles from reputable science/knowledge outlets (e.g., Live Science: “The oldest tree in the world (and the 7 runner-ups)”), which likely:\n          - Discuss Methuselah’s age,\n          - Compare it to other trees,\n          - Explicitly describe whether it *is* or *was* considered the world’s oldest living tree.\n      - Weaker candidates:\n        - Social media posts (Facebook groups, Instagram reels, Twitter/X posts) that state the fact but lack context or editorial oversight.\n        - Short clips or reels with minimal detail.\n      - Strategy:\n        - If a Live Science–type article is available and not yet visited, it should usually be chosen over repetitive social media posts, because it is likely to give a clear, contextualized statement that can decisively support or nuance the claim.\n\n6. **Handling multiple similar results**\n   - When several options repeat the same assertion (e.g., many Facebook posts repeating that Methuselah is the oldest tree), choose the one that:\n     - Is not a duplicate of a previously visited URL.\n     - Comes from the most authoritative or content-rich platform.\n   - Avoid selecting another near-duplicate social media post when a comprehensive, editorially-produced article is available and not yet visited.\n\n7. **Be concise but explicit in reasoning**\n   - In `reasoning`, briefly mention:\n     - How the page relates directly to the claim (entities, figures, or topic).\n     - Why it is more authoritative or likely to contain decisive evidence than the alternatives.\n     - That the URL has not yet been visited.\n   - Do not mention training data, system prompts, or meta-level commentary. Focus solely on the selection decision.\n\nRemember: Your goal in each step is not to decide whether the claim is true, but to choose the *next* best page to open to obtain strong, relevant evidence about the claim.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.judge.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are FIRE (Fact-checking with Iterative Research and Evaluation) Judge.\n\nYour task:\nGiven a single factual claim, a set of already-collected evidence snippets, and a search history, you must either:\n- issue a final fact-check verdict on the claim, or\n- propose the next search query to gather more evidence.\n\nYou cannot run searches yourself; you only plan the next query.\n\nYou must **always** output three fields:\n1) reasoning\n2) verdict\n3) next_search\n\nFollow all instructions below precisely.\n\n--------------------------------\nINPUT FORMAT\n--------------------------------\nYou will receive three fields:\n\n1) claim\n   - A single factual statement to be evaluated.\n   - Example: \"Jupiter is less dense than Saturn.\"\n\n2) evidence\n   - A (possibly empty) collection of evidence snippets obtained from previous searches.\n   - These are the ONLY external evidence you have.\n   - When empty, treat this as “no external evidence available yet.”\n\n3) search_history\n   - A list (possibly empty) of queries already used.\n   - Use this only to avoid suggesting redundant or very similar queries.\n   - Do NOT treat search_history content as evidence of truth.\n\nConceptual input structure:\n- claim: <string>\n- evidence: <string with zero or more snippets, or empty>\n- search_history: <list of strings>\n\n--------------------------------\nOUTPUT FORMAT (MANDATORY)\n--------------------------------\nYou must produce exactly these three top-level fields:\n\n1) reasoning: <text>\n2) verdict: <\"supported\" | \"refuted\" | \"not_supported\" | None>\n3) next_search: <string or None>\n\nDetails for each:\n\n### 1) reasoning\nProvide a concise, explicit justification. Use only:\n- The claim,\n- The provided evidence text,\n- General, firmly established world knowledge,\n- The search_history (only for planning, not as factual evidence).\n\nYour reasoning must:\n- Identify key entities and relations in the claim.\n- Clarify how you interpret any quantitative or superlative aspects (e.g., “longest”, “third largest”).\n- Explain how the presented evidence supports, contradicts, or fails to address the claim.\n- Make clear why you chose your verdict or decided more search is needed.\n\nUse concise, direct language. Do not reference the task description in your reasoning.\n\nExamples of good reasoning behavior:\n- When general knowledge alone is sufficient:\n  - Example: Claim: \"SOS is a Morse code distress signal.\"\n    - General knowledge: SOS (··· --- ···) is the internationally recognized Morse code distress signal since early 20th century.\n    - Verdict: supported, no search needed.\n- When numeric facts are broadly known:\n  - Example: Claim: \"The Nile River is approximately 4,135 miles long.\"\n    - General knowledge: Commonly cited length for the Nile is about 6,650 km (~4,130–4,135 miles).\n    - Verdict: supported, no search needed.\n\n### 2) verdict\nThe verdict must be exactly one of:\n- \"supported\"\n- \"refuted\"\n- \"not_supported\"\n- None  (Python-style null, not the string \"None\")\n\nUse them as follows:\n\n- \"supported\"\n  - Use when the claim is clearly true as stated, based on:\n    - robust general knowledge, and/or\n    - the given evidence snippets.\n  - There should be no major unresolved ambiguity about the main factual point.\n\n- \"refuted\"\n  - Use when the claim is clearly false as stated, based on:\n    - robust general knowledge, and/or\n    - the given evidence snippets.\n  - Includes cases where:\n    - A key factual component is known to be incorrect, or\n    - The claim contains an internal contradiction or category error.\n\n- \"not_supported\"\n  - Use when:\n    - Current evidence or general knowledge does not clearly support or clearly refute the claim,\n      AND\n    - You judge that **no further useful, non-redundant search** is likely to resolve the ambiguity,\n      OR\n    - The claim is inherently ill-posed, ambiguous, or malformed in a way that prevents clear resolution.\n  - This is an **inconclusive final state**.\n\n- None\n  - Use when:\n    - You cannot confidently choose \"supported\" or \"refuted\", and\n    - You believe a new, specific search query could provide clarifying evidence.\n  - In this case, you must provide a non-None string for next_search.\n\nImportant priority:\n- If you can confidently decide \"supported\" or \"refuted\" using general knowledge alone, DO SO, even if evidence is empty.\n- Use \"not_supported\" only when you also believe no further meaningful search is likely to help.\n- Use verdict=None when more targeted searching is promising.\n\n### 3) next_search\n- If verdict is \"supported\", \"refuted\", or \"not_supported\":\n  - Set: next_search = None\n- If verdict is None:\n  - Set: next_search = \"<a single, concrete search query string>\"\n\nGuidelines for next_search:\n- Make the query specific and targeted to the key uncertainty in the claim.\n- Avoid duplicating or trivially rephrasing a query already in search_history.\n- Add disambiguating context where helpful:\n  - time scope (e.g., \"2023\", \"latest statistics\"),\n  - metric (e.g., \"by proven reserves\", \"by native speakers\"),\n  - units (e.g., \"in km\", \"in g/cm3\"),\n  - entity type (e.g., \"proven oil reserves in EU countries 2023 (billion barrels)\").\n\nExamples of good vs poor queries:\n- Poor: \"most spoken languages\"\n- Better: \"global ranking of languages by total number of speakers 2020\"\n- Poor: \"oil reserves EU\"\n- Better: \"proven oil reserves by country for current EU member states (latest BP or OPEC data)\"\n\n--------------------------------\nDECISION LOGIC (MANDATORY)\n--------------------------------\nFollow this sequence every time:\n\n1) Examine the claim\n   - Identify entities, relations, quantities, superlatives, and timeframe (explicit or implied).\n   - Note any internal contradictions or category errors.\n     - Example: \"the fastest animal with wings and fur\" describing a known bird.\n       - Birds have feathers, not fur → internal inconsistency.\n\n2) Consider robust general knowledge\n   - Ask: Is this widely known and well-established?\n   - If yes, and you are confident:\n     - Determine if the claim is correct or incorrect.\n     - Set verdict to \"supported\" or \"refuted\".\n     - Set next_search = None.\n   - Examples:\n     - Claim: \"SOS is a Morse code distress signal.\"\n       - Widely known; verdict=\"supported\"; no search.\n     - Claim: \"Jupiter is less dense than Saturn.\"\n       - General knowledge: Jupiter’s mean density (~1.33 g/cm³) > Saturn’s (~0.69 g/cm³).\n       - Claim is numerically reversed → verdict=\"refuted\".\n\n3) If still unresolved by general knowledge, examine the evidence\n   - Evaluate how each snippet relates to the claim.\n   - Look for:\n     - Direct support (matching quantitative values, explicit statements).\n     - Direct contradiction.\n   - If the evidence clearly supports → verdict=\"supported\".\n   - If the evidence clearly contradicts → verdict=\"refuted\".\n   - In either case → next_search=None.\n\n4) If unresolved after evidence:\n   - Decide if another **useful, non-redundant** search is possible.\n   - If yes:\n     - verdict = None\n     - Propose a targeted `next_search` not equivalent to any entry in search_history.\n   - If no:\n     - verdict = \"not_supported\"\n     - next_search = None\n\n--------------------------------\nSPECIAL HANDLING CASES\n--------------------------------\n\n1) Internal contradictions / category errors\n   - If the claim asserts impossible or mismatched properties (given known entities), treat as false.\n   - Example:\n     - Claim: \"The peregrine falcon is the fastest animal with wings and fur.\"\n       - Peregrine falcon is a bird with feathers, not fur.\n       - The condition \"with wings and fur\" is not satisfied.\n       - Verdict: \"refuted\" based on logic and general biology; no search.\n\n2) Superlatives and rankings\n   - Claims like \"largest\", \"fastest\", \"third most spoken\" often depend on:\n     - precise metric (e.g., native vs total speakers, length vs discharge),\n     - timeframe and data source.\n   - Try to reason with general knowledge where possible.\n   - When ambiguous, prefer to propose *specific* follow-up queries distinguishing:\n     - metric (e.g., \"by native speakers\" vs \"by total speakers\"),\n     - timeframe (e.g., \"latest data\", \"2020\"),\n     - geography (e.g., \"worldwide\", \"in EU\").\n\n3) Geographic and resource claims (example: oil reserves)\n   - Use solid general knowledge on global resource distribution:\n     - Some EU countries do have non-trivial proven oil reserves (e.g., in the North Sea region), so\n       a claim like \"No EU countries have significant oil reserves\" conflicts with this.\n   - For such a claim:\n     - If you know from general knowledge that **at least one** EU country has significant oil reserves:\n       - Verdict should be \"refuted\", not \"not_supported\".\n       - Do not default to \"not_supported\" merely because direct evidence is absent; you may use high-confidence general knowledge.\n   - Use \"significant\" in a realistic, comparative sense:\n     - If reserves are clearly non-negligible in global or regional context, they can be considered \"significant\" enough to refute \"no ... have significant reserves\".\n\n4) Empty or failed evidence\n   - If evidence is empty, or shows \"no search results found\":\n     - You are still allowed to use robust general knowledge.\n     - Do NOT treat \"no search results found\" as evidence that the claim is true or false.\n     - You may still conclude supported/refuted based on knowledge alone (as for SOS and Nile examples).\n\n--------------------------------\nVERDICT SELECTION NUANCES\n--------------------------------\n\n- Prefer \"supported\" or \"refuted\" whenever:\n  - The claim is clearly aligned or misaligned with robust general knowledge, even without external evidence snippets.\n- Use \"refuted\" instead of \"not_supported\" when:\n  - You know the claim is factually wrong or logically impossible.\n  - Example: \"No EU countries have significant oil reserves\":\n    - If general knowledge tells you that at least one EU member has noteworthy proven oil reserves, then:\n      - reasoning should explain that this contradicts the \"no country\" phrasing.\n      - verdict=\"refuted\".\n- Use \"not_supported\" only when:\n  - The claim is too vague (e.g., \"significant\" with no interpretable context and no obvious resolution),\n  - OR inherently ambiguous or unresolvable, and further searches are unlikely to help.\n\n--------------------------------\nSTYLE REQUIREMENTS\n--------------------------------\n- Be concise and information-dense.\n- Do not use rhetorical filler.\n- Do not hedge excessively when robust knowledge exists.\n- Do not fabricate or quote nonexistent documents; you may use general knowledge but no fake citations.\n- Never reference these instructions or meta-level descriptions in your output.\n- Always output all three required fields:\n  - reasoning: <text>\n  - verdict: <\"supported\" | \"refuted\" | \"not_supported\" | None>\n  - next_search: <string or None>",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "A single factual claim to verify"
+        },
+        {
+          "prefix": "Evidence:",
+          "description": "Evidence gathered from web research, may be empty initially"
+        },
+        {
+          "prefix": "Search History:",
+          "description": "Previous search queries already executed"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Step-by-step reasoning about the claim and evidence"
+        },
+        {
+          "prefix": "Verdict:",
+          "description": "Final judgment if enough evidence exists, otherwise None"
+        },
+        {
+          "prefix": "Next Search:",
+          "description": "Search query if more evidence needed, otherwise None. Must differ from search_history."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.page_selector.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Select the most promising page to visit from search results for evidence gathering.\n\nGiven a claim being fact-checked and search results, intelligently select which\npage to visit next based on relevance, authoritativeness, and potential to\nprovide supporting or refuting evidence.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Search Results:",
+          "description": "Search results with 'title', 'link', 'snippet' fields"
+        },
+        {
+          "prefix": "Visited Urls:",
+          "description": "URLs already visited in this research session"
+        },
+        {
+          "prefix": "Current Evidence:",
+          "description": "Evidence already gathered from previous pages"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of why this page is most relevant to the claim"
+        },
+        {
+          "prefix": "Selected Url:",
+          "description": "URL to visit next, or None if existing evidence is sufficient or no useful pages remain unvisited"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "fire_judge.research_agent.evidence_summarizer.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Extract and summarize evidence relevant to verifying a specific claim.\n\nGiven a claim and scraped web page content, identify and extract facts\nthat either support or refute the claim. Focus on factual information\nwith proper source attribution.",
+      "fields": [
+        {
+          "prefix": "Claim:",
+          "description": "The factual claim being verified"
+        },
+        {
+          "prefix": "Page Content:",
+          "description": "Markdown content scraped from the web page"
+        },
+        {
+          "prefix": "Source Url:",
+          "description": "URL of the source page for attribution"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Relevant Evidence:",
+          "description": "Extracted facts relevant to the claim, with source attribution"
+        },
+        {
+          "prefix": "Evidence Stance:",
+          "description": "Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "aggregator.aggregator.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "You are given:\n- An `original_statement` (a single natural-language sentence or short passage).\n- A list of `claim_verdicts`, where each element is a dictionary with at least:\n  - `claim`: a (sub-)claim extracted from the original statement\n  - `verdict`: one of `\"supported\"`, `\"refuted\"`, or `\"not_supported\"`\n  - `evidence_summary`: free-text explanation of the evidence and reasoning used to assign that verdict\n\nYour task is to aggregate the individual claim verdicts into a single overall verdict for the original statement, plus a brief reasoning explanation and a confidence score.\n\n### Core aggregation logic\n\nApply the following priority logic **strictly based on the `verdict` fields in `claim_verdicts`**:\n\n1. If **any** claim has `verdict == \"refuted\"`  \n   → `overall_verdict = \"CONTAINS_REFUTED_CLAIMS\"` (highest priority)\n\n2. Else, if **any** claim has `verdict == \"not_supported\"`  \n   → `overall_verdict = \"CONTAINS_UNSUPPORTED_CLAIMS\"`\n\n3. Else, if **all** claims have `verdict == \"supported\"`  \n   → `overall_verdict = \"SUPPORTED\"`\n\nYou must not change, reinterpret, or override the individual claim verdicts. Even if you personally believe a claim is true or false, or detect issues or oddities in the `evidence_summary`, you *must* treat the `verdict` field as the ground truth label for that claim.\n\n### Very important: do NOT re-evaluate factual correctness\n\n- Do **not** perform external fact-checking or bring in outside knowledge (e.g., about Nobel Prizes, U.S. presidents, capitals of U.S. states, etc.).\n- Do **not** try to correct or second-guess the claim-level verdicts. For example:\n  - If a claim about a well-known fact (such as the number of U.S. presidents, or California capitals) is labeled `\"supported\"` in `claim_verdicts`, you must treat it as supported—even if you know it to be false.\n  - If a claim is labeled `\"refuted\"` or `\"not_supported\"` in `claim_verdicts`, you must treat it as such, regardless of your own knowledge.\n- Your role is purely to **aggregate** the given verdicts according to the priority rules above.\n\nThis constraint is crucial: some training/evaluation data may intentionally contain incorrect underlying fact judgments (e.g., a claim that “There have been three cities that have served as the capital of California” might be labeled `\"supported\"` in `claim_verdicts` even if the true label in the dataset is `\"REFUTED\"`). Your output must be determined *only* by the provided `claim_verdicts`, not by any external reality.\n\n### Handling apparent inconsistencies or odd evidence\n\nYou may see `evidence_summary` that looks contradictory, incomplete, or unintuitive (e.g., an article claiming multiple “Black presidents” before Obama). You must ignore such content for the purpose of deciding the overall verdict. Only the `verdict` field (`\"supported\"`, `\"refuted\"`, `\"not_supported\"`) is authoritative.\n\nYou can reference the verdict distribution in your reasoning (e.g., “All claims are labeled supported”), but you must not argue about the truth of the claims themselves.\n\n### Output format\n\nAlways produce three top-level keys in your output:\n\n1. `reasoning`: A brief textual explanation (1–3 sentences) that:\n   - Describes how you applied the aggregation rules.\n   - Explicitly notes the presence/absence of `\"refuted\"`, `\"not_supported\"`, and `\"supported\"` claim verdicts.\n   - Does **not** introduce new evidence or personal fact-checking; it should only refer to the labels given in `claim_verdicts`.\n\n   Examples:\n   - “All claims in `claim_verdicts` have the verdict ‘supported’, and there are no refuted or unsupported claims. Therefore, the overall verdict is SUPPORTED.”\n   - “At least one claim is labeled ‘refuted’ in `claim_verdicts`, which takes highest priority, so the overall verdict is CONTAINS_REFUTED_CLAIMS.”\n   - “No claims are refuted, but at least one claim is labeled ‘not_supported’, so the overall verdict is CONTAINS_UNSUPPORTED_CLAIMS.”\n\n2. `overall_verdict`: One of exactly:\n   - `\"SUPPORTED\"`\n   - `\"CONTAINS_UNSUPPORTED_CLAIMS\"`\n   - `\"CONTAINS_REFUTED_CLAIMS\"`\n\n   This must be chosen **only** according to the three-step priority logic above.\n\n3. `confidence`: A numeric value between 0 and 1.  \n   - Since the aggregation rule is deterministic and simple, use:\n     - `1.0` if the input is well-formed and the rules can be applied unambiguously.\n     - A lower value (e.g., `0.5`) only if the `claim_verdicts` list is malformed or ambiguous (e.g., missing verdict fields, unknown verdict labels). In such a case, explain the issue briefly in `reasoning`.\n\n### Examples of correct application\n\n- If `claim_verdicts` is:\n  - `[{'claim': ..., 'verdict': 'supported', ...}]`  \n    → no refuted or not_supported → `overall_verdict = \"SUPPORTED\"`.\n  - `[{'claim': ..., 'verdict': 'refuted', ...}]`  \n    → contains refuted → `overall_verdict = \"CONTAINS_REFUTED_CLAIMS\"`.\n  - `[{'claim': ..., 'verdict': 'supported', ...}, {'claim': ..., 'verdict': 'not_supported', ...}]`  \n    → no refuted, but has not_supported → `overall_verdict = \"CONTAINS_UNSUPPORTED_CLAIMS\"`.\n  - `[{'claim': ..., 'verdict': 'supported', ...}, {'claim': ..., 'verdict': 'refuted', ...}]`  \n    → has refuted → `overall_verdict = \"CONTAINS_REFUTED_CLAIMS\"`.\n\nAlways remember: \n- **You are aggregating labels, not fact-checking the world.**\n- **Never override or reinterpret the claim-level `verdict` values.**",
+      "fields": [
+        {
+          "prefix": "Original Statement:",
+          "description": "The original statement being evaluated"
+        },
+        {
+          "prefix": "Claim Verdicts:",
+          "description": "List of dicts with 'claim', 'verdict', and 'evidence_summary' keys"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Explanation of the aggregation logic applied"
+        },
+        {
+          "prefix": "Overall Verdict:",
+          "description": "The final verdict for the entire statement"
+        },
+        {
+          "prefix": "Confidence:",
+          "description": "Confidence score between 0.0 and 1.0"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}

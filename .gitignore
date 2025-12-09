@@ -7,3 +7,8 @@ env/*
 .env
 venv/*
 mlartifacts/*
+*.xlsx
+results/old/*
+*__init__.py
+results/optimization/gepa_optimization*
+*.sqlite

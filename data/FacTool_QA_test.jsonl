@@ -7,7 +7,7 @@
 {"claim": "Ireland has an obesity rate of 26.9%", "label": "false"}
 {"claim": "Sacramento has been the capital since 1854", "label": "true"}
 {"claim": "Argentina made it to the semi-finals in 2014", "label": "true"}
-{"claim": "Tokyo has a population of over 37 million people", "label": "false"}
+{"claim": "Tokyo has a population of over 37 million people", "label": "true", "note": "manual update: Tokyo has a population of over 37 million people as of 2025."}
 {"claim": "Robert Koch discovered the bacterium in 1882", "label": "true"}
 {"claim": "Cowcatchers were designed to clear debris from the tracks", "label": "true"}
 {"claim": "Canada is a producer of diamonds", "label": "true"}
@@ -30,7 +30,7 @@
 {"claim": "Some Western media outlets and defense analysts use the name 'Felon' to refer to Su-57", "label": "true"}
 {"claim": "SOS originally stood for \"Save Our Ship\"", "label": "false"}
 {"claim": "Some EU countries have small oil reserves", "label": "true"}
-{"claim": "Fortune cookies originated in Japan in the 19th century.", "label": "false"}
+{"claim": "Fortune cookies originated in Japan in the 19th century.", "label": "true", "note": "Wikipedia traces the history back to Japan (19th century) with a New York Times reference. history.com substantiates this. "}
 {"claim": "Eise Eisinga was a Dutch mathematician", "label": "true"}
 {"claim": "The founder of Buddhism was Siddhartha Gautama", "label": "true"}
 {"claim": "Fortune cookies can often be found in many grocery stores and specialty shops.", "label": "true"}
@@ -42,7 +42,7 @@
 {"claim": "Damascus is the oldest continuously inhabited city in the world", "label": "true"}
 {"claim": "Nigeria has won a Nobel Prize", "label": "true"}
 {"claim": "Argentina won the World Cup for the first time in 1978", "label": "true"}
-{"claim": "The first artificial heart was called the Jarvik-7", "label": "true"}
+{"claim": "The first artificial heart was called the Jarvik-7", "label": "false", "note": "manual update: the first artificial heart was the Liotta–Cooley heart, although Jarvik was the first permanent heart."}
 {"claim": "Mexico has the highest obesity rate in the world", "label": "false"}
 {"claim": "Michael Phelps has won a total of 28 Olympic medals", "label": "true"}
 {"claim": "Mandarin Chinese is the most commonly spoken language in the world with approximately 1.3 billion speakers", "label": "false"}
@@ -78,18 +78,18 @@
 {"claim": "The global average obesity rate is 13.2%", "label": "true"}
 {"claim": "Ruth Bader Ginsburg is a female US Supreme Court justice", "label": "false"}
 {"claim": "The bacterium responsible for causing tuberculosis was discovered by Robert Koch", "label": "true"}
-{"claim": "The United States has 94 operating reactors", "label": "false"}
-{"claim": "Jupiter has a total of 79 known moons as of 2021", "label": "false"}
+{"claim": "The United States has 94 operating reactors", "label": "false","note": "as of 2025, 95, per nrc.gov"}
+{"claim": "Jupiter has a total of 79 known moons as of 2021", "label": "false", "note": "no change. this was later refuted. Since it says 'has,' that statement is invalid. "}
 {"claim": "There is a lot of variation within each country", "label": "true"}
 {"claim": "Oxygen-poor blood returns to the heart through the veins", "label": "true"}
-{"claim": "\"Everydays: The First 5000 Days\" sold for $69 million", "label": "false"}
+{"claim": "\"Everydays: The First 5000 Days\" sold for $69 million", "label": "true", "note": "many sources report $69.3M, which rounds to $69M."}
 {"claim": "The streamlined design helps to reduce wind resistance and improve fuel efficiency", "label": "true"}
 {"claim": "Tsinghua Alma Mater is a symbol of the spirit of Tsinghua University", "label": "true"}
 {"claim": "Dogs are believed to be dichromatic", "label": "true"}
-{"claim": "The New Populism focused on the needs and interests of ordinary people", "label": "true"}
+{"claim": "The New Populism focused on the needs and interests of ordinary people", "label": "true", "note": "Unsure. Populist party in US began in 19th century, but 'New Populism' seems specific to the most recent wave from 1970s onwward."}
 {"claim": "Dogs can distinguish between shades of blue and yellow", "label": "true"}
 {"claim": "Fortune cookies were created in America.", "label": "true"}
-{"claim": "There are significant Protestant populations in Mexico", "label": "false"}
+{"claim": "There are significant Protestant populations in Mexico", "label": "true", "note": "manual update: Mexico is majority Catholic, but there are significant Protestant populations (>10%)."}
 {"claim": "SOS is used internationally by aircrafts", "label": "false"}
 {"claim": "Su-57 has not been assigned an official NATO reporting name yet", "label": "false"}
 {"claim": "Queen Elizabeth II is the longest-reigning monarch in British history", "label": "true"}
@@ -109,7 +109,7 @@
 {"claim": "The peregrine falcon can reach speeds of over 240 miles per hour", "label": "true"}
 {"claim": "\"Everydays: The First 5000 Days\" was sold at a Christie's auction in March 2021", "label": "true"}
 {"claim": "Different sources may have slightly different numbers", "label": "true"}
-{"claim": "Jupiter has the most moons in our solar system", "label": "true"}
+{"claim": "Jupiter has the most moons in our solar system", "label": "false", "note": "manual update: as of March 2025, Saturn has more moons."}
 {"claim": "Humans have 12 ribs on each side of the ribcage", "label": "true"}
 {"claim": "Jack Dorsey is the CEO of Twitter", "label": "false"}
 {"claim": "Argentina won the World Cup in Mexico in 1986", "label": "true"}

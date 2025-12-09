@@ -10,7 +10,7 @@ from src.baseline.baseline_model import BaselineModel
 from src.evaluation.evaluate import run_evaluation
 
 
-def configure_dspy(model: str = "openai/gpt-4o-mini"):
+def configure_dspy(model: str = "openai/gpt-5-mini"):
     """Configure DSPy with the specified model.
 
     Args:
@@ -18,6 +18,10 @@ def configure_dspy(model: str = "openai/gpt-4o-mini"):
     """
     lm = dspy.LM(model, api_key=openai_key)
     dspy.configure(lm=lm)
+    dspy.configure_cache(
+        enable_disk_cache=False,
+        enable_memory_cache=False
+    )
 
 
 def run_single_check(statement: str, model: str):
@@ -56,7 +60,7 @@ def run_single_check(statement: str, model: str):
     print("=" * 60)
 
 
-def run_benchmark(sample_size: int, model: str):
+def run_benchmark(sample_size: int, model: str, optimized_program_path: str = None):
     """Run benchmark evaluation on HOVER dataset.
 
     Args:
@@ -66,13 +70,21 @@ def run_benchmark(sample_size: int, model: str):
     configure_dspy(model)
 
     fact_checker = FactCheckerPipeline()
+    # Load optimized program if path provided
+    if optimized_program_path:
+        print(f"Loading optimized program from: {optimized_program_path}")
+        fact_checker.load(optimized_program_path)
+        print("Optimized program loaded successfully!")
+    else:
+        print("Using unoptimized (baseline) program")
     baseline = BaselineModel()
 
     run_evaluation(
         fact_checker=fact_checker,
         baseline_model=baseline,
-        sample_size=sample_size
-    )
+        sample_size=sample_size,
+        num_threads = 40 #firecrawl concurrency limit is 50
+    ) #could set dataset path here too
 
 
 def main():
@@ -105,9 +117,14 @@ def main():
     )
     parser.add_argument(
         "--mlflow",
-        type=bool,
-        default=False,
+        action="store_true",
         help="Enable MLflow tracking (default: False)"
+    )
+    parser.add_argument(
+        "--optimized-program-path",
+        type=str,
+        default="results/optimization/optimized_program_20251208_045645.json",
+        help="Path to optimized program JSON (e.g., results/optimization/optimized_program_20241208.json)"
     )
 
     args = parser.parse_args()
@@ -122,6 +139,10 @@ def main():
         # Configure MLflow tracking
         mlflow.set_tracking_uri("http://localhost:5000")
         mlflow.set_experiment("DSPy-Optimization")
+    
+    optimized_program_path = args.optimized_program_path
+    if str(optimized_program_path).lower() in ["none", "null", ""]:
+        optimized_program_path = None
 
     if args.mode == "check":
         if not args.statement:
@@ -129,8 +150,7 @@ def main():
         run_single_check(args.statement, args.model)
 
     elif args.mode == "evaluate":
-        run_benchmark(args.sample_size, args.model)
-
+        run_benchmark(args.sample_size, args.model, optimized_program_path)
 
 if __name__ == "__main__":
     main()

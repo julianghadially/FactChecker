@@ -56,3 +56,5 @@ class WebQueryModule(dspy.Module):
 - **Location**: `./data/hover/hover_dev.jsonl`
 - **Labels**: SUPPORTED, REFUTED, NOT_ENOUGH_INFO
 
+## Additional rules
+- Never change the model unless explicitly asked by user. GPT-5 and GPT-5-mini do in fact exist!

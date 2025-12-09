@@ -72,6 +72,37 @@ Statement → [ClaimExtractor] → Claims[]
 | **EvidenceSummarizer** | Signature | Extracts relevant facts from scraped pages |
 | **Aggregator** | Signature/Module | Combines claim verdicts into overall statement verdict |
 
+
+## Results
+
+### GPT-5-mini
+This assessment uses GPT five mini for every component of the system, including the reflection model, FactChecker model, and baseline model. See "notes" in FacTools-QA for seven claims that were flipped due to no longer being true. 
+
+#### FactChecker (Optimized)
+
+|                            | Supported | Refuted |
+|                            |---        |---      |
+| **Correct Predictions**    | 68        | 5       |
+| **Incorrect Predictions**  | 5         | 17      |
+
+**Accuracy on Predicted Cases: 89%** 
+
+#### Baseline
+
+|                            | Supported | Refuted |
+|                            |---        |---      |
+| **Correct Predictions**    | 77        | 2       |
+| **Incorrect Predictions**  | 7         | 14      |
+
+**Accuracy on Predicted Cases: 91%** 
+
+**Summary:**
+- The optimized FactChecker achieves 89% accuracy, slightly below the baseline's 91%
+- The FactChecker correctly identifies more refuted cases (5 vs 2) but also has more false positives for refuted cases (17 vs 14)
+- The baseline has better precision on supported cases (77 correct vs 68 for FactChecker)
+
+
+
 ## Installation
 
 ```bash

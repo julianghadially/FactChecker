@@ -101,4 +101,5 @@ class ResearchAgentModule(dspy.Module):
             if summary.evidence_stance in ["supports", "refutes"]:
                 break
 
-        return "\n\n".join(all_evidence) if all_evidence else "No relevant evidence found."
+        evidence ="\n\n".join(all_evidence) if all_evidence else "No relevant evidence found."
+        return dspy.Prediction(evidence=evidence)
