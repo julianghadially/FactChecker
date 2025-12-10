@@ -81,7 +81,7 @@ This assessment uses GPT five mini for every component of the system, including 
 #### FactChecker (Optimized)
 
 |                            | Supported | Refuted |
-|                            |---        |---      |
+|----------------------------|-----------|---------|
 | **Correct Predictions**    | 68        | 5       |
 | **Incorrect Predictions**  | 5         | 17      |
 
@@ -90,7 +90,7 @@ This assessment uses GPT five mini for every component of the system, including 
 #### Baseline
 
 |                            | Supported | Refuted |
-|                            |---        |---      |
+|----------------------------|-----------|---------|
 | **Correct Predictions**    | 77        | 2       |
 | **Incorrect Predictions**  | 7         | 14      |
 
