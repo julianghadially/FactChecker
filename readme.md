@@ -166,7 +166,7 @@ Statement → [ClaimExtractor] → Claims[]
 ## Installation
 
 ```bash
-pip install dspy-ai requests firecrawl-py tqdm
+pip install dspy requests firecrawl-py tqdm
 ```
 
 Set environment variables:
@@ -178,19 +178,9 @@ export FIRECRAWL_KEY="your-firecrawl-key"
 
 ## Usage
 
-### Single Statement Check
+### Run FactChecker
 ```bash
-python src/main.py --mode check --statement "The Eiffel Tower was built in 1889"
-```
-
-### Run HOVER Benchmark
-```bash
-python src/main.py --mode evaluate --sample-size 100
-```
-
-### Use Different Model
-```bash
-python src/main.py --mode evaluate --model anthropic/claude-3-sonnet
+python src.main --mode evaluate --sample-size 100 --optimized-program-path results/optimization/optimized_program_20251209_150856.json
 ```
 
 ## Project Structure
@@ -226,9 +216,8 @@ src/
 
 ## Key Resources
 - **DSPy docs**: https://dspy.ai/
-- **HOVER paper**: 
+- **GEPA Prompt-Optimization paper**: https://arxiv.org/pdf/2507.19457
 - **FIRE LLM Fact-Checking paper**: FIRE stands for Fact-checking with Iterative Retrieval and Verification: https://aclanthology.org/2025.findings-naacl.158.pdf?utm_source=chatgpt.com
 - **FIRE paper github**: https://github.com/mbzuai-nlp/fire
 - **LoCal LLM Fact-checking Paper**: https://dl.acm.org/doi/10.1145/3696410.3714748
  
-

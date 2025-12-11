@@ -33,10 +33,7 @@ def run_single_check(statement: str, model: str):
     """
     configure_dspy(model)
 
-    pipeline = FactCheckerPipeline(
-        serper_api_key=serper_key,
-        firecrawl_api_key=firecrawl_key
-    )
+    pipeline = FactCheckerPipeline()
 
     print(f"\nFact-checking statement: {statement}\n")
     print("-" * 60)
