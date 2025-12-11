@@ -1,11 +1,11 @@
 # FactChecker
 
-FactChecker is a DSPy-based multi-hop fact verification system that assesses the factual correctness of language model outputs. Unlike simple LLM-as-judge approaches that share biases with the models they evaluate, FactChecker grounds its judgments in external evidence through iterative web search.
+FactChecker is a DSPy-based fact verification system that assesses the factual correctness of language model outputs. Unlike simple LLM-as-judge approaches that share biases with the models they evaluate, FactChecker grounds its judgments in external evidence through iterative web search. 
 
 **Results Summary:**
-1. DSPy + GEPA optimization improved FactChecker performance relative to the unoptimized model. On current event claims, FactChecker went from 91% to 96% accuracy on predictions made, and added 10-18 percentage points to each class-specific recall
+1. DSPy + GEPA optimization improved FactChecker performance relative to the unoptimized FactChecker system. On current event claims, FactChecker went from 91% to 96% accuracy on predictions made, and added 10-18 percentage points to each class-specific recall
 2. FactChecker verifies and refutes way more claims than the baseline model. On current event claims, FactChecker tied the base model on accuracy on predictions made, but added 21-66 percentage points to each class-specific recall
-3. On the 2023 FacTools-QA dataset, All systems performed roughly the same accuracy on predictions cases: 89% vs 88% vs. 91% for optimized, unoptimized, and baseline, respectively. It is likely that GPT-5-mini has been trained on this data set, rendering the test unhelpful. 
+3. On the 2023 FacTools-QA dataset, All systems performed roughly the same accuracy on predictions cases: 89% vs 88% vs. 91% for optimized, unoptimized, and baseline, respectively. Three explanations come to mind. Either GPT-5-mini has been trained on this 2023 data set, or the data set is too easy, or GPT-5-mini has very good recall. 
 
 ## Results
 
@@ -19,12 +19,15 @@ FactChecker is a DSPy-based multi-hop fact verification system that assesses the
 | **No Prediction ('Unsupported')**  | 15        | 5       |
 | **'Refuted' Predictions**          | 1         | 30      |
 
-**Accuracy on predicted cases: 96% (55 preditions)** ⭐️
-**Supported recall: 59%** ⭐️
-**Refuted recall: 83%** ⭐️
-Model: GPT-5-Mini
+**Accuracy on predicted cases:** 96% (55 preditions) ⭐️
 
-#### Baseline - FactChecker, Not Optimized
+**Supported recall:** 59% ⭐️
+
+**Refuted recall:** 83% ⭐️
+
+**Model:** GPT-5-Mini
+
+#### FactChecker, Not Optimized
 
 |                                    | Supported | Refuted |
 |------------------------------------|-----------|---------|
@@ -32,9 +35,12 @@ Model: GPT-5-Mini
 | **No Prediction ('Unsupported')**  | 18        | 10      |
 | **'Refuted' Predictions**          | 0         | 26      |
 
-**Accuracy on predicted cases: 91% (47 preditions)** 
-**Supported recall: 49%** 
-**Refuted recall: 65%** 
+**Accuracy on predicted cases:** 91% (47 preditions)
+
+**Supported recall:** 49% 
+
+**Refuted recall:** 65% 
+
 Model: GPT-5-Mini
 
 #### Baseline - GPT-5-Mini
@@ -45,9 +51,12 @@ Model: GPT-5-Mini
 | **No Prediction ('Unsupported')**  | 24        | 27      |
 | **'Refuted' Predictions**          | 1         | 8       |
 
-**Accuracy on predicted cases: 96% (24 preditions)** 
-**Supported recall: 38%** 
-**Refuted recall: 23%** 
+**Accuracy on predicted cases:** 96% (24 preditions) 
+
+**Supported recall:** 38% 
+
+**Refuted recall:** 23% 
+
 Model: GPT-5-Mini
 
 
@@ -56,7 +65,7 @@ Model: GPT-5-Mini
 ### FacTools
 This assessment uses GPT five mini for every component of the system, including the reflection model, FactChecker model, and baseline model. See "notes" in FacTools-QA for seven claims that were flipped due to no longer being true. 
 
-#### FactChecker (Optimized)
+#### FactChecker, Optimized
 
 |                            | Supported | Refuted |
 |----------------------------|-----------|---------|
