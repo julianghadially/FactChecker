@@ -1,0 +1,111 @@
+{
+  "timestamp": "2025-12-10T18:40:57.274637",
+  "sample_size": 5,
+  "label_schema": "FacToolLabelSchema",
+  "labels": [
+    "SUPPORTED",
+    "REFUTED"
+  ],
+  "factchecker": {
+    "accuracy": 1.0,
+    "accuracy_on_predictions": 1.0,
+    "total_examples": 5,
+    "valid_examples": 5,
+    "error_count": 0,
+    "per_class_precision": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 1.0
+    },
+    "per_class_recall": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 1.0
+    },
+    "confusion_matrix": {
+      "SUPPORTED": {
+        "SUPPORTED": 3,
+        "REFUTED": 0
+      },
+      "REFUTED": {
+        "SUPPORTED": 0,
+        "REFUTED": 2
+      }
+    }
+  },
+  "baseline": {
+    "accuracy": 0.4,
+    "accuracy_on_predictions": 1.0,
+    "total_examples": 5,
+    "valid_examples": 5,
+    "error_count": 0,
+    "per_class_precision": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 1.0
+    },
+    "per_class_recall": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 1.0
+    },
+    "confusion_matrix": {
+      "SUPPORTED": {
+        "SUPPORTED": 1,
+        "REFUTED": 0
+      },
+      "REFUTED": {
+        "SUPPORTED": 0,
+        "REFUTED": 1
+      }
+    }
+  },
+  "detailed_results": [
+    {
+      "uid": "csv_0",
+      "claim": "Alaska Airlines has announced that it will launch new nonstop flights between Seattle and London Heathrow Airport on May 21, 2026.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_1",
+      "claim": "Delta Air Lines CEO Ed Bastian has publicly stated that United Airlines is trying to copy Delta's premium offerings strategy.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_2",
+      "claim": "United Airlines has announced that it will increase the Premier elite status qualification requirements for the MileagePlus program in 2026.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_3",
+      "claim": "Oppenheimer analyst Rupesh Parikh raised his price target for Ulta Beauty (ULTA) from $615 to $675 while maintaining an 'Outperform' rating.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_4",
+      "claim": "Cayla Gray's launch on Ulta.com is part of Ulta Beauty's long-established, open-to-all third-party marketplace that is not curated or invite-only.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    }
+  ]
+}

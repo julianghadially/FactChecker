@@ -1,6 +1,14 @@
-"""Data loader for the HOVER dataset."""
+"""Data loader.
+
+Datasets
+- FacTools-QA
+- FactChecker News Claims
+- HOVER
+- MMM-FACT (Wenyan0110/MMM-Fact)
+"""
 
 import json
+import csv
 from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Literal, Optional
@@ -242,6 +250,69 @@ def load_dataset(
             label=label,
             supporting_facts=[(sf[0], sf[1]) if isinstance(sf, (list, tuple)) and len(sf) >= 2 else ("", 0) for sf in supporting_facts],
             num_hops=num_hops
+        ))
+
+    if limit:
+        examples = examples[:limit]
+
+    return DatasetWithSchema(examples=examples, schema=schema)
+
+
+def load_csv_dataset(
+    path: str = "data/FactChecker_news_claims.csv",
+    limit: Optional[int] = None
+) -> DatasetWithSchema:
+    """Load dataset from CSV file.
+
+    Args:
+        path: Path to the CSV file (relative to project root).
+        limit: Optional limit on number of examples to load.
+
+    Returns:
+        DatasetWithSchema containing examples and detected label schema.
+
+    Raises:
+        FileNotFoundError: If the dataset file doesn't exist.
+    """
+    file_path = Path(path)
+    if not file_path.exists():
+        raise FileNotFoundError(f"Dataset not found at {path}")
+
+    data = []
+    with open(file_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for idx, row in enumerate(reader):
+            # CSV format: topic, claim, label, url, date_generalReviewed
+            data.append({
+                "uid": f"csv_{idx}",
+                "claim": row.get("claim", ""),
+                "label": row.get("label", "").strip().lower(),  # Normalize to lowercase
+                "topic": row.get("topic", ""),
+                "url": row.get("url", ""),
+            })
+
+    # Detect label schema from data
+    all_labels = set(item["label"] for item in data if item["label"])
+    
+    # For CSV with true/false labels, explicitly use FacToolLabelSchema
+    # Check if labels are true/false format
+    if all_labels.issubset({"true", "false", ""}):
+        schema = FacToolLabelSchema
+        print(f"Using FacToolLabelSchema for CSV dataset (true/false labels)")
+    else:
+        schema = detect_label_schema(all_labels)
+        print(f"Detected label schema: {schema.__name__}")
+    
+    print(f"Labels in dataset: {all_labels}")
+
+    examples = []
+    for idx, item in enumerate(data):
+        examples.append(HoverExample(
+            uid=item.get("uid", f"csv_{idx}"),
+            claim=item["claim"],
+            label=item["label"],
+            supporting_facts=[],  # CSV doesn't have supporting facts
+            num_hops=0  # CSV doesn't have num_hops
         ))
 
     if limit:

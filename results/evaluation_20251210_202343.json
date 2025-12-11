@@ -1,0 +1,811 @@
+{
+  "timestamp": "2025-12-10T20:23:43.206808",
+  "sample_size": 2000,
+  "label_schema": "FacToolLabelSchema",
+  "labels": [
+    "SUPPORTED",
+    "REFUTED"
+  ],
+  "factchecker": {
+    "accuracy": 0.5733333333333334,
+    "accuracy_on_predictions": 0.9148936170212766,
+    "total_examples": 75,
+    "valid_examples": 75,
+    "error_count": 0,
+    "per_class_precision": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 0.8666666666666667
+    },
+    "per_class_recall": {
+      "SUPPORTED": 0.8095238095238095,
+      "REFUTED": 1.0
+    },
+    "confusion_matrix": {
+      "SUPPORTED": {
+        "SUPPORTED": 17,
+        "REFUTED": 4
+      },
+      "REFUTED": {
+        "SUPPORTED": 0,
+        "REFUTED": 26
+      }
+    }
+  },
+  "baseline": {
+    "accuracy": 0.26666666666666666,
+    "accuracy_on_predictions": 0.9523809523809523,
+    "total_examples": 75,
+    "valid_examples": 75,
+    "error_count": 0,
+    "per_class_precision": {
+      "SUPPORTED": 0.9166666666666666,
+      "REFUTED": 1.0
+    },
+    "per_class_recall": {
+      "SUPPORTED": 1.0,
+      "REFUTED": 0.9
+    },
+    "confusion_matrix": {
+      "SUPPORTED": {
+        "SUPPORTED": 11,
+        "REFUTED": 0
+      },
+      "REFUTED": {
+        "SUPPORTED": 1,
+        "REFUTED": 9
+      }
+    }
+  },
+  "detailed_results": [
+    {
+      "uid": "csv_0",
+      "claim": "Alaska Airlines has announced that it will launch new nonstop flights between Seattle and London Heathrow Airport on May 21, 2026.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_1",
+      "claim": "Delta Air Lines CEO Ed Bastian has publicly stated that United Airlines is trying to copy Delta's premium offerings strategy.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_2",
+      "claim": "United Airlines has announced that it will increase the Premier elite status qualification requirements for the MileagePlus program in 2026.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_3",
+      "claim": "Oppenheimer analyst Rupesh Parikh raised his price target for Ulta Beauty (ULTA) from $615 to $675 while maintaining an 'Outperform' rating.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_4",
+      "claim": "Cayla Gray's launch on Ulta.com is part of Ulta Beauty's long-established, open-to-all third-party marketplace that is not curated or invite-only.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_5",
+      "claim": "The U.S. Department of Transportation credited Southwest Airlines $11 million toward its record $140 million penalty for the airline's 2022 holiday operational meltdown, in recognition of the carrier's $112.4 million investment in its Network Operations Control and resulting improvements in on-time performance and completion factor.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_6",
+      "claim": "Southwest Airlines is still required to pay the full $35 million cash portion of its $140 million civil penalty to the U.S. Treasury, with no part of that amount waived or credited by the Department of Transportation.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_7",
+      "claim": "U.S. Bancorp has maintained dividend payments for 55 consecutive years.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_8",
+      "claim": "U.S. Bancorp has not paid any dividends to shareholders in 2025.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_9",
+      "claim": "Platinum Equity entered into a definitive agreement to acquire the Products & Healthcare Services segment of Owens & Minor, with Owens & Minor retaining a 5% equity stake in that business.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_10",
+      "claim": "Owens & Minor decided to retain full ownership of its Products & Healthcare Services segment.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_11",
+      "claim": "Mondelez is introducing Oreo Zero Sugar and Oreo Double Stuf Zero Sugar as permanent sugar-free Oreo products in the United States market starting in January.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_12",
+      "claim": "Mondelez has been selling sugar-free Oreo cookies in the United States for several years prior to the announced Oreo Zero Sugar launch.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_13",
+      "claim": "New York Life Insurance Company adopted Windows 365 and Microsoft Intune to provide Cloud PC experiences for more than 7,000 users.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_14",
+      "claim": "New York Life Insurance Company relies solely on on-premises desktop infrastructure and has not adopted Windows 365 for its workforce.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_15",
+      "claim": "For WEC Energy Group's 2026 plan year, 75% of the annual incentive for named executive officers will be tied to earnings per share and 25% to cash flow.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_16",
+      "claim": "For WEC Energy Group's 2026 plan year, the annual incentive for named executive officers will be based entirely on cash flow, with no portion tied to earnings per share.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_17",
+      "claim": "Cencora is expanding its third-party logistics networks across the United States and Europe to strengthen its cold chain and healthcare bio logistics capabilities.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_18",
+      "claim": "Cencora is reducing its investments in third-party logistics and scaling back its cold chain infrastructure in the United States and Europe.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_19",
+      "claim": "Stryker has promoted longtime executive Spencer Stiles to the role of president and chief operating officer to help oversee its global business strategy and mergers and acquisitions.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_20",
+      "claim": "Timothy Scannell is still serving as Stryker's chief operating officer as of December 2026.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_21",
+      "claim": "Wells Fargo analyst Colin Langan has maintained an 'Equal-Weight' rating on Autoliv (ALV) while lowering the stock's price target from $129.00 to $125.00.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_22",
+      "claim": "Evercore ISI Group recently lowered its price target for Autoliv (ALV) from $140.00 to $150.00 while downgrading the stock's rating as of December 2026.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_23",
+      "claim": "Tyson Foods operates a beef plant in Lexington, Nebraska, with a slaughter capacity of about 5,000 head of cattle per day.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_24",
+      "claim": "The U.S. cattle herd is currently at its highest level in 75 years, providing abundant supplies for meatpackers.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_25",
+      "claim": "Chipotle Mexican Grill, Inc. announced in an SEC filing that its board of directors authorized an additional $1.8 billion for share repurchases.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_26",
+      "claim": "The US Court of Appeals for the Fourth Circuit heard oral arguments in a case involving an Advance Auto Parts investor alleging that former executives hid improper accounting practices related to vendor credits to boost margins during a turnaround effort.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_27",
+      "claim": "The US Court of Appeals for the Fourth Circuit has definitively ruled that Advance Auto Parts is free from all investor fraud allegations related to its accounting of vendor credits.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_28",
+      "claim": "Science Applications International Corporation (NYSE: SAIC) reported a return on equity of 23.75%, according to a Seeking Alpha analysis.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_29",
+      "claim": "Science Applications International Corporation (NYSE: SAIC) reported a five-year net income decline of 75.8%, according to a Seeking Alpha analysis.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_30",
+      "claim": "Nvidia has developed a software-based location verification technology that uses GPU telemetry and confidential computing capabilities to indicate which country its chips are operating in.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_31",
+      "claim": "Nvidia's Blackwell artificial intelligence chips are freely exportable to China without any U.S. government restrictions as of December 2026.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_32",
+      "claim": "M&T Bank Corporation is headquartered in Buffalo, New York and manages approximately $210 billion in assets as of June 30, 2025.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_33",
+      "claim": "M&T Bank Corporation plans to increase its prime lending rate from 6.75% to 7.00%.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_34",
+      "claim": "The PSEG Foundation received the Spirit of Edison Corporate Community Leader Award from Thomas Edison State University in recognition of more than 30 years of support for military and veteran students.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_35",
+      "claim": "The PSEG Foundation has not provided any scholarship or educational support related to nuclear energy engineering technology programs.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_36",
+      "claim": "Yum! Brands, Inc., in collaboration with its internal strategy agency Collider Lab, released a 2026 Food Trends Report titled \"What's Next in Dining\" that examines cultural and consumer shifts shaping how and what people will eat in 2026.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_37",
+      "claim": "Fastenal Company has established a corporate partnership with the National FFA Organization, under which Fastenal will provide grants to state FFA associations and local chapters and fund college scholarship programs available through FFA's grant application platform.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_38",
+      "claim": "Fastenal's reported November net sales declined year-over-year, with both total and daily sales falling compared to the prior year.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_39",
+      "claim": "Kimberly-Clark announced a cash and stock agreement to acquire Tylenol maker Kenvue in a deal valued at about $48.7 billion.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_40",
+      "claim": "Kimberly-Clark's planned acquisition of Tylenol maker Kenvue is structured as an all-cash transaction with no stock component.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_41",
+      "claim": "Stella & Chewy's has launched its products into 464 Sprouts Farmers Market stores across the United States.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_42",
+      "claim": "Stella & Chewy's products are not available in any Sprouts Farmers Market stores in the United States.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_43",
+      "claim": "Under a licensing deal signed in February 2024, AbbVie obtained an exclusive global license to develop, manufacture and commercialize OSE Immunotherapeutics' preclinical anti-ChemR23 monoclonal antibody OSE-230.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_44",
+      "claim": "Under their February 2024 agreement, OSE Immunotherapeutics retained global rights to develop, manufacture and commercialize the anti-ChemR23 monoclonal antibody OSE-230 while AbbVie only provided funding support.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_45",
+      "claim": "Solventum Corporation (ticker symbol SOLV) is a healthcare company that develops, manufactures, and commercializes a portfolio of solutions to address customer and patient needs in the United States and internationally.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_46",
+      "claim": "Solventum Corporation was spun off from Johnson & Johnson.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_47",
+      "claim": "Howmet Aerospace manufactures parts for Lockheed Martin's F-35 fighter jet.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_48",
+      "claim": "Howmet Aerospace does not manufacture any components for the F-35 fighter jet.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_49",
+      "claim": "Colgate-Palmolive has maintained uninterrupted dividend payments on its common stock since 1895.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_50",
+      "claim": "Colgate-Palmolive has suspended its common stock dividend multiple times since 1895.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_51",
+      "claim": "Michael T. Rollings served as Chief Financial Officer and Managing Director of Finance at the Vanguard Group from 2016 until his retirement in June 2025.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_52",
+      "claim": "The U.S. Securities and Exchange Commission investigation described in the articles concerns MassMutual's marketing practices rather than its accounting for income on loans in its general investment account.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_53",
+      "claim": "Community Health Systems, Inc. appointed Kevin Hammons as chief executive officer and Jason Johnson as chief financial officer after both had been serving in those roles on an interim basis since October 1, 2025.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_54",
+      "claim": "Community Health Systems, Inc. selected Jason Johnson as chief executive officer and Kevin Hammons as chief financial officer after they had been serving in those roles on an interim basis since October 1, 2025.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_55",
+      "claim": "Commercial Metals Company operates in the basic materials sector with a focus on steel production and recycling, including the manufacture of rebar and structural steel.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_56",
+      "claim": "Commercial Metals Company's recent private offering of senior unsecured notes was for less than US$1 billion in total principal amount.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_57",
+      "claim": "DTE Energy has selected ISNetworld as its primary contractor information management platform to improve contractor compliance and safety management across its operations.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_58",
+      "claim": "The planned Saline Township data center associated with DTE Energy is described as a 2.4-gigawatt project costing $7 billion.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_59",
+      "claim": "The Skechers World Champions Cup Supporting Shriners Children's is a golf event featuring three six-player teams representing the United States, Europe, and an International side.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_60",
+      "claim": "Team USA won the 2025 Skechers World Champions Cup Supporting Shriners Children's.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_61",
+      "claim": "Deutsche Bank downgraded its rating on 3M Company shares from Buy to Hold while setting a price target of $178.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_62",
+      "claim": "Deutsche Bank upgraded its rating on 3M Company shares from Hold to Buy and raised its price target to $199.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_63",
+      "claim": "West Virginia has filed a lawsuit in the U.S. District Court for the Northern District of West Virginia against UnitedHealthcare's pharmacy benefit manager Optum, alleging that Optum and its affiliated companies contributed to the large-scale oversupply of opioids in the state.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_64",
+      "claim": "Louisiana has decided to extend its Medicaid contracts with Aetna Better Health of Louisiana and UnitedHealthCare of Louisiana through 2026, ensuring that their existing Medicaid members will remain with those plans without being moved to other insurers on January 1.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_65",
+      "claim": "Ryder System has opened a 20,000-square-foot full-service truck rental and maintenance facility in McDonough, Georgia, as part of its Southeast expansion strategy.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_66",
+      "claim": "Ryder System's new facility in McDonough, Georgia, is a 200,000-square-foot warehouse dedicated exclusively to e-commerce fulfillment.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_67",
+      "claim": "Dana White has publicly denied that a boxing match between Ronda Rousey and Katie Taylor is being arranged, calling reports of the bout 'total bullsh*t' in an interview with MMA Junkie.",
+      "ground_truth": "true",
+      "factchecker_prediction": "SUPPORTED",
+      "factchecker_normalized": "SUPPORTED",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_68",
+      "claim": "Dana White has confirmed that a boxing match between Ronda Rousey and Katie Taylor is being arranged for 2026 in Las Vegas.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_69",
+      "claim": "Publix Super Markets Charities announced on December 9, 2025, that it is donating $15 million to more than 300 nonprofit organizations throughout the Southeast that focus on housing and shelter services.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_70",
+      "claim": "Publix Super Markets Charities has contributed less than $10 million to housing-related initiatives since 2015.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_71",
+      "claim": "Morningstar analysis cited by Bloomberg found that from January 2024 through November 2025, BlackRock's iShares Bitcoin Trust (ticker IBIT) had an annualized return of more than 40%, while the average investor in the fund earned about an 11% annualized return over the same period.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_72",
+      "claim": "According to BlackRock's chief financial officer, the company's iShares exchange traded funds had total inflows of about $45 billion for the year as of December 5, 2025.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "NOT_ENOUGH_INFO",
+      "baseline_normalized": "UNKNOWN",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_73",
+      "claim": "Caterpillar Inc. is recognized as a member of the S&P 500 Dividend Aristocrats Index.",
+      "ground_truth": "true",
+      "factchecker_prediction": "CONTAINS_UNSUPPORTED_CLAIMS",
+      "factchecker_normalized": "UNKNOWN",
+      "baseline_prediction": "SUPPORTED",
+      "baseline_normalized": "SUPPORTED",
+      "num_hops": 0
+    },
+    {
+      "uid": "csv_74",
+      "claim": "Caterpillar Inc. has never paid a quarterly dividend to its shareholders.",
+      "ground_truth": "false",
+      "factchecker_prediction": "CONTAINS_REFUTED_CLAIMS",
+      "factchecker_normalized": "REFUTED",
+      "baseline_prediction": "REFUTED",
+      "baseline_normalized": "REFUTED",
+      "num_hops": 0
+    }
+  ]
+}

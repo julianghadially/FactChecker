@@ -1,0 +1,353 @@
+source,author,title,description,url,publishedAt,content
+Makezine.com,Tim Deagan,Radio Antennas in the Wild,"Get the skinny on all types of antennas with this primer and radio antenna field guide.
+The post Radio Antennas in the Wild appeared first on Make: DIY Projects and Ideas for Makers.",https://makezine.com/article/technology/radio-antennas-in-the-wild/,2025-11-25T17:00:00Z,"­
+
+Radio Antennas in the Wild - Make:Radio Antennas in the Wild - Make:![](data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201%201'%3E%3C/svg%3E)
+
+[Skip to content](https://makezine.com/article/technology/radio-antennas-in-the-wild/#content)
+
+Search
+
+##### POPULAR SEARCHES:
+
+- [Arduino](https://makezine.com/?s=arduino)
+- [CNC](https://makezine.com/?s=cnc)
+- [Raspberry Pi](https://makezine.com/?s=raspberry%20pi)
+- [Woodworking](https://makezine.com/?s=wood%20working)
+
+- [3D Printing](https://makezine.com/?s=3d%20printing)
+- [IOT](https://makezine.com/?s=iot)
+- [Robot](https://makezine.com/?s=robot)
+- [Maker Faire](https://makezine.com/?s=maker%20faire)
+
+# Radio Antennas in the Wild
+
+[Technology](https://makezine.com/category/technology/)
+
+![Radio Antennas in the Wild](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-0-scaled.jpg?fit=2464%2C2560&ssl=1)
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2021/11/M78_Cover_web_promo.jpg?resize=175%2C249&ssl=1)This article appeared in Make: Vol. 78. [Subscribe today](https://make.co/join) to get more great articles delivered to your mailbox.
+
+There are easily thousands of different types of antennas serving different purposes. Some are simple lengths of wire, others exotic assemblages of high math and science. Most of the antennas around us are pretty straightforward and have a set of identifiable characteristics.
+
+With a few patterns in mind and some rules of thumb, you can usually make a pretty good guess at what most antennas are being used for, or at least the parts of the EM spectrum on which they’re operating.
+
+Table Of Contents
+
+1. [Making electromagnetic waves](https://makezine.com/article/technology/radio-antennas-in-the-wild/#making-electromagnetic-waves)
+2. [Frequency and wavelength](https://makezine.com/article/technology/radio-antennas-in-the-wild/#frequency-and-wavelength)
+3. [Antenna size and shape](https://makezine.com/article/technology/radio-antennas-in-the-wild/#antenna-size-and-shape)
+4. [Shaping electromagnetic radiation](https://makezine.com/article/technology/radio-antennas-in-the-wild/#shaping-electromagnetic-radiation)
+5. [How electromagnetic waves travel](https://makezine.com/article/technology/radio-antennas-in-the-wild/#how-electromagnetic-waves-travel)
+6. [Antenna spotting field guide](https://makezine.com/article/technology/radio-antennas-in-the-wild/#antenna-spotting-field-guide)
+   - [Dipole](https://makezine.com/article/technology/radio-antennas-in-the-wild/#dipole)
+   - [Monopole](https://makezine.com/article/technology/radio-antennas-in-the-wild/#monopole)
+   - [Directional](https://makezine.com/article/technology/radio-antennas-in-the-wild/#directional)
+   - [Tiny and huge](https://makezine.com/article/technology/radio-antennas-in-the-wild/#tiny-and-huge)
+   - [Loop](https://makezine.com/article/technology/radio-antennas-in-the-wild/#loop)
+
+## Making electromagnetic waves
+
+Antennas are driven from radios by feedlines consisting of two conductors (often bundled in a coax cable with a center conductor and a shield) which carry the two sides of the alternating current signal the radio produces. The simplest antenna, a **dipole**, takes the two conductors from the feedline and spreads them out away from each other. The antenna might appear to be a break in the circuit since the two arms of the antennas are separated instead of connected. What’s actually happening is that the two wires are acting like a big air-gap capacitor. Instead of the current being contained within the dielectric gap of a capacitor, the current is flowing in space as an electric field arc between the two arms of the dipole.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-A-750x608.jpg?resize=750%2C608&ssl=1)
+
+As the oscillating AC signal moves electric charges back and forth across the antenna arms, the accelerating charges create a magnetic field around the antenna, just like an electromagnet. Without trying to go too deep into Maxwell’s equations, rest assured that changing magnetic fields create electric fields, and changing electric fields create magnetic fields. The electrical energy applied to the antenna is thus converted into electromagnetic waves that self-sustain (magnetic and electric fields each relentlessly creating the other) and radiate away from the antenna. Radio!
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-B-1024x787.jpg?resize=1024%2C787&ssl=1)
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-C-1024x721.jpg?resize=1024%2C721&ssl=1)
+
+This only works efficiently if the antenna has the appropriate length for the frequency of signal it’s trying to radiate. An antenna that is perfectly matched to a frequency is called **resonant**. When you change the free length of a guitar string by pressing on frets, you change the note (frequency) the string resonates at. When you change the length of an antenna, you change the frequency that it resonates at (though _resonance_ has a number of additional technical meanings when used in electronics and radio).
+
+## Frequency and wavelength
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-SB-450x297.jpg?resize=450%2C297&ssl=1)
+
+**Frequency** is the number of times the wave completes a cycle in a given amount of time. The common unit of measure is the Hertz (Hz), or cycles per second. Since waves travel through space at the speed of light, the distance between peaks, called the **wavelength** (λ), is directly related to the frequency. This is generally measured in meters and derived by dividing the speed of light by the frequency. A signal with a frequency of 14.074MHz has a wavelength of 21.03m.
+
+Ranges of frequencies are usually referred to as **bands**, such as the US 40m amateur radio band (7.000MHz–7.300MHz) or the US AM radio band (525kHz–1705kHz).
+
+## Antenna size and shape
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-D-318x450.jpg?resize=318%2C450&ssl=1)A monopole antenna.
+
+Antenna lengths are generally whole-number multiples or fractions of a target wavelength (½λ, ¼λ, ⅛λ, 1λ, 2λ, 4λ, etc.), so they often provides clues about the intended frequency of operation. Long wavelengths/low frequencies tend to use long antennas and short wavelengths/high frequencies tend to use short antennas. Engineers have created a wealth of tricks to allow antennas to operate on multiple bands, but there are almost always limits. Shortwave antennas designed for wavelengths of tens of meters aren’t very useful for PCS cell wavelengths in the tens of centimeters, and vice versa.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-E-450x187.jpg?resize=450%2C187&ssl=1)Ground plane below radiation pattern.
+
+If your initial image of an antenna is the wire sticking out of your car, don’t worry! That single wire (a **monopole** instead of a dipole) is doing the same thing as one arm of the dipole.
+
+As a substitute for the other arm, monopole antennas connect that side of the feedline to a reference source, or **ground plane**, that’s usually perpendicular to the monopole (shown below the radiation pattern in the diagram). The ground plane could be your car, a set of wires, the earth, or in the case of cell phones, our bodies.
+
+## Shaping electromagnetic radiation
+
+Monopoles and dipoles send their signals out in a donut-shaped 360° ring around the length of the wire. This is referred to as an _omni-directional_ signal. However, electromagnetic (EM) waves interact with matter in different ways. In some cases it’s absorbed, in some reflected, and others refracted. Conductive items that respond to EM waves may, in turn, re-radiate them out again. If the secondary radiation interacts with the initial waves, the two signals may reinforce or cancel each other out depending on their phase relationship. This is referred to as _constructive_ and _destructive interference_.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-F-750x333.jpg?resize=750%2C333&ssl=1)Photo by Wikimedia Commons/Psgs123xyz
+
+When carefully managed, this effect can be used to shape and direct the output of an antenna. Many antenna designs have a driven element called an **emitter** (frequently a dipole) and one or more additional elements ( **reflectors** and **directors**) that shape the resulting combined field. While no antenna can add power to the initial signal, by using additional elements a power gain can be created in one or more specific directions by reducing power in other directions. The result is often called a _uni-directional_ signal.
+
+![Animation showing how a Yagi-Uda antenna works. It consists of 4 half-wave dipole antennas in a line; a driven element (E) which is connected to the transmitter and radiates the radio waves, and 3 parasitic elements, two directors (D1, D2) and one reflector (R) which act as resonators, absorbing and reradiating the waves from the driven element with a different phase. The radio waves from all 4 elements combine and interfere, increasing the power radiated in the desired direction (up) and decreasing the power radiated in other directions. The radio waves from each individual element (wavy moving lines) are shown in a different color. The waves in the forward direction are in phase, and interfere constructively, adding together to produce a higher signal strength, while the waves in the reverse direction are out of phase, partially canceling each other to produce lower signal strength in that direction.](https://makezine.com/wp-content/uploads/2025/11/Antenna-Guide-G.gif)Diagram by Wikimedia Commons/Chetvorno
+
+These are described as **beam** or **directional** antennas and are either fixed at a specific target to improve transmission and reception or rotated to change targets.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-H-750x433.jpg?resize=750%2C433&ssl=1)
+
+EM waves’ ability to reflect can be leveraged to great effect when they are aimed at a **parabolic dish**. Satellite dishes and space telescopes both use the same principle of concentrating a tight capture area into a small point for reception and focusing the output of a small point into a directional beam for transmission. The dish is a passive reflector element and the driven element is positioned at the focal point of its parabola.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-I-980x1024.jpg?resize=980%2C1024&ssl=1)
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-J-1024x571.jpg?resize=1024%2C571&ssl=1)
+
+Reflection also allows EM waves to be routed through shaped hollow pipes called **waveguides**. Though there are examples of waveguides for all kinds of waves, these tools are a common feature used in antennas used for extremely high-frequency waves, commonly called _microwaves_ when above 1GHz (though other definitions start microwaves at 300MHz). Waveguides allow a low-loss way to direct EM waves while also serving as a _high-pass filter_, rejecting waves below a certain frequency.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-K-750x792.jpg?resize=750%2C792&ssl=1)Photo by Wikimedia Commons/Chetvorno
+
+The diagram illustrating the electrical wave arching from one end of a dipole to the other implies an orientation that antennas create for the waves they generate. This effect is called **polarization** and it is an important aspect of antenna design. Antennas have different polarizations if they are mounted vertically or horizontally. A receiving antenna operates best if it has the same orientation as the transmitted signal it’s picking up. Other polarization schemes are used as well. **Helical antennas** are an example of a circular polarization design that can receive both horizontal and vertically polarized waves. This is especially useful for receiving signals from satellites that are changing orientation (and therefore polarization) as they orbit or experiencing an effect called _Faraday rotation_ as their signal traverses the ionosphere.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-L-780x1024.jpg?resize=780%2C1024&ssl=1)Helical antenna for receiving satellite signals. Photo by Wikimedia Commons/Chetvorno.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-M-1024x686.jpg?resize=1024%2C686&ssl=1)
+
+Most antennas operate by interacting with the electrical field of an EM wave. But the magnetic field is always there too, and that’s the aspect used to transmit and receive with most **loop antennas**. These antennas can be circular, hexagonal, square, or any closed geometry. There may be more than one loop serving the same purpose as the additional elements on a beam antenna. Small loop antennas can have especially sharp _nulls_ where they can’t receive. This makes them especially useful for radio direction finding. By turning the loop until a signal disappears, you can determine the direction from which it is coming.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-N-936x1024.jpg?resize=936%2C1024&ssl=1)Small loop antenna.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-O-936x1024.jpg?resize=936%2C1024&ssl=1)Directional radiation pattern.
+
+## How electromagnetic waves travel
+
+EM waves can travel, or **propagate**, in a variety of ways, though different frequencies have different abilities in this regard. These propagation types are: **ground waves**, **direct waves**, and **sky waves**. Extremely low-frequency (used for communication with submarines around the world) to medium-frequency signals (3Hz–3MHz, such as [AM radio](https://makezine.com/projects/bottle-radio/)) hug the Earth as they travel and are called _ground waves_. High-frequency (HF) waves in the 3MHz–30MHz range (and medium-frequency waves) have the ability to refract off the layers of the ionosphere as _sky waves_, if they’re at a shallow enough angle (otherwise they head into space), often multiple times, and reach around the world.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-P-1024x732.jpg?resize=1024%2C732&ssl=1)Sky waves.
+
+Very high-frequency (VHF) and above waves (30MHz and up) rely on _direct_, or _line-of-sight_, transmission. These waves are obstructed by the curvature of the Earth or other obstacles and tend to have limited range compared to lower frequencies. Of course, that depends on where you point them. Aim them at a satellite and even a handheld radio can contact low Earth orbit!
+
+The higher an antenna is mounted, the farther its line-of-sight radius is. Tall antenna towers provide broad coverage for antennas relying on direct propagation. Cellphone towers, commercial radio, amateur radio repeaters, microwave data transmission, emergency services, and other UHF/VHF/microwave antennas all tend to be mounted as high as feasible to increase their range.
+
+Even HF antennas attempting to bounce signals off the ionosphere benefit from height. Some part of the signals they output bounce off the Earth below them. When they are less than half a wavelength above the ground, these reflected waves interfere with the transmitted wave and tend to make most of the signal go upward at an angle so steep that it either passes through the ionosphere or bounces straight back down. This means that an antenna operating on the 40-meter amateur band would ideally be at least 20 meters (65 feet) above the ground to achieve long distance propagation. The images below show the comparison of this band being broadcast at 5 meters high and 20 meters high. In some cases, if you want to communicate locally, aiming up and bouncing down is desirable. This is referred to as **near-vertical-incidence skywave** **(NVIS)** operation.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-Q-750x480.jpg?resize=750%2C480&ssl=1)Simulation of an amateur band antenna broadcasting from 5 meters high.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Guide-R-750x503.jpg?resize=750%2C503&ssl=1)Simulation of an amateur band antenna broadcasting from 20 meters high.
+
+All these characteristics provide clues when spotting an antenna in the wild. The length of the elements relates to the frequency of operation. The height offers clues to the coverage area. Odd shapes like horns suggest waveguides which are most likely used for high-bandwidth microwave transmissions. Directional antennas are usually pointed at a target such as a receiver at a given compass bearing. If they’re pointed at the sky, that target is probably a satellite.
+
+We spend our lives constantly bathed in the radio waves propagating around us. Much of our daily activity relies on radio-enabled cellphones, tablets, GPS, and Wi-Fi. Recognizing the amazing proliferation of antennas can be an exciting way to gain awareness of these tools for manipulation of the invisible forces underlying our modern world. And with that, let’s take a look at some of the more common antennas you’ll see in the wild …
+
+## Antenna spotting field guide
+
+Antennas are all around us, but what does each kind actually do? Here are a variety of different types, and how they’re used. See how many you can find near you!
+
+### **Dipole**
+
+Dipoles consist of two arms, each connected to one side of the radio circuit feedline. Can be constructed from stretched lengths of wire or rigid metal tubing. “Rabbit ear” TV antennas are a common example. Used for nearly every radio band. Size ranges from huge to tiny. Particular favorites of the **amateur radio** aka **ham** community.
+
+**Horizontal, Vertical, and Diagonal**— Mounted horizontally, a dipole radiates broadside to the length of the wires, with _nulls_ (directions in which it can’t receive) at either end. Mounted vertically, a dipole radiates in an _omnidirectional_ 360° pattern (since the nulls point up and down). When one end is mounted higher than the other, it’s called a _sloper_ and the radiation pattern changes with the angle of slope.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-A-1024x360.jpg?resize=1024%2C360&ssl=1)
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-B-1024x360.jpg?resize=1024%2C360&ssl=1)
+
+**Inverted V and L**— Dipoles are often mounted with the highest point in the center and the two arms angled down, usually at a 120° or 90° angle. _Inverted-vee_ _dipoles_ provide a more omnidirectional pattern than a horizontal. Dipoles can also be mounted with one arm horizontal and one vertical, in an _L-dipole_ configuration. This is usually due to space constraints.
+
+**Folded** — When the far ends of the dipole are connected with a parallel wire, the result looks like a flattened oval and is called a _folded dipole_.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-C-1024x459.jpg?resize=1024%2C459&ssl=1)
+
+### **Monopole**
+
+Extremely common anywhere that room for a dipole isn’t available. Frequently used in commercial radios to save space. If one of the arms of the dipole is replaced with a connection to a ground plane (wires, car, person, earth), the antenna becomes a monopole.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-D-1024x590.jpg?resize=1024%2C590&ssl=1)Image by Wikimedia Commons/Henry Smith Williams
+
+**Long Wire**— While they require a tuning circuit to work well, long lengths of _random wire_ can be used as antennas.
+
+**End-Fed Half Wave**— By using a transformer to connect to a wire that’s a half-wavelength long, the antenna will be resonant on the primary wavelength plus its harmonics, making it a _multi-band_ antenna.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-E-450x158.jpg?resize=450%2C158&ssl=1)
+
+**Car**— Car radio antennas are usually around 75cm long, approximately one quarter of the center wavelength of the FM radio band (2.78m–3.41m).
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-F-1024x817.jpg?resize=1024%2C817&ssl=1)Photo by Zuzu
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-G-1024x887.jpg?resize=1024%2C887&ssl=1)Photo by Wikimedia Commons/Shootthedevgru
+
+**Handheld**— Walkie-talkies, handheld radios, and older cellphones typically have antennas sticking out of them. They may be telescoping whips or wire coiled in a plastic extrusion. Our bodies serve as their ground planes!
+
+### **Directional**
+
+These allow for transmission/reception toward specific locations, while lowering functionality in other directions. Generally referred to as _beam_ or _directional_ antennas.
+
+**Yagi**— While not all antennas with a central shaft and parallel extrusions are specifically [_Yagi_ antennas](https://makezine.com/projects/homemade-yagi-antenna/), the term often gets used generically for this and similar styles of directional antenna (including _Uda_ and _log-periodic_ types). Yagi-style antennas are loved by hams for the gain they offer. High-end broadcast television antennas are often Yagi antennas since they can be aimed at a stationary broadcasting station.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-H-667x1024.jpg?resize=667%2C1024&ssl=1)Photo by Wikimedia Commons/Merja Partanen
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-I-1024x662.jpg?resize=1024%2C662&ssl=1)Photo by Wikimedia Commons/Greg Goebel
+
+**Hexbeam**— The hexbeam directional antenna uses a W-shaped driven element in front of a U-shaped reflector element, all arranged as a hexagon. Hexbeams are a favorite of ham radio operators for 20m–6m operation. Longer wavelengths make the construction too large.
+
+**Parabolic (Dish)** — A transmitting/receiving element placed at the focal point of a parabola collects and emits focused radio waves from the dish. Commercial and government installations often use parabolic antennas, as does satellite TV.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-J-1024x754.jpg?resize=1024%2C754&ssl=1)Photo by Wikimedia Commons/Bidgee
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-K-1024x557.jpg?resize=1024%2C557&ssl=1)Photo by Wikimedia Commons/Tony Webster
+
+**Waveguide** — These are channels that direct and focus radio waves in the microwave range. Frequently used for high-speed digital signals between buildings or relay towers.
+
+**Helical** — Antennas produce polarized radio waves. These can be horizontal, vertical, or circular depending on the orientation of the emitting elements. Orbiting satellites change position, and therefore polarization, so a helix does a good job of dealing with those changes. Helical antennas are used whenever it’s difficult to get the receiver oriented to the same polarity as the transmitter.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-L-1024x1016.jpg?resize=1024%2C1016&ssl=1)Photo by Wikimedia Commons/Kingbastard
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-M-678x1024.jpg?resize=678%2C1024&ssl=1)Photo by Wikimedia Commons/Joe Ravi
+
+**Cellphone Tower Sector Antennas** — Cellphone tower antennas are designed to work in a very narrow angle, or _sector_. Sets of these provide 360° coverage without sacrificing signal strength. Sector antennas are the most common configuration for cell service since they provide excellent coverage.
+
+### **Tiny** and **huge**
+
+Other types of antennas, from PCBs in personal devices to massive pieces of engineering used for commercial, military, and scientific purposes.
+
+**2.4GHz (Bluetooth, Wi-Fi, etc.) PCB Antennas** — Some devices operate on wavelengths short enough to allow traces on a printed circuit board to serve as antennas. The zig-zag trace shown is a Bluetooth 2.4GHz (12.5cm) antenna along with the ground plane of the board. The ESP8266 board includes a built-in Wi-Fi antenna, extremely common in IoT and mobile devices. You probably have a few around you right now!
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-N.jpg?resize=975%2C800&ssl=1)Photo by Flickr/Endolith
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-O-1024x565.jpg?resize=1024%2C565&ssl=1)Photo by Make Magazine DE
+
+**High-Band (Millimeter Wave) 5G Antennas** — Very tiny, used by 5G cellular devices operating near 30GHz (10mm).
+
+![Penny resting on a circuit board beside a bare plane about the same width, and a much smaller chip with lots of fine wires tying it to the board.](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-P-1024x392.jpg?resize=1024%2C392&ssl=1)Photo by David Baillot/UC San Diego Jacobs School of Engineering
+
+![massive antenna array sticking out of a shed](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-Q-1024x686.jpg?resize=1024%2C686&ssl=1)Photo by Eyreland/Wikimedia Commons
+
+**ALLISS** — Commercial, government, and high-power shortwave stations with coverage that needs to be changed directionally may use giant, steerable _ALLISS_ antennas (from the French towns of Allouis and Issoudun).
+
+**“Elephant Cage” (AN/FLR-9, AN/FRD-10)** — During the Cold War, massive ring antenna systems were set up to monitor and locate radio transmissions worldwide. The last of these “elephant cage” antennas can still be seen in Canada and Alaska.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-R-1024x557.jpg?resize=1024%2C557&ssl=1)Photo by Chaddy/Wikimedia Commons
+
+### **Loop**
+
+Unique in that many of them respond to the magnetic rather than the electrical portion of the electromagnetic waves. Have very sharp nulls, making them useful for direction finding. Very portable; common in receivers and low power (QRP) operations.
+
+**Circular** — Loop antennas can be circular, rectangular, or any closed geometry. They are often easier to deploy than large wire antennas.
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-S-1024x778.jpg?resize=1024%2C778&ssl=1)Photo by Trixt/Wikimedia Commons
+
+![](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-T-1024x771.jpg?resize=1024%2C771&ssl=1)Photo by Trixt/Wikimedia Commons
+
+**Quad** — Loop antennas can also include multiple elements that modify their directional transmission and reception abilities.
+
+**Radio Direction Finding Loop** — _Radio direction finding (RDF)_ usually uses small receiving loops that are inefficient for transmitting, but have extremely sharp nulls to assist in finding the direction of a radio source.
+
+![WWII-era equipment with circular loop antenna](https://i0.wp.com/makezine.com/wp-content/uploads/2025/11/Antenna-Spotting-U-1024x983.jpg?resize=1024%2C983&ssl=1)Photo by Daderot; with permission Randy Taylor, WB5QFM
+
+* * *
+
+_All images by Tim Deagan unless otherwise noted. Featured graphic Adobe Stock/bitontawan02_.
+
+_This article appeared in_ [Make: _Vol. 78_](https://www.makershed.com/collections/pdf-magazines/products/make-magazine-volume-78-pdf) _. [Subscribe today](https://make.co/join) to get the latest content._
+
+Tagged [antenna](https://makezine.com/tag/antenna/) [make78](https://makezine.com/tag/make78/) [radio](https://makezine.com/tag/radio/) [skills](https://makezine.com/tag/skills/)
+
+![Tim Deagan](https://i0.wp.com/makezine.com/wp-content/uploads/2018/07/TimDeagan.jpg?fit=150%2C150&resize=300%2C300&quality=70&strip=all#038;ssl=1&resize=198%2C198&strip=all)
+
+### [By Tim Deagan](https://makezine.com/author/tim-deagan)
+
+### [Tim Deagan](https://makezine.com/author/tim-deagan)
+
+Tim Deagan (@TimDeagan) likes to make things. He casts, prints, screens, welds, brazes, bends, screws, glues, nails, and dreams in his Austin, Texas, shop. He's spent decades gathering tools based on the idea that one day he will come up with a project that has a special use for each and every one of them.
+
+[View more articles by Tim Deagan](https://makezine.com/author/tim-deagan)
+
+Discuss this article with the rest of the community on our [Discord server](https://discord.gg/mpBkj2hhJ4?utm_source=makezine&utm_medium=article&utm_campaign=discord&utm_content=launch)!
+
+ADVERTISEMENT
+
+[Subscribe now to Make: Magazine\\
+\\
+The official magazine of Maker Faire](https://subscribe.makezine.com/loading.do?omedasite=Make_subscribe&utm_source=makezine&utm_medium=ad&utm_campaign=alternate-unit&utm_content=launch)
+
+### _Related Articles from Make:_
+
+[![](https://i0.wp.com/makezine.com/wp-content/uploads/2023/02/FM-_Radio-e1675726927665.jpg?fit=1200%2C674&ssl=1&resize=350%2C200)](https://makezine.com/article/electronics/getting-started-with-software-defined-radio-sdr/ ""Getting Started With Software Defined Radio (SDR)"")
+
+#### [Getting Started With Software Defined Radio (SDR)](https://makezine.com/article/electronics/getting-started-with-software-defined-radio-sdr/ ""Getting Started With Software Defined Radio (SDR)"")
+
+Eavesdrop on virtually the entire radio spectrum — for 30 bucks! Not long ago, enthusiasts with an urge to listen to radio broadcasts had to make hard choices about what equipment to buy based on their interests. “Multi-band” radios provided circuitry for a selected set of frequencies, usually requiring crystals…
+
+[![](https://i0.wp.com/makezine.com/wp-content/uploads/2023/02/HDSDR.png?fit=1200%2C675&ssl=1&resize=350%2C200)](https://makezine.com/article/technology/online-event-join-us-for-a-chat-about-makers-and-ham-radio/ ""Online Event: Join Us for a Chat About Makers and Ham Radio"")
+
+#### [Online Event: Join Us for a Chat About Makers and Ham Radio](https://makezine.com/article/technology/online-event-join-us-for-a-chat-about-makers-and-ham-radio/ ""Online Event: Join Us for a Chat About Makers and Ham Radio"")
+
+Please join us next Wednesday March 23 at 7pm ET / 4pm PT for an online conversation about ""Makers and Hams."" We will talk about the joys of making and amateur radio, how both attract enthusiasts and the commonalities of their communities.
+
+[![](https://i0.wp.com/makezine.com/wp-content/uploads/2022/11/Sondehub.png?fit=1200%2C1034&ssl=1&resize=350%2C200)](https://makezine.com/article/drones-vehicles/planes/plane-spotting-and-more-put-your-spare-gear-to-use-as-a-feeder-for-community-based-data-exchanges/ ""Plane Spotting (And More!): Put your spare gear to use as a feeder for community-based data exchanges"")
+
+#### [Plane Spotting (And More!): Put your spare gear to use as a feeder for community-based data exchanges](https://makezine.com/article/drones-vehicles/planes/plane-spotting-and-more-put-your-spare-gear-to-use-as-a-feeder-for-community-based-data-exchanges/ ""Plane Spotting (And More!): Put your spare gear to use as a feeder for community-based data exchanges"")
+
+If you’ve ever used a flight-tracking app or looked up local weather on Weather Underground, you’ve likely accessed data supplied, in part, by volunteer contributors. Crowd-sourced data exchanges collect this information and share the pooled results online via interactive maps. The data ranges from radio-signal telemetry for airplanes, ships, weather balloons, or satellites,…
+
+### From the Shed: Engineering, Arts and Math
+
+[![Computer Engineering for BIG Babies](https://cdn.shopify.com/s/files/1/0243/7593/files/DSC01290_small_0dbd40b8-5092-4daf-98a4-263afaecfa97.jpg?v=1763680684)\\
+**Computer Engineering for BIG Babies** \\
+$33.00](https://www.makershed.com/products/computer-engineering-for-big-babies?utm_source=makezine.com&utm_medium=cross-site&utm_campaign=makershed_related&utm_content=https://makezine.com/wp-cron.php?doing_wp_cron=1764921300.4656949043273925781250) [![Computer Engineering for Babies](https://cdn.shopify.com/s/files/1/0243/7593/files/computer_engineering_for_babies_book_cover_small_e218cb6c-0fb7-4e64-9f38-ff78af9bd898.jpg?v=1763680672)\\
+**Computer Engineering for Babies** \\
+$33.00](https://www.makershed.com/products/computer-engineering-for-babies?utm_source=makezine.com&utm_medium=cross-site&utm_campaign=makershed_related&utm_content=https://makezine.com/wp-cron.php?doing_wp_cron=1764921300.4656949043273925781250) [![Paddlewheel Boat DIY Kit, Educational STEM Toy](https://cdn.shopify.com/s/files/1/0243/7593/files/PaddlewheelBoat_Green_Assorted.jpg?v=1763682080)\\
+**Paddlewheel Boat DIY Kit, Educational STEM Toy** \\
+$16.00](https://www.makershed.com/products/paddlewheel-boat-diy-kit-educational-stem-toy?utm_source=makezine.com&utm_medium=cross-site&utm_campaign=makershed_related&utm_content=https://makezine.com/wp-cron.php?doing_wp_cron=1764921300.4656949043273925781250) [![Subscribe to Make: Magazine Today](https://make.co/wp-content/universal-assets/v2/images/make-magazine-cover-large.jpg)\\
+**Get _Make:_ Magazine** \\
+$19.99](https://subscribe.makezine.com/loading.do?omedasite=Make_subscribe&PK=M3GCT016&utm_source=makezine.com&utm_medium=cross-site&utm_campaign=makershed_related&utm_content=https://makezine.com/article/technology/radio-antennas-in-the-wild/)
+
+When you buy through links on our site, we may earn an affiliate commission.
+
+
+[**Special Pinterest-only offer!**\\
+\\
+**One year of Make: Magazine for just $19.99**![Special Pinterest Make: Magazine subscription offer](data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20253'%3E%3C/svg%3E)](https://subscribe.makezine.com/Make_subscribe?PC=MK&PK=M0MPT2&utm_source=make&utm_medium=pinterest_popup&utm_campaign=pinterest&utm_content=launch)
+
+Cookie Settings
+
+We use cookies to continuously improve our websites for you and optimize its design and customization.
+
+
+We'll assume you're ok with this, but you can opt-out if you wish.
+
+
+ConfigureAccept
+
+[FEEDBACK](mailto:feedback@make.co?subject=Makezine.com%20Feedback)
+
+Helper
+
+Close
+
+Our websites use cookies to improve your browsing experience. Some of these are essential for the basic
+functionalities of our websites. In addition, we use third-party cookies to help us analyze and understand
+usage. These will be stored in your browser only with your consent and you have the option to opt-out. Your
+choice here will be recorded for all Make.co
+Websites.
+
+Allow Non-Necessary CookiesAllow Non-Necessary Cookies
+
+Accept
+
+# Search results
+
+Magnifying Glass
+Search
+
+Close search results
+
+FiltersShow filters
+
+Sort by:
+
+Relevance•Newest•Oldest
+
+## No results found
+
+## Filter options
+
+Close Search"

@@ -1,0 +1,76 @@
+claim,ground_truth,factchecker_prediction,baseline_prediction
+"Alaska Airlines has announced that it will launch new nonstop flights between Seattle and London Heathrow Airport on May 21, 2026.",true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Delta Air Lines CEO Ed Bastian has publicly stated that United Airlines is trying to copy Delta's premium offerings strategy.,true,SUPPORTED,NOT_ENOUGH_INFO
+United Airlines has announced that it will increase the Premier elite status qualification requirements for the MileagePlus program in 2026.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Oppenheimer analyst Rupesh Parikh raised his price target for Ulta Beauty (ULTA) from $615 to $675 while maintaining an 'Outperform' rating.,true,SUPPORTED,NOT_ENOUGH_INFO
+"Cayla Gray's launch on Ulta.com is part of Ulta Beauty's long-established, open-to-all third-party marketplace that is not curated or invite-only.",false,CONTAINS_REFUTED_CLAIMS,REFUTED
+"The U.S. Department of Transportation credited Southwest Airlines $11 million toward its record $140 million penalty for the airline's 2022 holiday operational meltdown, in recognition of the carrier's $112.4 million investment in its Network Operations Control and resulting improvements in on-time performance and completion factor.",true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+"Southwest Airlines is still required to pay the full $35 million cash portion of its $140 million civil penalty to the U.S. Treasury, with no part of that amount waived or credited by the Department of Transportation.",false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+U.S. Bancorp has maintained dividend payments for 55 consecutive years.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+U.S. Bancorp has not paid any dividends to shareholders in 2025.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"Platinum Equity entered into a definitive agreement to acquire the Products & Healthcare Services segment of Owens & Minor, with Owens & Minor retaining a 5% equity stake in that business.",true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Owens & Minor decided to retain full ownership of its Products & Healthcare Services segment.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Mondelez is introducing Oreo Zero Sugar and Oreo Double Stuf Zero Sugar as permanent sugar-free Oreo products in the United States market starting in January.,true,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Mondelez has been selling sugar-free Oreo cookies in the United States for several years prior to the announced Oreo Zero Sugar launch.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"New York Life Insurance Company adopted Windows 365 and Microsoft Intune to provide Cloud PC experiences for more than 7,000 users.",true,SUPPORTED,SUPPORTED
+New York Life Insurance Company relies solely on on-premises desktop infrastructure and has not adopted Windows 365 for its workforce.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"For WEC Energy Group's 2026 plan year, 75% of the annual incentive for named executive officers will be tied to earnings per share and 25% to cash flow.",true,SUPPORTED,NOT_ENOUGH_INFO
+"For WEC Energy Group's 2026 plan year, the annual incentive for named executive officers will be based entirely on cash flow, with no portion tied to earnings per share.",false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Cencora is expanding its third-party logistics networks across the United States and Europe to strengthen its cold chain and healthcare bio logistics capabilities.,true,SUPPORTED,NOT_ENOUGH_INFO
+Cencora is reducing its investments in third-party logistics and scaling back its cold chain infrastructure in the United States and Europe.,false,CONTAINS_REFUTED_CLAIMS,SUPPORTED
+Stryker has promoted longtime executive Spencer Stiles to the role of president and chief operating officer to help oversee its global business strategy and mergers and acquisitions.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Timothy Scannell is still serving as Stryker's chief operating officer as of December 2026.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Wells Fargo analyst Colin Langan has maintained an 'Equal-Weight' rating on Autoliv (ALV) while lowering the stock's price target from $129.00 to $125.00.,true,SUPPORTED,NOT_ENOUGH_INFO
+Evercore ISI Group recently lowered its price target for Autoliv (ALV) from $140.00 to $150.00 while downgrading the stock's rating as of December 2026.,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+"Tyson Foods operates a beef plant in Lexington, Nebraska, with a slaughter capacity of about 5,000 head of cattle per day.",true,CONTAINS_REFUTED_CLAIMS,SUPPORTED
+"The U.S. cattle herd is currently at its highest level in 75 years, providing abundant supplies for meatpackers.",false,CONTAINS_UNSUPPORTED_CLAIMS,REFUTED
+"Chipotle Mexican Grill, Inc. announced in an SEC filing that its board of directors authorized an additional $1.8 billion for share repurchases.",true,SUPPORTED,NOT_ENOUGH_INFO
+The US Court of Appeals for the Fourth Circuit heard oral arguments in a case involving an Advance Auto Parts investor alleging that former executives hid improper accounting practices related to vendor credits to boost margins during a turnaround effort.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+The US Court of Appeals for the Fourth Circuit has definitively ruled that Advance Auto Parts is free from all investor fraud allegations related to its accounting of vendor credits.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"Science Applications International Corporation (NYSE: SAIC) reported a return on equity of 23.75%, according to a Seeking Alpha analysis.",true,SUPPORTED,NOT_ENOUGH_INFO
+"Science Applications International Corporation (NYSE: SAIC) reported a five-year net income decline of 75.8%, according to a Seeking Alpha analysis.",false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Nvidia has developed a software-based location verification technology that uses GPU telemetry and confidential computing capabilities to indicate which country its chips are operating in.,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Nvidia's Blackwell artificial intelligence chips are freely exportable to China without any U.S. government restrictions as of December 2026.,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+"M&T Bank Corporation is headquartered in Buffalo, New York and manages approximately $210 billion in assets as of June 30, 2025.",true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+M&T Bank Corporation plans to increase its prime lending rate from 6.75% to 7.00%.,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+The PSEG Foundation received the Spirit of Edison Corporate Community Leader Award from Thomas Edison State University in recognition of more than 30 years of support for military and veteran students.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+The PSEG Foundation has not provided any scholarship or educational support related to nuclear energy engineering technology programs.,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+"Yum! Brands, Inc., in collaboration with its internal strategy agency Collider Lab, released a 2026 Food Trends Report titled ""What's Next in Dining"" that examines cultural and consumer shifts shaping how and what people will eat in 2026.",true,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"Fastenal Company has established a corporate partnership with the National FFA Organization, under which Fastenal will provide grants to state FFA associations and local chapters and fund college scholarship programs available through FFA's grant application platform.",true,SUPPORTED,NOT_ENOUGH_INFO
+"Fastenal's reported November net sales declined year-over-year, with both total and daily sales falling compared to the prior year.",false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Kimberly-Clark announced a cash and stock agreement to acquire Tylenol maker Kenvue in a deal valued at about $48.7 billion.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Kimberly-Clark's planned acquisition of Tylenol maker Kenvue is structured as an all-cash transaction with no stock component.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Stella & Chewy's has launched its products into 464 Sprouts Farmers Market stores across the United States.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Stella & Chewy's products are not available in any Sprouts Farmers Market stores in the United States.,false,CONTAINS_UNSUPPORTED_CLAIMS,REFUTED
+"Under a licensing deal signed in February 2024, AbbVie obtained an exclusive global license to develop, manufacture and commercialize OSE Immunotherapeutics' preclinical anti-ChemR23 monoclonal antibody OSE-230.",true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+"Under their February 2024 agreement, OSE Immunotherapeutics retained global rights to develop, manufacture and commercialize the anti-ChemR23 monoclonal antibody OSE-230 while AbbVie only provided funding support.",false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"Solventum Corporation (ticker symbol SOLV) is a healthcare company that develops, manufactures, and commercializes a portfolio of solutions to address customer and patient needs in the United States and internationally.",true,SUPPORTED,NOT_ENOUGH_INFO
+Solventum Corporation was spun off from Johnson & Johnson.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Howmet Aerospace manufactures parts for Lockheed Martin's F-35 fighter jet.,true,SUPPORTED,SUPPORTED
+Howmet Aerospace does not manufacture any components for the F-35 fighter jet.,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Colgate-Palmolive has maintained uninterrupted dividend payments on its common stock since 1895.,true,SUPPORTED,SUPPORTED
+Colgate-Palmolive has suspended its common stock dividend multiple times since 1895.,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Michael T. Rollings served as Chief Financial Officer and Managing Director of Finance at the Vanguard Group from 2016 until his retirement in June 2025.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+The U.S. Securities and Exchange Commission investigation described in the articles concerns MassMutual's marketing practices rather than its accounting for income on loans in its general investment account.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"Community Health Systems, Inc. appointed Kevin Hammons as chief executive officer and Jason Johnson as chief financial officer after both had been serving in those roles on an interim basis since October 1, 2025.",true,SUPPORTED,NOT_ENOUGH_INFO
+"Community Health Systems, Inc. selected Jason Johnson as chief executive officer and Kevin Hammons as chief financial officer after they had been serving in those roles on an interim basis since October 1, 2025.",false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"Commercial Metals Company operates in the basic materials sector with a focus on steel production and recycling, including the manufacture of rebar and structural steel.",true,SUPPORTED,SUPPORTED
+Commercial Metals Company's recent private offering of senior unsecured notes was for less than US$1 billion in total principal amount.,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+DTE Energy has selected ISNetworld as its primary contractor information management platform to improve contractor compliance and safety management across its operations.,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+The planned Saline Township data center associated with DTE Energy is described as a 2.4-gigawatt project costing $7 billion.,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+"The Skechers World Champions Cup Supporting Shriners Children's is a golf event featuring three six-player teams representing the United States, Europe, and an International side.",true,SUPPORTED,NOT_ENOUGH_INFO
+Team USA won the 2025 Skechers World Champions Cup Supporting Shriners Children's.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Deutsche Bank downgraded its rating on 3M Company shares from Buy to Hold while setting a price target of $178.,true,SUPPORTED,NOT_ENOUGH_INFO
+Deutsche Bank upgraded its rating on 3M Company shares from Hold to Buy and raised its price target to $199.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"West Virginia has filed a lawsuit in the U.S. District Court for the Northern District of West Virginia against UnitedHealthcare's pharmacy benefit manager Optum, alleging that Optum and its affiliated companies contributed to the large-scale oversupply of opioids in the state.",true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+"Louisiana has decided to extend its Medicaid contracts with Aetna Better Health of Louisiana and UnitedHealthCare of Louisiana through 2026, ensuring that their existing Medicaid members will remain with those plans without being moved to other insurers on January 1.",false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+"Ryder System has opened a 20,000-square-foot full-service truck rental and maintenance facility in McDonough, Georgia, as part of its Southeast expansion strategy.",true,CONTAINS_REFUTED_CLAIMS,SUPPORTED
+"Ryder System's new facility in McDonough, Georgia, is a 200,000-square-foot warehouse dedicated exclusively to e-commerce fulfillment.",false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+"Dana White has publicly denied that a boxing match between Ronda Rousey and Katie Taylor is being arranged, calling reports of the bout 'total bullsh*t' in an interview with MMA Junkie.",true,SUPPORTED,SUPPORTED
+Dana White has confirmed that a boxing match between Ronda Rousey and Katie Taylor is being arranged for 2026 in Las Vegas.,false,CONTAINS_UNSUPPORTED_CLAIMS,REFUTED
+"Publix Super Markets Charities announced on December 9, 2025, that it is donating $15 million to more than 300 nonprofit organizations throughout the Southeast that focus on housing and shelter services.",true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Publix Super Markets Charities has contributed less than $10 million to housing-related initiatives since 2015.,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+"Morningstar analysis cited by Bloomberg found that from January 2024 through November 2025, BlackRock's iShares Bitcoin Trust (ticker IBIT) had an annualized return of more than 40%, while the average investor in the fund earned about an 11% annualized return over the same period.",true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+"According to BlackRock's chief financial officer, the company's iShares exchange traded funds had total inflows of about $45 billion for the year as of December 5, 2025.",false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Caterpillar Inc. is recognized as a member of the S&P 500 Dividend Aristocrats Index.,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Caterpillar Inc. has never paid a quarterly dividend to its shareholders.,false,CONTAINS_REFUTED_CLAIMS,REFUTED

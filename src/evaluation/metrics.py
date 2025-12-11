@@ -12,6 +12,7 @@ class EvaluationMetrics:
     """Metrics from evaluation run."""
 
     accuracy: float
+    accuracy_on_predictions: float
     total_examples: int
     valid_examples: int
     error_count: int
@@ -53,6 +54,7 @@ def calculate_metrics(
     if not valid_pairs:
         return EvaluationMetrics(
             accuracy=0.0,
+            accuracy_on_predictions=0.0,
             total_examples=len(ground_truth),
             valid_examples=0,
             error_count=error_count,
@@ -62,10 +64,24 @@ def calculate_metrics(
         )
 
     valid_preds, valid_truth = zip(*valid_pairs)
+    
+    # Filter to only predictions (SUPPORTED/REFUTED), excluding UNKNOWN
+    prediction_pairs = [
+        (p, g) for p, g in zip(valid_preds, valid_truth)
+        if p in labels  # Only count SUPPORTED/REFUTED, exclude UNKNOWN
+    ]
 
-    # Calculate accuracy
+    # Calculate overall accuracy (includes UNKNOWN predictions)
     correct = sum(p == g for p, g in zip(valid_preds, valid_truth))
-    accuracy = correct / len(valid_truth)
+    accuracy = correct / len(valid_truth) if valid_truth else 0.0
+    
+    # Calculate accuracy on predictions only (excludes UNKNOWN)
+    if prediction_pairs:
+        pred_preds, pred_truth = zip(*prediction_pairs)
+        correct_on_predictions = sum(p == g for p, g in zip(pred_preds, pred_truth))
+        accuracy_on_predictions = correct_on_predictions / len(pred_truth)
+    else:
+        accuracy_on_predictions = 0.0
 
     # Build confusion matrix
     confusion = {true_label: {pred_label: 0 for pred_label in labels} for true_label in labels}
@@ -92,6 +108,7 @@ def calculate_metrics(
 
     return EvaluationMetrics(
         accuracy=accuracy,
+        accuracy_on_predictions=accuracy_on_predictions,
         total_examples=len(ground_truth),
         valid_examples=len(valid_pairs),
         error_count=error_count,
@@ -127,6 +144,7 @@ def print_metrics(metrics: EvaluationMetrics, name: str = "Model") -> None:
     print(f"Valid examples:  {metrics.valid_examples}")
     print(f"Errors:          {metrics.error_count}")
     print(f"Accuracy:        {metrics.accuracy:.1%}")
+    print(f"Accuracy on Predictions: {metrics.accuracy_on_predictions:.1%}")
     print()
     
     # Highlight key metrics for FacTool evaluation

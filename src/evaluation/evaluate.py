@@ -6,7 +6,7 @@ from pathlib import Path
 from tqdm import tqdm
 import dspy
 
-from .data_loader import load_dataset
+from .data_loader import load_dataset, load_csv_dataset
 from .metrics import calculate_metrics, print_metrics
 
 
@@ -15,7 +15,7 @@ def run_evaluation(
     baseline_model,
     sample_size: int = 100,
     output_dir: str = "results",
-    dataset_path: str = "data/FacTool_QA_test.jsonl",
+    dataset_path: str = "data/FactChecker_news_claims.csv",
     num_threads: int = 5 #firecrawl concurrency limit is 5
 ) -> dict:
     """Run evaluation comparing FactChecker vs Baseline.
@@ -31,10 +31,16 @@ def run_evaluation(
         Dict with evaluation results for both systems.
     """
     # Load dataset (returns DatasetWithSchema)
-    dataset_with_schema = load_dataset(path=dataset_path, limit=sample_size)
-    dataset = dataset_with_schema.examples
-    schema = dataset_with_schema.schema
-
+    if dataset_path.endswith(".json") or dataset_path.endswith(".jsonl"):
+        dataset_with_schema = load_dataset(path=dataset_path, limit=sample_size)
+        dataset = dataset_with_schema.examples
+        schema = dataset_with_schema.schema
+    elif dataset_path.endswith(".csv"):
+        dataset_with_schema = load_csv_dataset(path=dataset_path, limit=sample_size)
+        dataset = dataset_with_schema.examples
+        schema = dataset_with_schema.schema
+    else:
+        raise ValueError(f"Unsupported dataset format: {dataset_path}")
     print(f"\nUsing label schema: {schema.__name__}")
     print(f"Valid labels: {schema.get_labels()}")
 
@@ -125,6 +131,7 @@ def run_evaluation(
         "labels": schema.get_labels(),
         "factchecker": {
             "accuracy": fc_metrics.accuracy,
+            "accuracy_on_predictions": fc_metrics.accuracy_on_predictions,
             "total_examples": fc_metrics.total_examples,
             "valid_examples": fc_metrics.valid_examples,
             "error_count": fc_metrics.error_count,
@@ -134,6 +141,7 @@ def run_evaluation(
         },
         "baseline": {
             "accuracy": bl_metrics.accuracy,
+            "accuracy_on_predictions": bl_metrics.accuracy_on_predictions,
             "total_examples": bl_metrics.total_examples,
             "valid_examples": bl_metrics.valid_examples,
             "error_count": bl_metrics.error_count,
@@ -158,12 +166,21 @@ def run_evaluation(
     print_metrics(bl_metrics, "Baseline (Single LLM Query)")
 
     improvement = fc_metrics.accuracy - bl_metrics.accuracy
+    improvement_on_predictions = fc_metrics.accuracy_on_predictions - bl_metrics.accuracy_on_predictions
     print(f"\nAccuracy Improvement: {improvement:+.1%}")
+    print(f"Accuracy on Predictions Improvement: {improvement_on_predictions:+.1%}")
     
     # Print key metrics comparison
     print(f"\n{'='*60}")
     print("KEY METRICS COMPARISON")
     print(f"{'='*60}")
+    
+    # Accuracy on Predictions
+    print(f"Accuracy on Predictions:")
+    print(f"  FactChecker: {fc_metrics.accuracy_on_predictions:.1%}")
+    print(f"  Baseline:    {bl_metrics.accuracy_on_predictions:.1%}")
+    print(f"  Improvement: {improvement_on_predictions:+.1%}")
+    print()
     
     # Precision of SUPPORTED
     if "SUPPORTED" in fc_metrics.per_class_precision and "SUPPORTED" in bl_metrics.per_class_precision:

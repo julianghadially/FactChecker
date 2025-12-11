@@ -1,8 +1,8 @@
 """Convert evaluation JSON results to CSV format.
 
 Usage:
-    python -m src.evaluation.convert_to_csv results/evaluation_20251209_161710.json
-    python -m src.evaluation.convert_to_csv results/evaluation_20251209_161710.json --output results.csv
+    python -m src.evaluation.convert_results_to_csv results/evaluation_20251210_*.json
+    python -m src.evaluation.convert_results_to_csv results/evaluation_20251210_191731.json --output news_results_optimized.csv
 """
 
 import argparse

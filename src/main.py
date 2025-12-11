@@ -60,12 +60,14 @@ def run_single_check(statement: str, model: str):
     print("=" * 60)
 
 
-def run_benchmark(sample_size: int, model: str, optimized_program_path: str = None):
-    """Run benchmark evaluation on HOVER dataset.
+def run_benchmark(sample_size: int, model: str, optimized_program_path: str = None, dataset_path: str = None):
+    """Run benchmark evaluation on dataset.
 
     Args:
         sample_size: Number of examples to evaluate.
         model: Model to use for evaluation.
+        optimized_program_path: Path to optimized program JSON file.
+        dataset_path: Path to dataset file (JSON, JSONL, or CSV).
     """
     configure_dspy(model)
 
@@ -76,15 +78,16 @@ def run_benchmark(sample_size: int, model: str, optimized_program_path: str = No
         fact_checker.load(optimized_program_path)
         print("Optimized program loaded successfully!")
     else:
-        print("Using unoptimized (baseline) program")
+        print("Using unoptimized program")
     baseline = BaselineModel()
 
     run_evaluation(
         fact_checker=fact_checker,
         baseline_model=baseline,
         sample_size=sample_size,
-        num_threads = 40 #firecrawl concurrency limit is 50
-    ) #could set dataset path here too
+        dataset_path=dataset_path,
+        num_threads=40  # firecrawl concurrency limit is 50
+    )
 
 
 def main():
@@ -126,6 +129,12 @@ def main():
         default="results/optimization/optimized_program_20251208_045645.json",
         help="Path to optimized program JSON (e.g., results/optimization/optimized_program_20241208.json)"
     )
+    parser.add_argument(
+        "--dataset-path",
+        type=str,
+        default="data/FactChecker_news_claims.csv",
+        help="Path to dataset file (JSON, JSONL, or CSV). Default: data/FactChecker_news_claims.csv"
+    )
 
     args = parser.parse_args()
 
@@ -150,7 +159,7 @@ def main():
         run_single_check(args.statement, args.model)
 
     elif args.mode == "evaluate":
-        run_benchmark(args.sample_size, args.model, optimized_program_path)
+        run_benchmark(args.sample_size, args.model, optimized_program_path, args.dataset_path)
 
 if __name__ == "__main__":
     main()

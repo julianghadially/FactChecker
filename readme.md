@@ -2,6 +2,84 @@
 
 FactChecker is a DSPy-based multi-hop fact verification system that assesses the factual correctness of language model outputs. Unlike simple LLM-as-judge approaches that share biases with the models they evaluate, FactChecker grounds its judgments in external evidence through iterative web search.
 
+**Results Summary:**
+1. DSPy + GEPA optimization improved FactChecker performance relative to the unoptimized model. On current event claims, FactChecker went from 91% to 96% accuracy on predictions made, and added 10-18 percentage points to each class-specific recall
+2. FactChecker verifies and refutes way more claims than the baseline model. On current event claims, FactChecker tied the base model on accuracy on predictions made, but added 21-66 percentage points to each class-specific recall
+3. On the 2023 FacTools-QA dataset, All systems performed roughly the same accuracy on predictions cases: 89% vs 88% vs. 91% for optimized, unoptimized, and baseline, respectively. It is likely that GPT-5-mini has been trained on this data set, rendering the test unhelpful. 
+
+## Results
+
+### FactChecker News Claims
+
+#### FactChecker, Optimized
+
+|                                    | Supported | Refuted |
+|------------------------------------|-----------|---------|
+| **'Supported' Prediction**         | 23        | 1       |
+| **No Prediction ('Unsupported')**  | 15        | 5       |
+| **'Refuted' Predictions**          | 1         | 30      |
+
+**Accuracy on predicted cases: 96% (55 preditions)** ⭐️
+**Supported recall: 59%** ⭐️
+**Refuted recall: 83%** ⭐️
+Model: GPT-5-Mini
+
+#### Baseline - FactChecker, Not Optimized
+
+|                                    | Supported | Refuted |
+|------------------------------------|-----------|---------|
+| **'Supported' Prediction**         | 17        | 4       |
+| **No Prediction ('Unsupported')**  | 18        | 10      |
+| **'Refuted' Predictions**          | 0         | 26      |
+
+**Accuracy on predicted cases: 91% (47 preditions)** 
+**Supported recall: 49%** 
+**Refuted recall: 65%** 
+Model: GPT-5-Mini
+
+#### Baseline - GPT-5-Mini
+
+|                                    | Supported | Refuted |
+|------------------------------------|-----------|---------|
+| **'Supported' Prediction**         | 15        | 0       |
+| **No Prediction ('Unsupported')**  | 24        | 27      |
+| **'Refuted' Predictions**          | 1         | 8       |
+
+**Accuracy on predicted cases: 96% (24 preditions)** 
+**Supported recall: 38%** 
+**Refuted recall: 23%** 
+Model: GPT-5-Mini
+
+
+
+
+### FacTools
+This assessment uses GPT five mini for every component of the system, including the reflection model, FactChecker model, and baseline model. See "notes" in FacTools-QA for seven claims that were flipped due to no longer being true. 
+
+#### FactChecker (Optimized)
+
+|                            | Supported | Refuted |
+|----------------------------|-----------|---------|
+| **Correct Predictions**    | 68        | 5       |
+| **Incorrect Predictions**  | 5         | 17      |
+
+**Accuracy on Predicted Cases: 89%** 
+Model: GPT-5-Mini
+
+#### Baseline
+
+|                            | Supported | Refuted |
+|----------------------------|-----------|---------|
+| **Correct Predictions**    | 77        | 2       |
+| **Incorrect Predictions**  | 7         | 14      |
+
+**Accuracy on Predicted Cases: 91%** 
+Model: GPT-5-Mini
+
+
+
+
+
 ## Architecture
 
 ```
@@ -73,33 +151,6 @@ Statement → [ClaimExtractor] → Claims[]
 | **Aggregator** | Signature/Module | Combines claim verdicts into overall statement verdict |
 
 
-## Results
-
-### GPT-5-mini
-This assessment uses GPT five mini for every component of the system, including the reflection model, FactChecker model, and baseline model. See "notes" in FacTools-QA for seven claims that were flipped due to no longer being true. 
-
-#### FactChecker (Optimized)
-
-|                            | Supported | Refuted |
-|----------------------------|-----------|---------|
-| **Correct Predictions**    | 68        | 5       |
-| **Incorrect Predictions**  | 5         | 17      |
-
-**Accuracy on Predicted Cases: 89%** 
-
-#### Baseline
-
-|                            | Supported | Refuted |
-|----------------------------|-----------|---------|
-| **Correct Predictions**    | 77        | 2       |
-| **Incorrect Predictions**  | 7         | 14      |
-
-**Accuracy on Predicted Cases: 91%** 
-
-**Summary:**
-- The optimized FactChecker achieves 89% accuracy, slightly below the baseline's 91%
-- The FactChecker correctly identifies more refuted cases (5 vs 2) but also has more false positives for refuted cases (17 vs 14)
-- The baseline has better precision on supported cases (77 correct vs 68 for FactChecker)
 
 
 

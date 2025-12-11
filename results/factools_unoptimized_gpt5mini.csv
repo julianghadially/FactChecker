@@ -1,0 +1,117 @@
+claim,ground_truth,factchecker_prediction,baseline_prediction
+SOS requires immediate assistance,true,SUPPORTED,SUPPORTED
+The Victoria Falls is the largest waterfall in the world,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Russia is the largest producer of diamonds in the world,true,SUPPORTED,SUPPORTED
+Norway has oil reserves in Europe,true,SUPPORTED,SUPPORTED
+The New Populism advocated for the use of silver as currency,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+The United States has a higher level of income inequality than Australia,true,SUPPORTED,SUPPORTED
+Ireland has an obesity rate of 26.9%,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Sacramento has been the capital since 1854,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Argentina made it to the semi-finals in 2014,true,SUPPORTED,SUPPORTED
+Tokyo has a population of over 37 million people,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Robert Koch discovered the bacterium in 1882,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Cowcatchers were designed to clear debris from the tracks,true,SUPPORTED,SUPPORTED
+Canada is a producer of diamonds,true,SUPPORTED,SUPPORTED
+"The largest oil reserves in Europe are found in non-EU countries such as Russia, Norway, and the United Kingdom",true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+OECD provided the statistics,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+"The most valuable NFT ever sold is a digital artwork called ""Everydays: The First 5000 Days""",false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Jupiter is mostly made up of gas,true,SUPPORTED,SUPPORTED
+Xian Xinghai composed Tsinghua Alma Mater,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Cowcatchers were designed to prevent derailments caused by collisions with animals or fallen branches,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Methuselah is a Great Basin bristlecone pine tree,true,SUPPORTED,SUPPORTED
+"The Nile River is approximately 6,650 kilometers long",true,SUPPORTED,SUPPORTED
+The New Populism emerged in the late 19th century in the United States,true,CONTAINS_UNSUPPORTED_CLAIMS,REFUTED
+Jupiter has a density of 1.33 grams per cubic centimeter,true,SUPPORTED,SUPPORTED
+The highest mountain in the solar system is Olympus Mons,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Helsinki is located at a latitude of 60.1699° N,true,SUPPORTED,SUPPORTED
+Approximately 82% of the population in Mexico identifies as Catholic,false,CONTAINS_REFUTED_CLAIMS,SUPPORTED
+Siddhartha Gautama is also known as the Buddha,true,SUPPORTED,SUPPORTED
+"Paige Pierce won the world championship in 2011, 2w013, 2015, 2017, and 2019",true,SUPPORTED,SUPPORTED
+Veins are a dark shade of red or purple,true,CONTAINS_REFUTED_CLAIMS,REFUTED
+Some Western media outlets and defense analysts use the name 'Felon' to refer to Su-57,true,SUPPORTED,SUPPORTED
+"SOS originally stood for ""Save Our Ship""",false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Some EU countries have small oil reserves,true,SUPPORTED,SUPPORTED
+Fortune cookies originated in Japan in the 19th century.,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Eise Eisinga was a Dutch mathematician,true,SUPPORTED,SUPPORTED
+The founder of Buddhism was Siddhartha Gautama,true,SUPPORTED,SUPPORTED
+Fortune cookies can often be found in many grocery stores and specialty shops.,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Dr. Barbara Liskov was the first woman to receive a Ph.D. in computer science,false,CONTAINS_UNSUPPORTED_CLAIMS,REFUTED
+The United States has a higher level of income inequality than Canada,true,SUPPORTED,SUPPORTED
+Sonia Sotomayor is a female US Supreme Court justice,true,SUPPORTED,SUPPORTED
+The Gini coefficient is a measure of income inequality,true,SUPPORTED,SUPPORTED
+Blue light is scattered more easily and penetrates deeper into the tissue,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Damascus is the oldest continuously inhabited city in the world,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Nigeria has won a Nobel Prize,true,SUPPORTED,SUPPORTED
+Argentina won the World Cup for the first time in 1978,true,SUPPORTED,SUPPORTED
+The first artificial heart was called the Jarvik-7,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Mexico has the highest obesity rate in the world,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Michael Phelps has won a total of 28 Olympic medals,true,SUPPORTED,SUPPORTED
+Mandarin Chinese is the most commonly spoken language in the world with approximately 1.3 billion speakers,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Vallejo was the capital from 1852 to 1853,false,SUPPORTED,SUPPORTED
+Saturn has a larger proportion of solid materials in its composition,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Fortune cookies are not a traditional Chinese invention.,true,SUPPORTED,SUPPORTED
+"Mexicans work an average of 2,246 hours per year",true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+The invention was made in 1879,false,SUPPORTED,NOT_ENOUGH_INFO
+'Felon' may be related to Su-57's potential threat to Western air sauperiority,false,SUPPORTED,NOT_ENOUGH_INFO
+"Paul McBeth won the world championship in 2012, 2013, 2014, 2015, and 2019",true,SUPPORTED,SUPPORTED
+Michael Phelps has won 23 gold medals,true,SUPPORTED,SUPPORTED
+Mexico is a predominantly Roman Catholic country,true,SUPPORTED,SUPPORTED
+"Eise Eisinga built an orrery in his house in Franeker, Netherlands",true,SUPPORTED,SUPPORTED
+The United States has a higher level of income inequality than most European countries,true,SUPPORTED,SUPPORTED
+Argentina made it to the final in 1990,true,SUPPORTED,SUPPORTED
+Romania has small oil reserves,false,SUPPORTED,SUPPORTED
+Veins are not actually blue,true,SUPPORTED,SUPPORTED
+Time magazine recognized Jack Dorsey as one of the 100 most influential people in the world,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+The Arctic Ocean covers an area of about 14.05 million square kilometers,true,SUPPORTED,SUPPORTED
+Messner climbed Mount Everest without supplemental oxygen in 1978,true,SUPPORTED,SUPPORTED
+Dr. Barbara Liskov received a Ph.D. in computer science,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Thomas Edison is credited with inventing the first commercially practical incandescent light bulb,true,SUPPORTED,SUPPORTED
+Argentina have won the FIFA World Cup two times,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+The US has a lower level of income inequality than Brazil,true,SUPPORTED,SUPPORTED
+The Nile River is the longest river in Africa,true,SUPPORTED,SUPPORTED
+The Aztec Empire existed first,false,CONTAINS_REFUTED_CLAIMS,NOT_ENOUGH_INFO
+Olympus Mons is almost three times the height of Mount Everest,true,CONTAINS_REFUTED_CLAIMS,REFUTED
+The Jarvik-7 was successfully implanted in a patient named Barney Clark,true,SUPPORTED,SUPPORTED
+Sandra Day O'Connor is a female US Supreme Court justice,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Tokyo is in Japan,true,SUPPORTED,SUPPORTED
+Mount Everest is the highest mountain on Earth,true,SUPPORTED,SUPPORTED
+"The song of Tsinghua University is called ""Tsinghua Alma Mater""",true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+The global average obesity rate is 13.2%,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Ruth Bader Ginsburg is a female US Supreme Court justice,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+The bacterium responsible for causing tuberculosis was discovered by Robert Koch,true,SUPPORTED,SUPPORTED
+The United States has 94 operating reactors,false,SUPPORTED,NOT_ENOUGH_INFO
+Jupiter has a total of 79 known moons as of 2021,false,SUPPORTED,SUPPORTED
+There is a lot of variation within each country,true,SUPPORTED,NOT_ENOUGH_INFO
+Oxygen-poor blood returns to the heart through the veins,true,SUPPORTED,SUPPORTED
+"""Everydays: The First 5000 Days"" sold for $69 million",true,SUPPORTED,SUPPORTED
+The streamlined design helps to reduce wind resistance and improve fuel efficiency,true,SUPPORTED,SUPPORTED
+Tsinghua Alma Mater is a symbol of the spirit of Tsinghua University,true,SUPPORTED,SUPPORTED
+Dogs are believed to be dichromatic,true,SUPPORTED,SUPPORTED
+The New Populism focused on the needs and interests of ordinary people,true,SUPPORTED,SUPPORTED
+Dogs can distinguish between shades of blue and yellow,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Fortune cookies were created in America.,true,SUPPORTED,SUPPORTED
+There are significant Protestant populations in Mexico,true,SUPPORTED,SUPPORTED
+SOS is used internationally by aircrafts,false,CONTAINS_UNSUPPORTED_CLAIMS,REFUTED
+Su-57 has not been assigned an official NATO reporting name yet,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Queen Elizabeth II is the longest-reigning monarch in British history,true,SUPPORTED,SUPPORTED
+Spanish is the second most spoken language with approximately 460 million speakers,false,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+"""Everydays: The First 5000 Days"" was created by the artist Beeple",true,SUPPORTED,SUPPORTED
+I cannot provide a specific answer to this question,true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Jack Dorsey co-founded Twitter in 2006,true,SUPPORTED,SUPPORTED
+Jack Dorsey served as the CEO of Twitter until 2008,false,SUPPORTED,SUPPORTED
+"Some European trains have a similar feature to the cowcatcher called a ""snowplow""",true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+"Variation is based on factors such as industry, occupation, and individual preferences",true,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+There is no record of how many sons Eise Eisinga had,false,CONTAINS_UNSUPPORTED_CLAIMS,NOT_ENOUGH_INFO
+Denmark has small oil reserves,false,SUPPORTED,SUPPORTED
+SOS is used internationally by ships,true,SUPPORTED,SUPPORTED
+Mexico has a bigger problem with obesity than Ireland,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+Argentina hosted the tournament in 1978,true,SUPPORTED,NOT_ENOUGH_INFO
+Humans typically have 24 ribs,true,SUPPORTED,SUPPORTED
+The peregrine falcon can reach speeds of over 240 miles per hour,true,CONTAINS_UNSUPPORTED_CLAIMS,SUPPORTED
+"""Everydays: The First 5000 Days"" was sold at a Christie's auction in March 2021",true,SUPPORTED,SUPPORTED
+Different sources may have slightly different numbers,true,SUPPORTED,SUPPORTED
+Jupiter has the most moons in our solar system,false,CONTAINS_REFUTED_CLAIMS,SUPPORTED
+Humans have 12 ribs on each side of the ribcage,true,SUPPORTED,SUPPORTED
+Jack Dorsey is the CEO of Twitter,false,CONTAINS_REFUTED_CLAIMS,REFUTED
+Argentina won the World Cup in Mexico in 1986,true,SUPPORTED,SUPPORTED
+The New Populism is a political movement,true,SUPPORTED,SUPPORTED
