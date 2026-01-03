@@ -220,4 +220,4 @@ src/
 - **FIRE LLM Fact-Checking paper**: FIRE stands for Fact-checking with Iterative Retrieval and Verification: https://aclanthology.org/2025.findings-naacl.158.pdf?utm_source=chatgpt.com
 - **FIRE paper github**: https://github.com/mbzuai-nlp/fire
 - **LoCal LLM Fact-checking Paper**: https://dl.acm.org/doi/10.1145/3696410.3714748
- 
+ - **Deep Research Dataset**: For future training: https://www.kaggle.com/benchmarks/google/dsqa/leaderboard
