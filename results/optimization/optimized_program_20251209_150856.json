@@ -11,7 +11,7 @@
           "description": "the statements to extract claims from"
         },
         {
-          "prefix": "Reasoning: Let's think step by step in order to",
+          "prefix": "Reasoning: Let's think step by step",
           "description": "${reasoning}"
         },
         {
