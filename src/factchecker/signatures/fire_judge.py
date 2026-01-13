@@ -3,7 +3,6 @@
 from dspy import Signature, InputField, OutputField
 from typing import Literal, Optional
 
-
 class FireJudge(Signature):
     """FIRE (Fact-checking with Iterative Research and Evaluation) Judge.
 
@@ -21,7 +20,6 @@ class FireJudge(Signature):
     claim: str = InputField(desc="A single factual claim to verify")
     evidence: str = InputField(desc="Evidence gathered from web research, may be empty initially")
     search_history: list[str] = InputField(desc="Previous search queries already executed")
-
     reasoning: str = OutputField(desc="Step-by-step reasoning about the claim and evidence")
     verdict: Optional[Literal["supported", "not_supported", "refuted"]] = OutputField(
         desc="Final judgment if enough evidence exists, otherwise None"

@@ -25,9 +25,5 @@ class ClaimExtractorModule(dspy.Module):
         Returns:
             List of distinct factual claims extracted from the statement.
         """
-        start_time = time.time()
         result = self.extractor(statement=statement)
-        time_taken = time.time() - start_time
-        if time_taken > 0.5:
-            print(f"Claim extractor time. Statement: {statement}. \nTime: {time_taken:.2f} seconds")
         return dspy.Prediction(claims=result.claims)
