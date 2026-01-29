@@ -49,7 +49,7 @@ JOB_CONFIG = {
     "metric": "src.codeevolver.metric.metric",
 
     # Required - Training data (path to file in your repo)
-    "trainset_path": "data/FacTool_QA_train.jsonl",
+    "trainset_path": "data/FacTool_QA_train_normalized.jsonl",
 
     # Optional - Validation set (defaults to trainset if not provided)
     # "valset_path": "data/FacTool_QA_test.jsonl",
@@ -59,7 +59,7 @@ JOB_CONFIG = {
 
     # Optional - Field names that are inputs (vs. labels)
     # For FacTool dataset: 'claim' is input, 'label' is ground truth
-    "input_keys": ["claim"],
+    "input_keys": ["statement"],
 
     # Optimization configuration
     "reflection_lm": "openai/gpt-5-mini",  # Removed task_lm (not in schema)
