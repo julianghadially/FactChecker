@@ -93,13 +93,8 @@ class ResearchAgentModule(dspy.Module):
 
             all_evidence.append(
                 f"Source: {selection.selected_url}\n"
-                f"Stance: {summary.evidence_stance}\n"
                 f"Evidence: {summary.relevant_evidence}"
             )
-
-            # Early exit if we found strong supporting/refuting evidence
-            if summary.evidence_stance in ["supports", "refutes"]:
-                break
 
         evidence ="\n\n".join(all_evidence) if all_evidence else "No relevant evidence found."
         return dspy.Prediction(evidence=evidence)

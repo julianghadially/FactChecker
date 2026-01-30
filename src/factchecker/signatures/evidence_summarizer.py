@@ -18,6 +18,3 @@ class EvidenceSummarizer(Signature):
     relevant_evidence: str = OutputField(
         desc="Extracted facts relevant to the claim, with source attribution"
     )
-    evidence_stance: str = OutputField(
-        desc="Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
-    )
