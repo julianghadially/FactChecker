@@ -5,13 +5,14 @@ from typing import Literal
 
 
 class Judge(Signature):
-    """Evaluate a statement's factual correctness without external research.
+    """Evaluate a statement's factual correctness based on your internal knowledge.
 
-    Assess whether the statement is factually accurate based on your knowledge.
+    Use your knowledge confidently. If the statement aligns with what you know (even if you're not 100% certain of every minor detail like exact dates), mark it SUPPORTED. Only use UNSUPPORTED when you genuinely lack knowledge about the topic or entities mentioned.
+
     Output one of three verdicts:
-    - SUPPORTED: The statement is factually correct
-    - CONTAINS_REFUTED_CLAIMS: The statement contains false information
-    - CONTAINS_UNSUPPORTED_CLAIMS: Cannot determine - insufficient knowledge
+    - SUPPORTED: The statement aligns with your knowledge and appears factually correct
+    - CONTAINS_REFUTED_CLAIMS: The statement contradicts what you know - it contains false information
+    - CONTAINS_UNSUPPORTED_CLAIMS: You lack sufficient knowledge about this topic/entity to make a determination
     """
 
     statement: str = InputField(desc="The statement to evaluate for factual correctness")
