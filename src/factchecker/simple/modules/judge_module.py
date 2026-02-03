@@ -2,6 +2,8 @@
 
 import dspy
 import re
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from src.factchecker.simple.signatures.judge import Judge
 from src.factchecker.simple.signatures.judge_with_context import JudgeWithContext
 from src.services.serper_service import SerperService
@@ -56,7 +58,7 @@ class JudgeModule(dspy.Module):
 
         # Step 2: Check if web search is needed
         needs_search = self.enable_web_search and self._detect_knowledge_limitations(
-            result.reasoning, result.verdict
+            result.reasoning, result.verdict, statement
         )
 
         if needs_search:
@@ -88,12 +90,13 @@ class JudgeModule(dspy.Module):
             web_search_performed=False,
         )
 
-    def _detect_knowledge_limitations(self, reasoning: str, verdict: str) -> bool:
+    def _detect_knowledge_limitations(self, reasoning: str, verdict: str, statement: str = "") -> bool:
         """Detect if the reasoning indicates knowledge cutoff or uncertainty.
 
         Args:
             reasoning: The LLM's reasoning for its verdict.
             verdict: The verdict assigned.
+            statement: The original statement being evaluated (used for temporal detection).
 
         Returns:
             True if knowledge limitations are detected, False otherwise.
@@ -131,7 +134,124 @@ class JudgeModule(dspy.Module):
             if re.search(pattern, reasoning_lower):
                 return True
 
+        # Check for temporal references in the statement itself
+        temporal_refs = self._extract_temporal_references(statement)
+        if temporal_refs['needs_verification']:
+            return True
+
         return False
+
+    def _extract_temporal_references(self, statement: str) -> dict:
+        """Extract temporal references from the statement.
+
+        Detects dates and time-sensitive keywords to determine if the statement
+        requires current web verification.
+
+        Args:
+            statement: The statement to analyze for temporal references.
+
+        Returns:
+            Dictionary with:
+                - dates: List of detected date objects
+                - temporal_keywords: List of detected temporal keywords
+                - needs_verification: Boolean indicating if web search is needed
+        """
+        dates = []
+        temporal_keywords = []
+        today = datetime.now()
+        cutoff_date = today - relativedelta(months=24)  # 24 months ago
+
+        # Pattern 1: YYYY-MM-DD format
+        yyyy_mm_dd_pattern = r'\b(20\d{2})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\b'
+        for match in re.finditer(yyyy_mm_dd_pattern, statement):
+            try:
+                date_obj = datetime.strptime(match.group(0), '%Y-%m-%d')
+                dates.append(date_obj)
+            except ValueError:
+                pass
+
+        # Pattern 2: Month YYYY format (e.g., "January 2024", "Jan 2024")
+        month_yyyy_pattern = r'\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+(20\d{2})\b'
+        for match in re.finditer(month_yyyy_pattern, statement, re.IGNORECASE):
+            try:
+                date_obj = datetime.strptime(match.group(0), '%B %Y')
+            except ValueError:
+                try:
+                    date_obj = datetime.strptime(match.group(0), '%b %Y')
+                except ValueError:
+                    continue
+            dates.append(date_obj)
+
+        # Pattern 3: "in 20XX" format
+        in_year_pattern = r'\bin\s+(20\d{2})\b'
+        for match in re.finditer(in_year_pattern, statement):
+            try:
+                year = int(match.group(1))
+                # For year-only dates, use December 31st to be more inclusive
+                # (if any part of the year is recent, we should check)
+                date_obj = datetime(year, 12, 31)
+                dates.append(date_obj)
+            except ValueError:
+                pass
+
+        # Pattern 4: Just a year in 2000s (e.g., "2024")
+        year_pattern = r'\b(202[0-9]|20[3-9][0-9])\b'
+        for match in re.finditer(year_pattern, statement):
+            try:
+                year = int(match.group(1))
+                # For year-only dates, use December 31st to be more inclusive
+                # (if any part of the year is recent, we should check)
+                date_obj = datetime(year, 12, 31)
+                dates.append(date_obj)
+            except ValueError:
+                pass
+
+        # Temporal keywords that indicate time-sensitive information
+        temporal_keyword_patterns = [
+            r'\brecent\b',
+            r'\brecently\b',
+            r'\blatest\b',
+            r'\bcurrent\b',
+            r'\bcurrently\b',
+            r'\bthis year\b',
+            r'\blast year\b',
+            r'\blast month\b',
+            r'\bthis month\b',
+            r'\btoday\b',
+            r'\bnow\b',
+            r'\bpresent\b',
+            r'\bup-to-date\b',
+            r'\bup to date\b',
+            r'\bmodern\b',
+            r'\bongoing\b',
+            r'\bas of\b',
+        ]
+
+        statement_lower = statement.lower()
+        for pattern in temporal_keyword_patterns:
+            if re.search(pattern, statement_lower):
+                match = re.search(pattern, statement_lower)
+                if match:
+                    temporal_keywords.append(match.group(0))
+
+        # Determine if verification is needed
+        needs_verification = False
+
+        # Check if any date is within the last 24 months
+        for date in dates:
+            if date >= cutoff_date:
+                needs_verification = True
+                break
+
+        # Check if temporal keywords are present
+        if temporal_keywords:
+            needs_verification = True
+
+        return {
+            'dates': dates,
+            'temporal_keywords': temporal_keywords,
+            'needs_verification': needs_verification,
+        }
 
     def _perform_web_search(self, statement: str) -> str:
         """Perform web search and format results for the judge.
