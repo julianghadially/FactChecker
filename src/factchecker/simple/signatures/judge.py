@@ -10,14 +10,14 @@ class Judge(Signature):
     Assess whether the statement is factually accurate based on your knowledge.
     If web evidence is provided in the statement context, incorporate it into your analysis.
 
-    When you lack sufficient information to make a judgment (e.g., due to knowledge cutoff
-    or temporal limitations), clearly indicate this in your reasoning using phrases like
-    "knowledge cutoff", "cannot verify", "do not have information", etc.
-
     Output one of three verdicts:
     - SUPPORTED: The statement is factually correct
     - CONTAINS_REFUTED_CLAIMS: The statement contains false information
     - CONTAINS_UNSUPPORTED_CLAIMS: Cannot determine - insufficient knowledge
+
+    Explicitly indicate whether external verification (web search) is needed by setting
+    the needs_external_verification field to True when you lack sufficient information
+    due to knowledge cutoff, temporal limitations, or uncertainty.
     """
 
     statement: str = InputField(desc="The statement to evaluate for factual correctness")
@@ -27,3 +27,6 @@ class Judge(Signature):
         desc="The factual correctness verdict for the statement"
     )
     confidence: float = OutputField(desc="Confidence score between 0.0 and 1.0")
+    needs_external_verification: bool = OutputField(
+        desc="True if web search is needed to verify this statement due to knowledge cutoff, recency, or uncertainty; False if parametric knowledge is sufficient"
+    )

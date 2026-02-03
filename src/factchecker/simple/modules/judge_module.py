@@ -11,37 +11,17 @@ class JudgeModule(dspy.Module):
     """Barebones fact checker that judges statements with optional web search.
 
     Takes a statement as input and outputs a verdict using LLM knowledge.
-    When the LLM detects knowledge cutoff limitations, it can automatically
-    perform a lightweight web search to gather recent evidence.
+    When the LLM explicitly indicates it needs external verification, it can
+    automatically perform a lightweight web search to gather recent evidence.
 
     Two-stage architecture:
     1. First attempt judgment using parametric knowledge
-    2. If reasoning indicates uncertainty due to temporal/knowledge limitations,
-       trigger a focused web search and re-evaluate with evidence
+    2. If the LLM sets needs_external_verification=True, trigger a focused
+       web search and re-evaluate with evidence
 
     This serves as a simpler/faster alternative to the full FactCheckerPipeline
     for cases where minimal external research is needed.
     """
-
-    # Keywords that indicate knowledge cutoff or temporal limitations
-    UNCERTAINTY_KEYWORDS = [
-        "knowledge cutoff",
-        "cannot verify",
-        "after my training",
-        "do not have",
-        "don't have",
-        "unable to verify",
-        "no information",
-        "lack information",
-        "beyond my knowledge",
-        "outside my knowledge",
-        "recent event",
-        "recent information",
-        "as of my",
-        "training data",
-        "cannot confirm",
-        "can't confirm",
-    ]
 
     def __init__(self, use_web_search: bool = True):
         """Initialize the simple judge module.
@@ -72,17 +52,6 @@ class JudgeModule(dspy.Module):
             self._firecrawl_service = FirecrawlService()
         return self._firecrawl_service
 
-    def _detect_knowledge_limitation(self, reasoning: str) -> bool:
-        """Detect if the reasoning indicates knowledge cutoff or uncertainty.
-
-        Args:
-            reasoning: The LLM's reasoning text.
-
-        Returns:
-            True if knowledge limitation is detected, False otherwise.
-        """
-        reasoning_lower = reasoning.lower()
-        return any(keyword in reasoning_lower for keyword in self.UNCERTAINTY_KEYWORDS)
 
     def _extract_search_query(self, statement: str) -> str:
         """Derive a search query from the statement.
@@ -164,7 +133,7 @@ class JudgeModule(dspy.Module):
         web_evidence_used = False
 
         # Stage 2: Check if web search is needed and enabled
-        if self.use_web_search and self._detect_knowledge_limitation(result.reasoning):
+        if self.use_web_search and result.needs_external_verification:
             # Derive search query from statement
             query = self._extract_search_query(statement)
 
