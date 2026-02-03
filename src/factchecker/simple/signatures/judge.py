@@ -7,8 +7,9 @@ from typing import Literal
 class Judge(Signature):
     """Evaluate a statement's factual correctness using parametric knowledge and web evidence.
 
-    Assess whether the statement is factually accurate based on your knowledge.
-    If web evidence is provided in the statement context, incorporate it into your analysis.
+    Compare the statement against the provided evidence. If evidence contradicts the statement,
+    return CONTAINS_REFUTED_CLAIMS. If evidence supports it, return SUPPORTED. If evidence is
+    insufficient or absent, return CONTAINS_UNSUPPORTED_CLAIMS.
 
     When you lack sufficient information to make a judgment (e.g., due to knowledge cutoff
     or temporal limitations), clearly indicate this in your reasoning using phrases like
@@ -20,7 +21,8 @@ class Judge(Signature):
     - CONTAINS_UNSUPPORTED_CLAIMS: Cannot determine - insufficient knowledge
     """
 
-    statement: str = InputField(desc="The statement to evaluate for factual correctness")
+    statement: str = InputField(desc="The claim to verify")
+    evidence: str = InputField(desc="Web evidence to compare against the statement (empty string by default)", default="")
 
     reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(

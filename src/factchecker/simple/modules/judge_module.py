@@ -159,8 +159,8 @@ class JudgeModule(dspy.Module):
                 - reasoning: Explanation of the verdict
                 - web_evidence_used: Boolean indicating if web search was performed
         """
-        # Stage 1: Initial judgment with parametric knowledge
-        result = self.judge(statement=statement)
+        # Stage 1: Initial judgment with parametric knowledge (no evidence)
+        result = self.judge(statement=statement, evidence="")
         web_evidence_used = False
 
         # Stage 2: Check if web search is needed and enabled
@@ -171,15 +171,8 @@ class JudgeModule(dspy.Module):
             # Gather web evidence
             web_evidence = self._gather_web_evidence(query)
 
-            # Re-evaluate with evidence appended to context
-            statement_with_evidence = (
-                f"{statement}\n\n"
-                f"--- Web Evidence ---\n"
-                f"{web_evidence}"
-            )
-
-            # Re-run judgment with evidence
-            result = self.judge(statement=statement_with_evidence)
+            # Re-run judgment with evidence as separate parameter
+            result = self.judge(statement=statement, evidence=web_evidence)
             web_evidence_used = True
 
         return dspy.Prediction(
