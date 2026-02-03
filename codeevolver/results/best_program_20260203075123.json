@@ -1,0 +1,4 @@
+{
+  "judge.predict": "Evaluate a statement's factual correctness without external research.\n\nAssess whether the statement is factually accurate based on your knowledge.\nOutput one of three verdicts:\n- SUPPORTED: The statement is factually correct\n- CONTAINS_REFUTED_CLAIMS: The statement contains false information\n- CONTAINS_UNSUPPORTED_CLAIMS: Cannot determine - insufficient knowledge",
+  "_code": "{\"git_branch\": \"codeevolver-20260203075123-main\", \"change_request\": \"\", \"last_change_summary\": \"Initial state\"}"
+}
