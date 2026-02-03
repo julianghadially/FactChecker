@@ -5,9 +5,15 @@ from typing import Literal
 
 
 class Judge(Signature):
-    """Evaluate a statement's factual correctness without external research.
+    """Evaluate a statement's factual correctness using parametric knowledge and web evidence.
 
     Assess whether the statement is factually accurate based on your knowledge.
+    If web evidence is provided in the statement context, incorporate it into your analysis.
+
+    When you lack sufficient information to make a judgment (e.g., due to knowledge cutoff
+    or temporal limitations), clearly indicate this in your reasoning using phrases like
+    "knowledge cutoff", "cannot verify", "do not have information", etc.
+
     Output one of three verdicts:
     - SUPPORTED: The statement is factually correct
     - CONTAINS_REFUTED_CLAIMS: The statement contains false information

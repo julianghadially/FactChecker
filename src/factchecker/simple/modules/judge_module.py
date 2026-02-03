@@ -1,26 +1,152 @@
-"""Simple judge module - barebones fact checker without research."""
+"""Simple judge module - barebones fact checker with optional web search fallback."""
 
 import dspy
+from typing import Optional
 from src.factchecker.simple.signatures.judge import Judge
+from src.services.serper_service import SerperService
+from src.services.firecrawl_service import FirecrawlService
 
 
 class JudgeModule(dspy.Module):
-    """Barebones fact checker that judges statements without research.
+    """Barebones fact checker that judges statements with optional web search.
 
-    Takes a statement as input and outputs a verdict directly using LLM knowledge.
-    No claim extraction, no web search, no evidence gathering.
+    Takes a statement as input and outputs a verdict using LLM knowledge.
+    When the LLM detects knowledge cutoff limitations, it can automatically
+    perform a lightweight web search to gather recent evidence.
+
+    Two-stage architecture:
+    1. First attempt judgment using parametric knowledge
+    2. If reasoning indicates uncertainty due to temporal/knowledge limitations,
+       trigger a focused web search and re-evaluate with evidence
 
     This serves as a simpler/faster alternative to the full FactCheckerPipeline
-    for cases where external research is not needed or desired.
+    for cases where minimal external research is needed.
     """
 
-    def __init__(self):
-        """Initialize the simple judge module."""
+    # Keywords that indicate knowledge cutoff or temporal limitations
+    UNCERTAINTY_KEYWORDS = [
+        "knowledge cutoff",
+        "cannot verify",
+        "after my training",
+        "do not have",
+        "don't have",
+        "unable to verify",
+        "no information",
+        "lack information",
+        "beyond my knowledge",
+        "outside my knowledge",
+        "recent event",
+        "recent information",
+        "as of my",
+        "training data",
+        "cannot confirm",
+        "can't confirm",
+    ]
+
+    def __init__(self, use_web_search: bool = True):
+        """Initialize the simple judge module.
+
+        Args:
+            use_web_search: Whether to enable web search fallback when
+                LLM detects knowledge limitations. Default is True.
+        """
         super().__init__()
         self.judge = dspy.ChainOfThought(Judge)
+        self.use_web_search = use_web_search
+
+        # Initialize web services lazily only if needed
+        self._serper_service: Optional[SerperService] = None
+        self._firecrawl_service: Optional[FirecrawlService] = None
+
+    @property
+    def serper_service(self) -> SerperService:
+        """Lazy initialization of SerperService."""
+        if self._serper_service is None:
+            self._serper_service = SerperService()
+        return self._serper_service
+
+    @property
+    def firecrawl_service(self) -> FirecrawlService:
+        """Lazy initialization of FirecrawlService."""
+        if self._firecrawl_service is None:
+            self._firecrawl_service = FirecrawlService()
+        return self._firecrawl_service
+
+    def _detect_knowledge_limitation(self, reasoning: str) -> bool:
+        """Detect if the reasoning indicates knowledge cutoff or uncertainty.
+
+        Args:
+            reasoning: The LLM's reasoning text.
+
+        Returns:
+            True if knowledge limitation is detected, False otherwise.
+        """
+        reasoning_lower = reasoning.lower()
+        return any(keyword in reasoning_lower for keyword in self.UNCERTAINTY_KEYWORDS)
+
+    def _extract_search_query(self, statement: str) -> str:
+        """Derive a search query from the statement.
+
+        Args:
+            statement: The statement to fact-check.
+
+        Returns:
+            A search query string optimized for verification.
+        """
+        # Simple heuristic: use the statement directly, optionally add "news"
+        # for temporal queries. Could be enhanced with LLM-based query generation.
+        return statement
+
+    def _gather_web_evidence(self, query: str, max_results: int = 2) -> str:
+        """Perform web search and scrape top results for evidence.
+
+        Args:
+            query: The search query.
+            max_results: Maximum number of results to scrape (default 2).
+
+        Returns:
+            Concatenated markdown content from scraped pages.
+        """
+        try:
+            # Perform search using SerperService
+            search_results = self.serper_service.search(query, num_results=max_results)
+
+            if not search_results:
+                return "No search results found."
+
+            # Scrape top results
+            evidence_parts = []
+            for i, result in enumerate(search_results[:max_results], 1):
+                scraped = self.firecrawl_service.scrape(
+                    result.link,
+                    max_length=5000  # Limit to 5000 chars per page
+                )
+
+                if scraped.success:
+                    evidence_parts.append(
+                        f"### Source {i}: {result.title}\n"
+                        f"URL: {result.link}\n\n"
+                        f"{scraped.markdown}\n"
+                    )
+                else:
+                    # Fall back to snippet if scraping fails
+                    evidence_parts.append(
+                        f"### Source {i}: {result.title}\n"
+                        f"URL: {result.link}\n"
+                        f"Snippet: {result.snippet}\n"
+                    )
+
+            return "\n---\n".join(evidence_parts)
+
+        except Exception as e:
+            return f"Error gathering web evidence: {str(e)}"
 
     def forward(self, statement: str) -> dspy.Prediction:
         """Evaluate a statement for factual correctness.
+
+        Performs a two-stage evaluation:
+        1. Initial judgment using parametric knowledge
+        2. If knowledge limitations detected, perform web search and re-evaluate
 
         Args:
             statement: The statement to evaluate.
@@ -31,12 +157,35 @@ class JudgeModule(dspy.Module):
                 - overall_verdict: SUPPORTED | CONTAINS_UNSUPPORTED_CLAIMS | CONTAINS_REFUTED_CLAIMS
                 - confidence: Float between 0.0 and 1.0
                 - reasoning: Explanation of the verdict
+                - web_evidence_used: Boolean indicating if web search was performed
         """
+        # Stage 1: Initial judgment with parametric knowledge
         result = self.judge(statement=statement)
+        web_evidence_used = False
+
+        # Stage 2: Check if web search is needed and enabled
+        if self.use_web_search and self._detect_knowledge_limitation(result.reasoning):
+            # Derive search query from statement
+            query = self._extract_search_query(statement)
+
+            # Gather web evidence
+            web_evidence = self._gather_web_evidence(query)
+
+            # Re-evaluate with evidence appended to context
+            statement_with_evidence = (
+                f"{statement}\n\n"
+                f"--- Web Evidence ---\n"
+                f"{web_evidence}"
+            )
+
+            # Re-run judgment with evidence
+            result = self.judge(statement=statement_with_evidence)
+            web_evidence_used = True
 
         return dspy.Prediction(
             statement=statement,
             overall_verdict=result.verdict,
             confidence=result.confidence,
             reasoning=result.reasoning,
+            web_evidence_used=web_evidence_used,
         )
