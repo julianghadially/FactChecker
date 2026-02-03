@@ -21,3 +21,6 @@ class EvidenceSummarizer(Signature):
     evidence_stance: str = OutputField(
         desc="Whether this evidence 'supports', 'refutes', or is 'neutral' toward the claim"
     )
+    temporal_context: str = OutputField(
+        desc="Any dates, years, time references, or temporal information extracted from the evidence (e.g., 'Data from 2020', 'As of January 2024', 'Updated monthly'). This helps identify if data is current or outdated."
+    )

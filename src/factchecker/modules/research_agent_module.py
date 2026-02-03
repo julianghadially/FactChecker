@@ -47,17 +47,37 @@ class ResearchAgentModule(dspy.Module):
         Returns:
             Aggregated evidence from visited pages as a formatted string.
         """
-        # Execute search
+        # Execute parallel searches: regular and news (with recency filter)
         search_results = self.serper.search(query, num_results=10)
+        news_results = self.serper.search_news(query, recency="m")
 
-        if not search_results:
-            return "No search results found."
-
-        # Convert to dict format for signature
+        # Convert regular search results to dict format
         results_for_llm = [
             {"title": r.title, "link": r.link, "snippet": r.snippet}
             for r in search_results
         ]
+
+        # Merge news results into the results list
+        # News results already come as dicts with title, link, snippet, date, source
+        for news in news_results:
+            # Add temporal indicator to snippet
+            date_info = news.get("date", "")
+            source_info = news.get("source", "")
+            snippet = news.get("snippet", "")
+
+            # Enrich snippet with temporal metadata
+            enriched_snippet = f"[Recent: {date_info}] {snippet}" if date_info else snippet
+            if source_info:
+                enriched_snippet = f"{enriched_snippet} (Source: {source_info})"
+
+            results_for_llm.append({
+                "title": news.get("title", ""),
+                "link": news.get("link", ""),
+                "snippet": enriched_snippet
+            })
+
+        if not results_for_llm:
+            return "No search results found."
 
         visited_urls: list[str] = []
         all_evidence: list[str] = []
@@ -91,11 +111,14 @@ class ResearchAgentModule(dspy.Module):
                 source_url=selection.selected_url
             )
 
-            all_evidence.append(
+            # Include temporal metadata in the evidence string
+            evidence_entry = (
                 f"Source: {selection.selected_url}\n"
                 f"Stance: {summary.evidence_stance}\n"
-                f"Evidence: {summary.relevant_evidence}"
+                f"Evidence: {summary.relevant_evidence}\n"
+                f"Temporal Context: {summary.temporal_context}"
             )
+            all_evidence.append(evidence_entry)
 
             # Early exit if we found strong supporting/refuting evidence
             if summary.evidence_stance in ["supports", "refutes"]:
