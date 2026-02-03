@@ -4,6 +4,7 @@ import dspy
 from src.factchecker.signatures.fire_judge import FireJudge
 from src.factchecker.models.data_types import JudgmentResult
 from .research_agent_module import ResearchAgentModule
+from .search_query_generator import SearchQueryGeneratorModule
 
 
 class FireJudgeModule(dspy.Module):
@@ -15,6 +16,7 @@ class FireJudgeModule(dspy.Module):
     Attributes:
         max_iterations: Maximum number of search iterations allowed.
         research_agent: Module for conducting web research.
+        query_generator: Module for generating initial search queries.
     """
 
     def __init__(
@@ -31,6 +33,7 @@ class FireJudgeModule(dspy.Module):
         super().__init__()
         self.judge = dspy.ChainOfThought(FireJudge)
         self.research_agent = research_agent
+        self.query_generator = SearchQueryGeneratorModule()
         self.max_iterations = max_iterations
 
     def forward(self, claim: str) -> dspy.Prediction:
@@ -44,6 +47,20 @@ class FireJudgeModule(dspy.Module):
         """
         evidence = ""
         search_history: list[str] = []
+
+        # Generate and execute initial search query to pre-populate evidence
+        # This ensures every claim starts with relevant web evidence rather than
+        # relying on the LLM's internal knowledge
+        query_result = self.query_generator(claim=claim)
+        initial_query = query_result.search_query
+
+        if initial_query:
+            search_history.append(initial_query)
+            initial_evidence = self.research_agent(
+                claim=claim,
+                query=initial_query
+            )
+            evidence = f"--- Search: {initial_query} ---\n{initial_evidence}"
 
         for iteration in range(self.max_iterations):
             result = self.judge(
