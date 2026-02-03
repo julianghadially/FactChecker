@@ -33,16 +33,21 @@ class FireJudgeModule(dspy.Module):
         self.research_agent = research_agent
         self.max_iterations = max_iterations
 
-    def forward(self, claim: str) -> dspy.Prediction:
+    def forward(self, claim: str, temporal_context: str = None) -> dspy.Prediction:
         """Evaluate a claim with iterative research.
 
         Args:
             claim: The factual claim to verify.
+            temporal_context: Optional context about temporal signals requiring web search.
 
         Returns:
             JudgmentResult containing verdict, evidence, and metadata.
         """
+        # Initialize evidence with temporal context if provided
         evidence = ""
+        if temporal_context:
+            evidence = f"{temporal_context}\n\n{'=' * 80}\n"
+
         search_history: list[str] = []
 
         for iteration in range(self.max_iterations):

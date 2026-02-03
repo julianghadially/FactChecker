@@ -5,6 +5,24 @@ from typing import Literal
 
 
 @dataclass
+class TemporalContext:
+    """Context about temporal aspects of a statement.
+
+    Attributes:
+        has_temporal_signals: Whether temporal references were detected.
+        is_beyond_cutoff: Whether dates/events are beyond knowledge cutoff (June 2024).
+        temporal_entities: List of detected dates, years, or temporal phrases.
+        suggested_search_modifiers: Suggested query modifications for web search.
+        context_message: Human-readable context for the judge module.
+    """
+    has_temporal_signals: bool
+    is_beyond_cutoff: bool
+    temporal_entities: list[str]
+    suggested_search_modifiers: list[str]
+    context_message: str
+
+
+@dataclass
 class JudgmentResult:
     """Result from evaluating a single claim."""
 

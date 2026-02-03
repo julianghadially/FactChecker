@@ -7,6 +7,7 @@ from .claim_extractor_module import ClaimExtractorModule
 from .fire_judge_module import FireJudgeModule
 from .research_agent_module import ResearchAgentModule
 from .aggregator_module import AggregatorModule
+from .temporal_awareness_module import TemporalAwarenessModule
 from src.services.serper_service import SerperService
 from src.services.firecrawl_service import FirecrawlService
 
@@ -15,11 +16,13 @@ class FactCheckerPipeline(dspy.Module):
     """Complete fact-checking pipeline that orchestrates all modules.
 
     Flow:
-    1. Extract claims from statement
-    2. Evaluate each claim with iterative web research
-    3. Aggregate verdicts into overall statement verdict
+    1. Analyze statement for temporal signals (dates beyond knowledge cutoff)
+    2. Extract claims from statement
+    3. Evaluate each claim with iterative web research (with temporal context)
+    4. Aggregate verdicts into overall statement verdict
 
     Attributes:
+        temporal_awareness: Module for detecting time-sensitive claims.
         claim_extractor: Module for extracting claims.
         fire_judge: Module for evaluating claims with research.
         aggregator: Module for aggregating verdicts.
@@ -40,8 +43,9 @@ class FactCheckerPipeline(dspy.Module):
         """
         super().__init__()
 
-        
+
         # Initialize modules
+        self.temporal_awareness = TemporalAwarenessModule()
         self.claim_extractor = ClaimExtractorModule()
         self.research_agent = ResearchAgentModule(
             max_page_visits=max_page_visits
@@ -62,16 +66,24 @@ class FactCheckerPipeline(dspy.Module):
             FactCheckResult with all details including claim-level results.
         """
         start_time = time.time()
-        # Step 1: Extract claims
+
+        # Step 1: Analyze temporal signals
+        temporal_context = self.temporal_awareness(statement=statement)
+
+        # Step 2: Extract claims
         claims = self.claim_extractor(statement=statement)
         claims_prediction_obj = self.claim_extractor(statement=statement)
-        # Step 2: Evaluate each claim
+
+        # Step 3: Evaluate each claim with temporal context
         claim_results = []
         for claim in claims_prediction_obj.claims:
-            result = self.fire_judge(claim=claim)
+            result = self.fire_judge(
+                claim=claim,
+                temporal_context=temporal_context.context_message if temporal_context.is_beyond_cutoff else None
+            )
             claim_results.append(result)
 
-        # Step 3: Aggregate verdicts
+        # Step 4: Aggregate verdicts
         claim_verdicts = [
             {
                 "claim": r.claim,
