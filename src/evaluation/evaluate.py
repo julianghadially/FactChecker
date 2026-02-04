@@ -162,7 +162,7 @@ def run_evaluation(
         json.dump(results, f, indent=2)
 
     # Print summary
-    print_metrics(fc_metrics, "FactChecker (Agent-as-Judge with Web Search)")
+    print_metrics(fc_metrics, "FactChecker (Agent-as-Judge)")
     print_metrics(bl_metrics, "Baseline (Single LLM Query)")
 
     improvement = fc_metrics.accuracy - bl_metrics.accuracy

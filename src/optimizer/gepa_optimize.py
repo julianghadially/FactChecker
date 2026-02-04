@@ -20,7 +20,7 @@ import mlflow
 from tqdm import tqdm
 
 from src.context_.context import openai_key
-from src.factchecker.modules.fact_checker_pipeline import FactCheckerPipeline
+from src.factchecker import JudgeModule
 from src.evaluation.data_loader import load_dataset, FacToolLabelSchema
 from src.evaluation.metrics import calculate_metrics, print_metrics, get_f1, EvaluationMetrics
 
@@ -114,7 +114,7 @@ def run_optimization(
     print(f"Train: {len(trainset)}, Val: {len(valset)}, Test: {len(testset)}")
 
     # Initialize pipeline
-    program = FactCheckerPipeline()
+    program = JudgeModule()
 
     # Baseline evaluation
     #print("\n" + "=" * 60)
