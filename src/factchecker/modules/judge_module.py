@@ -19,11 +19,20 @@ class JudgeModule(dspy.Module):
         super().__init__()
         self.judge = dspy.ChainOfThought(Judge)
 
-    def forward(self, statement: str) -> dspy.Prediction:
+    def forward(
+        self,
+        statement: str,
+        topic: str = "",
+        date: str = "",
+        source_urls: str = ""
+    ) -> dspy.Prediction:
         """Evaluate a statement for factual correctness.
 
         Args:
             statement: The statement to evaluate.
+            topic: Optional context about the topic or domain.
+            date: Optional context about when the statement was generated (YYYYMMDD format).
+            source_urls: Optional comma-separated URLs providing relevant context.
 
         Returns:
             dspy.Prediction with:
@@ -32,7 +41,12 @@ class JudgeModule(dspy.Module):
                 - confidence: Float between 0.0 and 1.0
                 - reasoning: Explanation of the verdict
         """
-        result = self.judge(statement=statement)
+        result = self.judge(
+            statement=statement,
+            topic=topic,
+            date=date,
+            source_urls=source_urls
+        )
 
         return dspy.Prediction(
             statement=statement,

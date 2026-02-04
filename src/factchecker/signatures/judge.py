@@ -15,6 +15,18 @@ class Judge(Signature):
     """
 
     statement: str = InputField(desc="The statement to evaluate for factual correctness")
+    topic: str = InputField(
+        default="",
+        desc="Optional context: The topic or domain this statement relates to (e.g., 'Alaska Air', 'Politics')"
+    )
+    date: str = InputField(
+        default="",
+        desc="Optional context: The date when this statement was generated or refers to (YYYYMMDD format)"
+    )
+    source_urls: str = InputField(
+        default="",
+        desc="Optional context: Comma-separated URLs that provide relevant context for this statement"
+    )
 
     reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(

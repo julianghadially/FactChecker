@@ -26,13 +26,27 @@ from src.evaluation.metrics import calculate_metrics, print_metrics, get_f1, Eva
 
 
 def load_dspy_examples(path: str, limit: Optional[int] = None) -> list[dspy.Example]:
-    """Load dataset as DSPy Examples."""
-    dataset = load_dataset(path=path, limit=limit)
+    """Load dataset as DSPy Examples with optional context fields."""
+    # Import load_csv_dataset here to support CSV files
+    from src.evaluation.data_loader import load_csv_dataset
+
+    # Determine loader based on file extension
+    if path.endswith('.csv'):
+        dataset = load_csv_dataset(path=path, limit=limit)
+    else:
+        dataset = load_dataset(path=path, limit=limit)
+
     examples = []
     for ex in dataset.examples:
         normalized_label = FacToolLabelSchema.normalize_ground_truth(ex.label)
         examples.append(
-            dspy.Example(statement=ex.claim, label=normalized_label).with_inputs("statement")
+            dspy.Example(
+                statement=ex.claim,
+                label=normalized_label,
+                topic=ex.topic,
+                date=ex.date_generated,
+                source_urls=ex.url
+            ).with_inputs("statement", "topic", "date", "source_urls")
         )
     return examples
 
@@ -67,7 +81,13 @@ def evaluate_program(program: dspy.Module, examples: list[dspy.Example], name: s
 
     for ex in tqdm(examples, desc=f"Evaluating {name}"):
         try:
-            pred = program(statement=ex.statement)
+            # Pass context fields if available
+            pred = program(
+                statement=ex.statement,
+                topic=getattr(ex, 'topic', ''),
+                date=getattr(ex, 'date', ''),
+                source_urls=getattr(ex, 'source_urls', '')
+            )
             predictions.append(pred.overall_verdict if hasattr(pred, 'overall_verdict') else str(pred))
         except Exception as e:
             print(f"Error: {e}")

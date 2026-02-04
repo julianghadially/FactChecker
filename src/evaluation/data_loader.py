@@ -174,6 +174,10 @@ class HoverExample:
     label: str  # Actual label from dataset
     supporting_facts: list[tuple[str, int]]
     num_hops: int
+    # Optional context fields
+    topic: str = ""
+    date_generated: str = ""
+    url: str = ""
 
 
 @dataclass
@@ -239,17 +243,25 @@ def load_dataset(
         uid = item.get("uid", f"example_{idx}")
         claim = item.get("claim", item.get("statement", ""))
         label = item["label"]
-        
+
         # HOVER format has supporting_facts and num_hops, FacTool doesn't
         supporting_facts = item.get("supporting_facts", [])
         num_hops = item.get("num_hops", 0)
-        
+
+        # Optional context fields
+        topic = item.get("topic", "")
+        date_generated = item.get("date_generated", "")
+        url = item.get("url", "")
+
         examples.append(HoverExample(
             uid=uid,
             claim=claim,
             label=label,
             supporting_facts=[(sf[0], sf[1]) if isinstance(sf, (list, tuple)) and len(sf) >= 2 else ("", 0) for sf in supporting_facts],
-            num_hops=num_hops
+            num_hops=num_hops,
+            topic=topic,
+            date_generated=date_generated,
+            url=url
         ))
 
     if limit:
@@ -282,13 +294,14 @@ def load_csv_dataset(
     with open(file_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for idx, row in enumerate(reader):
-            # CSV format: topic, claim, label, url, date_generalReviewed
+            # CSV format: topic, claim, label, url, date_generated, Reviewed
             data.append({
                 "uid": f"csv_{idx}",
                 "claim": row.get("claim", ""),
                 "label": row.get("label", "").strip().lower(),  # Normalize to lowercase
                 "topic": row.get("topic", ""),
                 "url": row.get("url", ""),
+                "date_generated": row.get("date_generated", ""),
             })
 
     # Detect label schema from data
@@ -312,7 +325,10 @@ def load_csv_dataset(
             claim=item["claim"],
             label=item["label"],
             supporting_facts=[],  # CSV doesn't have supporting facts
-            num_hops=0  # CSV doesn't have num_hops
+            num_hops=0,  # CSV doesn't have num_hops
+            topic=item.get("topic", ""),
+            date_generated=item.get("date_generated", ""),
+            url=item.get("url", "")
         ))
 
     if limit:

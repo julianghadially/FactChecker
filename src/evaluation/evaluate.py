@@ -72,7 +72,13 @@ def run_evaluation(
     detailed_results = []
 
     examples = [
-        dspy.Example(statement=ex.claim, label=ex.label).with_inputs("statement")
+        dspy.Example(
+            statement=ex.claim,
+            label=ex.label,
+            topic=getattr(ex, 'topic', ''),
+            date=getattr(ex, 'date_generated', ''),
+            source_urls=getattr(ex, 'url', '')
+        ).with_inputs("statement", "topic", "date", "source_urls")
         for ex in dataset
     ]
 
