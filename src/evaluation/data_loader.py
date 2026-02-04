@@ -174,6 +174,7 @@ class HoverExample:
     label: str  # Actual label from dataset
     supporting_facts: list[tuple[str, int]]
     num_hops: int
+    urls: list[str] = field(default_factory=list)  # Optional URLs for reference
 
 
 @dataclass
@@ -239,17 +240,34 @@ def load_dataset(
         uid = item.get("uid", f"example_{idx}")
         claim = item.get("claim", item.get("statement", ""))
         label = item["label"]
-        
+
         # HOVER format has supporting_facts and num_hops, FacTool doesn't
         supporting_facts = item.get("supporting_facts", [])
         num_hops = item.get("num_hops", 0)
-        
+
+        # Extract URLs if present (can be string or list)
+        urls = []
+        if "url" in item:
+            url_data = item["url"]
+            if isinstance(url_data, str):
+                # Split comma-separated URLs and strip whitespace
+                urls = [u.strip() for u in url_data.split(",") if u.strip()]
+            elif isinstance(url_data, list):
+                urls = [str(u).strip() for u in url_data if u]
+        elif "urls" in item:
+            url_data = item["urls"]
+            if isinstance(url_data, list):
+                urls = [str(u).strip() for u in url_data if u]
+            elif isinstance(url_data, str):
+                urls = [u.strip() for u in url_data.split(",") if u.strip()]
+
         examples.append(HoverExample(
             uid=uid,
             claim=claim,
             label=label,
             supporting_facts=[(sf[0], sf[1]) if isinstance(sf, (list, tuple)) and len(sf) >= 2 else ("", 0) for sf in supporting_facts],
-            num_hops=num_hops
+            num_hops=num_hops,
+            urls=urls
         ))
 
     if limit:
@@ -307,12 +325,19 @@ def load_csv_dataset(
 
     examples = []
     for idx, item in enumerate(data):
+        # Extract URLs from CSV format
+        urls = []
+        if "url" in item and item["url"]:
+            # Split comma-separated URLs and strip whitespace
+            urls = [u.strip() for u in item["url"].split(",") if u.strip()]
+
         examples.append(HoverExample(
             uid=item.get("uid", f"csv_{idx}"),
             claim=item["claim"],
             label=item["label"],
             supporting_facts=[],  # CSV doesn't have supporting facts
-            num_hops=0  # CSV doesn't have num_hops
+            num_hops=0,  # CSV doesn't have num_hops
+            urls=urls
         ))
 
     if limit:

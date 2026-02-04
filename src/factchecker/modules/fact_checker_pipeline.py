@@ -52,11 +52,13 @@ class FactCheckerPipeline(dspy.Module):
         )
         self.aggregator = AggregatorModule()
 
-    def forward(self, statement: str) -> dspy.Prediction:
+    def forward(self, statement: str, urls: list[str] = None) -> dspy.Prediction:
         """Execute the full fact-checking pipeline.
 
         Args:
             statement: The statement to fact-check.
+            urls: Optional list of reference URLs (currently not used in this pipeline,
+                  but accepted for compatibility with evaluation infrastructure).
 
         Returns:
             FactCheckResult with all details including claim-level results.

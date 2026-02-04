@@ -21,18 +21,27 @@ from tqdm import tqdm
 
 from src.context_.context import openai_key
 from src.factchecker.modules.fact_checker_pipeline import FactCheckerPipeline
-from src.evaluation.data_loader import load_dataset, FacToolLabelSchema
+from src.evaluation.data_loader import load_dataset, load_csv_dataset, FacToolLabelSchema
 from src.evaluation.metrics import calculate_metrics, print_metrics, get_f1, EvaluationMetrics
 
 
 def load_dspy_examples(path: str, limit: Optional[int] = None) -> list[dspy.Example]:
-    """Load dataset as DSPy Examples."""
-    dataset = load_dataset(path=path, limit=limit)
+    """Load dataset as DSPy Examples with URLs if available."""
+    # Use appropriate loader based on file extension
+    if path.endswith('.csv'):
+        dataset = load_csv_dataset(path=path, limit=limit)
+    else:
+        dataset = load_dataset(path=path, limit=limit)
+
     examples = []
     for ex in dataset.examples:
         normalized_label = FacToolLabelSchema.normalize_ground_truth(ex.label)
+        # Include URLs if present in the dataset
+        example_data = {"statement": ex.claim, "label": normalized_label}
+        if ex.urls:
+            example_data["urls"] = ex.urls
         examples.append(
-            dspy.Example(statement=ex.claim, label=normalized_label).with_inputs("statement")
+            dspy.Example(**example_data).with_inputs("statement")
         )
     return examples
 
@@ -67,7 +76,11 @@ def evaluate_program(program: dspy.Module, examples: list[dspy.Example], name: s
 
     for ex in tqdm(examples, desc=f"Evaluating {name}"):
         try:
-            pred = program(statement=ex.statement)
+            # Pass URLs to program if available in the example
+            if hasattr(ex, 'urls') and ex.urls:
+                pred = program(statement=ex.statement, urls=ex.urls)
+            else:
+                pred = program(statement=ex.statement)
             predictions.append(pred.overall_verdict if hasattr(pred, 'overall_verdict') else str(pred))
         except Exception as e:
             print(f"Error: {e}")
