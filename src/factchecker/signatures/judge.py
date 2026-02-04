@@ -8,6 +8,10 @@ class Judge(Signature):
     """Evaluate a statement's factual correctness without external research.
 
     Assess whether the statement is factually accurate based on your knowledge.
+    If URLs are provided, use them as reference sources to verify the statement.
+    When URLs indicate the claim is false or contradicted, classify as CONTAINS_REFUTED_CLAIMS
+    rather than CONTAINS_UNSUPPORTED_CLAIMS.
+
     Output one of three verdicts:
     - SUPPORTED: The statement is factually correct
     - CONTAINS_REFUTED_CLAIMS: The statement contains false information
@@ -15,6 +19,7 @@ class Judge(Signature):
     """
 
     statement: str = InputField(desc="The statement to evaluate for factual correctness")
+    url: str = InputField(desc="Optional source URLs to use as reference for verification", default="")
 
     reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(
