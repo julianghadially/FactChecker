@@ -1,7 +1,9 @@
 """Simple judge module - barebones fact checker without research."""
 
 import dspy
+from typing import Optional, List
 from src.factchecker.simple.signatures.judge import Judge
+from src.services.firecrawl_service import FirecrawlService
 
 
 class JudgeModule(dspy.Module):
@@ -18,12 +20,14 @@ class JudgeModule(dspy.Module):
         """Initialize the simple judge module."""
         super().__init__()
         self.judge = dspy.ChainOfThought(Judge)
+        self.firecrawl_service = FirecrawlService()
 
-    def forward(self, statement: str) -> dspy.Prediction:
+    def forward(self, statement: str, urls: Optional[List[str]] = None) -> dspy.Prediction:
         """Evaluate a statement for factual correctness.
 
         Args:
             statement: The statement to evaluate.
+            urls: Optional list of URLs to scrape for evidence context.
 
         Returns:
             dspy.Prediction with:
@@ -32,7 +36,19 @@ class JudgeModule(dspy.Module):
                 - confidence: Float between 0.0 and 1.0
                 - reasoning: Explanation of the verdict
         """
-        result = self.judge(statement=statement)
+        # Gather evidence from URLs if provided
+        evidence_context = ""
+        if urls:
+            evidence_parts = []
+            for url in urls:
+                scraped = self.firecrawl_service.scrape(url)
+                if scraped.success:
+                    evidence_parts.append(f"Source: {url}\n{scraped.markdown}\n")
+                else:
+                    evidence_parts.append(f"Source: {url}\n[Failed to scrape: {scraped.error}]\n")
+            evidence_context = "\n---\n".join(evidence_parts)
+
+        result = self.judge(statement=statement, evidence_context=evidence_context)
 
         return dspy.Prediction(
             statement=statement,
