@@ -20,7 +20,12 @@ class Judge(Signature):
         desc="Additional evidence context from web sources to help evaluate the statement"
     )
 
-    reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
+    evidence_analysis: str = OutputField(
+        desc="First, extract and analyze ALL relevant facts from the evidence_context that support or contradict the statement. List specific quotes, dates, numbers, and sources. If evidence_context is empty or insufficient, explicitly state what information is missing."
+    )
+    reasoning: str = OutputField(
+        desc="Based on the evidence_analysis above, explain why this verdict was chosen and how the evidence supports your conclusion."
+    )
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(
         desc="The factual correctness verdict for the statement"
     )
