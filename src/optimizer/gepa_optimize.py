@@ -32,7 +32,7 @@ def load_dspy_examples(path: str, limit: Optional[int] = None) -> list[dspy.Exam
     for ex in dataset.examples:
         normalized_label = FacToolLabelSchema.normalize_ground_truth(ex.label)
         examples.append(
-            dspy.Example(statement=ex.claim, label=normalized_label).with_inputs("statement")
+            dspy.Example(statement=ex.claim, url=getattr(ex, 'url', None), label=normalized_label).with_inputs("statement", "url")
         )
     return examples
 
