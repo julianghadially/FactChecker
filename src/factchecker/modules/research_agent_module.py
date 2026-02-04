@@ -37,18 +37,39 @@ class ResearchAgentModule(dspy.Module):
         self.page_selector = dspy.ChainOfThought(PageSelector)
         self.evidence_summarizer = dspy.ChainOfThought(EvidenceSummarizer)
 
-    def forward(self, claim: str, query: str) -> str:
+    def forward(
+        self,
+        claim: str,
+        query: str,
+        use_news_search: bool = False,
+        news_recency: str = "m"
+    ) -> str:
         """Research a claim by searching and visiting relevant pages.
 
         Args:
             claim: The claim being fact-checked.
             query: Search query to execute.
+            use_news_search: If True, use news search instead of regular web search.
+            news_recency: Recency filter for news search ("d"=day, "w"=week, "m"=month).
 
         Returns:
             Aggregated evidence from visited pages as a formatted string.
         """
-        # Execute search
-        search_results = self.serper.search(query, num_results=10)
+        # Execute search (news or regular)
+        if use_news_search:
+            news_articles = self.serper.search_news(query, recency=news_recency)
+            # Convert news articles to SearchResult format
+            search_results = [
+                type('SearchResult', (), {
+                    'title': article.get('title', ''),
+                    'link': article.get('link', ''),
+                    'snippet': article.get('snippet', ''),
+                    'position': i + 1
+                })()
+                for i, article in enumerate(news_articles[:10])
+            ]
+        else:
+            search_results = self.serper.search(query, num_results=10)
 
         if not search_results:
             return "No search results found."

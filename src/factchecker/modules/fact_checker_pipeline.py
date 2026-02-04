@@ -5,7 +5,7 @@ import time
 from src.factchecker.models.data_types import FactCheckResult
 from .claim_extractor_module import ClaimExtractorModule
 from .fire_judge_module import FireJudgeModule
-from .research_agent_module import ResearchAgentModule
+from .temporal_research_router_module import TemporalResearchRouterModule
 from .aggregator_module import AggregatorModule
 from src.services.serper_service import SerperService
 from src.services.firecrawl_service import FirecrawlService
@@ -40,14 +40,14 @@ class FactCheckerPipeline(dspy.Module):
         """
         super().__init__()
 
-        
+
         # Initialize modules
         self.claim_extractor = ClaimExtractorModule()
-        self.research_agent = ResearchAgentModule(
+        self.temporal_router = TemporalResearchRouterModule(
             max_page_visits=max_page_visits
         )
         self.fire_judge = FireJudgeModule(
-            self.research_agent,
+            self.temporal_router,
             max_judge_iterations
         )
         self.aggregator = AggregatorModule()

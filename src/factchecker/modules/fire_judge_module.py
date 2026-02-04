@@ -3,7 +3,9 @@
 import dspy
 from src.factchecker.signatures.fire_judge import FireJudge
 from src.factchecker.models.data_types import JudgmentResult
+from typing import Union
 from .research_agent_module import ResearchAgentModule
+from .temporal_research_router_module import TemporalResearchRouterModule
 
 
 class FireJudgeModule(dspy.Module):
@@ -19,13 +21,14 @@ class FireJudgeModule(dspy.Module):
 
     def __init__(
         self,
-        research_agent: ResearchAgentModule,
+        research_agent: Union[ResearchAgentModule, TemporalResearchRouterModule],
         max_iterations: int = 3
     ):
         """Initialize the Fire Judge module.
 
         Args:
-            research_agent: Module for conducting web research.
+            research_agent: Module for conducting web research (can be ResearchAgentModule
+                          or TemporalResearchRouterModule for temporal-aware routing).
             max_iterations: Maximum search iterations before defaulting verdict.
         """
         super().__init__()
