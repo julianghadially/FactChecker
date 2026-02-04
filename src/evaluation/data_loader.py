@@ -174,6 +174,7 @@ class HoverExample:
     label: str  # Actual label from dataset
     supporting_facts: list[tuple[str, int]]
     num_hops: int
+    url: str = ""  # URL for web scraping verification
 
 
 @dataclass
@@ -239,17 +240,19 @@ def load_dataset(
         uid = item.get("uid", f"example_{idx}")
         claim = item.get("claim", item.get("statement", ""))
         label = item["label"]
-        
+
         # HOVER format has supporting_facts and num_hops, FacTool doesn't
         supporting_facts = item.get("supporting_facts", [])
         num_hops = item.get("num_hops", 0)
-        
+        url = item.get("url", "")  # Extract URL if present
+
         examples.append(HoverExample(
             uid=uid,
             claim=claim,
             label=label,
             supporting_facts=[(sf[0], sf[1]) if isinstance(sf, (list, tuple)) and len(sf) >= 2 else ("", 0) for sf in supporting_facts],
-            num_hops=num_hops
+            num_hops=num_hops,
+            url=url
         ))
 
     if limit:
@@ -312,7 +315,8 @@ def load_csv_dataset(
             claim=item["claim"],
             label=item["label"],
             supporting_facts=[],  # CSV doesn't have supporting facts
-            num_hops=0  # CSV doesn't have num_hops
+            num_hops=0,  # CSV doesn't have num_hops
+            url=item.get("url", "")  # Extract URL from CSV
         ))
 
     if limit:
