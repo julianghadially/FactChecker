@@ -1,6 +1,7 @@
 """Simple judge module - barebones fact checker without research."""
 
 import dspy
+from typing import Optional
 from src.factchecker.simple.signatures.judge import Judge
 
 
@@ -14,16 +15,24 @@ class JudgeModule(dspy.Module):
     for cases where external research is not needed or desired.
     """
 
-    def __init__(self):
-        """Initialize the simple judge module."""
+    def __init__(self, knowledge_cutoff_date: str = "20240401"):
+        """Initialize the simple judge module.
+
+        Args:
+            knowledge_cutoff_date: The LLM's knowledge cutoff date in YYYYMMDD format.
+                                   Defaults to "20240401" (April 1, 2024).
+        """
         super().__init__()
         self.judge = dspy.ChainOfThought(Judge)
+        self.knowledge_cutoff_date = knowledge_cutoff_date
 
-    def forward(self, statement: str) -> dspy.Prediction:
+    def forward(self, statement: str, statement_date: Optional[str] = None) -> dspy.Prediction:
         """Evaluate a statement for factual correctness.
 
         Args:
             statement: The statement to evaluate.
+            statement_date: Optional date the statement was made/generated (format: YYYYMMDD).
+                           Used to assess temporal context.
 
         Returns:
             dspy.Prediction with:
@@ -32,7 +41,11 @@ class JudgeModule(dspy.Module):
                 - confidence: Float between 0.0 and 1.0
                 - reasoning: Explanation of the verdict
         """
-        result = self.judge(statement=statement)
+        result = self.judge(
+            statement=statement,
+            statement_date=statement_date,
+            knowledge_cutoff_date=self.knowledge_cutoff_date,
+        )
 
         return dspy.Prediction(
             statement=statement,
