@@ -20,6 +20,9 @@ class Judge(Signature):
         desc="Optional external evidence to help evaluate the statement. Empty string if no evidence provided.",
         default=""
     )
+    current_date: str = InputField(
+        desc="Current date for temporal reasoning (YYYY-MM-DD format)"
+    )
 
     reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(

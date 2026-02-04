@@ -2,6 +2,7 @@
 
 import dspy
 import re
+from datetime import datetime
 from src.factchecker.simple.signatures.judge import Judge
 from src.services.serper_service import SerperService
 from src.services.firecrawl_service import FirecrawlService
@@ -82,6 +83,9 @@ class JudgeModule(dspy.Module):
             Formatted evidence string from web sources.
         """
         try:
+            # Get current date for temporal context
+            current_date = datetime.now().strftime("%Y-%m-%d")
+
             # Execute one search query using the statement itself
             search_results = self.serper.search(query=statement, num_results=2)
 
@@ -97,12 +101,22 @@ class JudgeModule(dspy.Module):
                 )
 
                 if scraped.success and scraped.markdown:
+                    # Extract publication date if available from the result
+                    date_info = ""
+                    if hasattr(result, 'date') and result.date:
+                        date_info = f" [Published: {result.date}]"
+
                     evidence_parts.append(
-                        f"Source {i}: {result.title} ({result.link})\n"
+                        f"Source {i}: {result.title} ({result.link}){date_info}\n"
                         f"{scraped.markdown}\n"
                     )
 
-            return "\n---\n".join(evidence_parts) if evidence_parts else ""
+            # Prepend current date to evidence
+            if evidence_parts:
+                evidence_with_context = f"[Current Date: {current_date}]\n\n" + "\n---\n".join(evidence_parts)
+                return evidence_with_context
+            else:
+                return ""
 
         except Exception as e:
             # If research fails, return empty evidence
@@ -123,8 +137,11 @@ class JudgeModule(dspy.Module):
                 - reasoning: Explanation of the verdict
                 - research_triggered: Boolean indicating if second pass was used
         """
+        # Get current date for temporal reasoning
+        current_date = datetime.now().strftime("%Y-%m-%d")
+
         # First pass: Judge with LLM knowledge only
-        first_pass = self.judge(statement=statement, evidence="")
+        first_pass = self.judge(statement=statement, evidence="", current_date=current_date)
 
         # Check if we should trigger web research
         should_research = self._should_trigger_research(
@@ -157,7 +174,7 @@ class JudgeModule(dspy.Module):
             )
 
         # Judge again with evidence
-        second_pass = self.judge(statement=statement, evidence=evidence)
+        second_pass = self.judge(statement=statement, evidence=evidence, current_date=current_date)
 
         return dspy.Prediction(
             statement=statement,
