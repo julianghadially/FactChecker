@@ -1,0 +1,267 @@
+================================================================================
+                    ADAPTIVE JUDGE MODULE - DECISION FLOW
+================================================================================
+
+                              ┌─────────────────┐
+                              │  User Statement │
+                              └────────┬────────┘
+                                       │
+                                       ▼
+                          ┌────────────────────────┐
+                          │  AdaptiveJudgeModule   │
+                          │   .forward(statement)  │
+                          └────────────┬───────────┘
+                                       │
+                                       ▼
+                    ╔══════════════════════════════════╗
+                    ║   STEP 1: Fast Judge Module     ║
+                    ╚══════════════════════════════════╝
+                                       │
+                              ┌────────▼────────┐
+                              │  JudgeModule()  │
+                              │  (No web search)│
+                              └────────┬────────┘
+                                       │
+                              ┌────────▼────────┐
+                              │  Get Result:    │
+                              │  - verdict      │
+                              │  - confidence   │
+                              │  - reasoning    │
+                              └────────┬────────┘
+                                       │
+                                       ▼
+                    ╔══════════════════════════════════╗
+                    ║   STEP 2: Check Conditions       ║
+                    ╚══════════════════════════════════╝
+                                       │
+                    ┌──────────────────┴──────────────────┐
+                    │                                     │
+                    ▼                                     ▼
+        ┌─────────────────────┐               ┌──────────────────────┐
+        │ enable_fallback?    │               │  Fallback needed?    │
+        │ (default: True)     │               │  ALL must be true:   │
+        └──────┬──────────────┘               │                      │
+               │                               │  1. enable_fallback  │
+               │                               │  2. verdict =        │
+               │                               │     "CONTAINS_       │
+               │                               │     UNSUPPORTED_     │
+               │                               │     CLAIMS"          │
+               │                               │  3. confidence <     │
+               │                               │     threshold        │
+               │                               └──────────┬───────────┘
+               │                                          │
+               │ No                                       │
+               │                            ┌─────────────┴───────────┐
+               │                            │                         │
+               │                            ▼ Yes                     ▼ No
+               │               ╔════════════════════════╗             │
+               │               ║ STEP 3a: FALLBACK     ║             │
+               │               ║ (Slow Path)           ║             │
+               │               ╚════════════════════════╝             │
+               │                           │                         │
+               │                  ┌────────▼────────┐                │
+               │                  │ Initialize      │                │
+               │                  │ FactChecker     │                │
+               │                  │ Pipeline (lazy) │                │
+               │                  └────────┬────────┘                │
+               │                           │                         │
+               │              ┌────────────▼────────────┐            │
+               │              │  FactCheckerPipeline()  │            │
+               │              │  1. Extract claims      │            │
+               │              │  2. Web search          │            │
+               │              │  3. Evaluate evidence   │            │
+               │              │  4. Aggregate verdicts  │            │
+               │              └────────────┬────────────┘            │
+               │                           │                         │
+               │              ┌────────────▼────────────┐            │
+               │              │  Get Pipeline Result:   │            │
+               │              │  - overall_verdict      │            │
+               │              │  - confidence           │            │
+               │              │  - reasoning            │            │
+               │              │  - claims               │            │
+               │              │  - claim_results        │            │
+               │              └────────────┬────────────┘            │
+               │                           │                         │
+               │              ┌────────────▼────────────┐            │
+               │              │  Add metadata:          │            │
+               │              │  fallback_triggered =   │            │
+               │              │  True                   │            │
+               │              └────────────┬────────────┘            │
+               │                           │                         │
+               └───────────────────────────┼─────────────────────────┘
+                                           │
+                                           ▼
+                             ╔════════════════════════╗
+                             ║ STEP 3b: NO FALLBACK  ║
+                             ║ (Fast Path)           ║
+                             ╚════════════════════════╝
+                                           │
+                              ┌────────────▼────────────┐
+                              │  Return Judge Result:   │
+                              │  - overall_verdict      │
+                              │  - confidence           │
+                              │  - reasoning            │
+                              │  fallback_triggered =   │
+                              │  False                  │
+                              └────────────┬────────────┘
+                                           │
+                                           ▼
+                                  ┌────────────────┐
+                                  │  Final Result  │
+                                  └────────────────┘
+
+
+================================================================================
+                          EXAMPLE SCENARIOS
+================================================================================
+
+Scenario 1: Well-Known Fact
+────────────────────────────
+Input: "Water boils at 100°C at sea level"
+
+JudgeModule Result:
+  verdict: SUPPORTED
+  confidence: 0.95
+
+Decision: No fallback (verdict is SUPPORTED)
+Path: Fast (1-2 seconds)
+Output: Judge result returned as-is
+
+
+Scenario 2: Obviously False
+────────────────────────────
+Input: "The Moon is made of cheese"
+
+JudgeModule Result:
+  verdict: CONTAINS_REFUTED_CLAIMS
+  confidence: 0.98
+
+Decision: No fallback (verdict is REFUTED)
+Path: Fast (1-2 seconds)
+Output: Judge result returned as-is
+
+
+Scenario 3: High Confidence Unsupported
+────────────────────────────────────────
+Input: "The Higgs boson was discovered in 2012"
+
+JudgeModule Result:
+  verdict: CONTAINS_UNSUPPORTED_CLAIMS
+  confidence: 0.8  (above threshold of 0.7)
+
+Decision: No fallback (confidence is high)
+Path: Fast (1-2 seconds)
+Output: Judge result returned as-is
+Note: Model is fairly confident it cannot verify this
+
+
+Scenario 4: Low Confidence Unsupported (FALLBACK!)
+────────────────────────────────────────────────────
+Input: "Company X's Q4 2024 revenue exceeded $500M"
+
+JudgeModule Result:
+  verdict: CONTAINS_UNSUPPORTED_CLAIMS
+  confidence: 0.4  (below threshold of 0.7)
+
+Decision: ✓ FALLBACK TRIGGERED
+  - enable_fallback = True ✓
+  - verdict = CONTAINS_UNSUPPORTED_CLAIMS ✓
+  - confidence (0.4) < threshold (0.7) ✓
+
+Path: Slow (10-30 seconds)
+
+FactCheckerPipeline Execution:
+  1. Extract claims: ["Company X Q4 2024 revenue exceeded $500M"]
+  2. Web search: Find financial reports
+  3. Evaluate: Compare with found evidence
+  4. Aggregate: Determine final verdict
+
+Output: Pipeline result with full research data
+
+
+Scenario 5: Fallback Disabled
+──────────────────────────────
+Input: "Recent study shows X causes Y"
+Config: enable_fallback = False
+
+JudgeModule Result:
+  verdict: CONTAINS_UNSUPPORTED_CLAIMS
+  confidence: 0.3  (below threshold)
+
+Decision: No fallback (fallback disabled)
+Path: Fast (1-2 seconds)
+Output: Judge result returned as-is
+Note: Even with low confidence, fallback is disabled
+
+
+================================================================================
+                        PERFORMANCE SUMMARY
+================================================================================
+
+Fast Path (No Fallback):
+  ⚡ Speed: 1-2 seconds
+  💰 Cost: 1 LLM API call
+  📊 Data: verdict, confidence, reasoning
+  ✅ Use for: Known facts, confident verdicts
+
+Slow Path (With Fallback):
+  🐢 Speed: 10-30 seconds
+  💰 Cost: 5-10 LLM calls + search APIs + scraping APIs
+  📊 Data: verdict, confidence, reasoning, claims, evidence
+  ✅ Use for: Uncertain claims needing verification
+
+
+================================================================================
+                          CONFIGURATION OPTIONS
+================================================================================
+
+Option 1: Default (Balanced)
+─────────────────────────────
+AdaptiveJudgeModule()
+
+  confidence_threshold: 0.7
+  enable_fallback: True
+  max_judge_iterations: 3
+  max_page_visits: 3
+
+  → Balanced between speed and accuracy
+
+
+Option 2: Conservative (More Research)
+───────────────────────────────────────
+AdaptiveJudgeModule(
+    confidence_threshold=0.9,  # Higher threshold
+    max_judge_iterations=5,
+    max_page_visits=5
+)
+
+  → Triggers fallback more often
+  → More thorough research
+  → Higher cost, better accuracy
+
+
+Option 3: Aggressive (Less Research)
+─────────────────────────────────────
+AdaptiveJudgeModule(
+    confidence_threshold=0.5,  # Lower threshold
+    max_judge_iterations=2,
+    max_page_visits=2
+)
+
+  → Triggers fallback less often
+  → Faster average response
+  → Lower cost, moderate accuracy
+
+
+Option 4: Judge-Only (No Research)
+───────────────────────────────────
+AdaptiveJudgeModule(
+    enable_fallback=False
+)
+
+  → Never triggers fallback
+  → Always fast
+  → Lowest cost, limited to LLM knowledge
+
+
+================================================================================

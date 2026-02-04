@@ -1,0 +1,178 @@
+AdaptiveJudgeModule - File Structure
+════════════════════════════════════════════════════════════════════════════════
+
+workspace/
+│
+├── src/factchecker/
+│   └── modules/
+│       ├── __init__.py                        ⬅ MODIFIED (added export)
+│       ├── adaptive_judge_module.py           ⬅ NEW (173 lines)
+│       ├── README_ADAPTIVE_JUDGE.md           ⬅ NEW (600+ lines)
+│       ├── ADAPTIVE_JUDGE_FLOWCHART.txt       ⬅ NEW (300+ lines)
+│       │
+│       ├── fact_checker_pipeline.py           (existing)
+│       ├── claim_extractor_module.py          (existing)
+│       ├── fire_judge_module.py               (existing)
+│       ├── research_agent_module.py           (existing)
+│       └── aggregator_module.py               (existing)
+│
+├── examples/
+│   └── adaptive_judge_example.py              ⬅ NEW (186 lines)
+│
+├── tests/
+│   └── test_adaptive_judge_module.py          ⬅ NEW (331 lines)
+│
+├── ADAPTIVE_JUDGE_SUMMARY.md                  ⬅ NEW (400+ lines)
+├── QUICK_START.md                             ⬅ NEW (400+ lines)
+├── MODULE_HIERARCHY.md                        ⬅ NEW (450+ lines)
+├── DELIVERABLES.md                            ⬅ NEW (300+ lines)
+├── FILE_TREE.txt                              ⬅ NEW (this file)
+└── verify_adaptive_judge.py                   ⬅ NEW (100 lines)
+
+
+════════════════════════════════════════════════════════════════════════════════
+File Categories
+════════════════════════════════════════════════════════════════════════════════
+
+🔧 CORE IMPLEMENTATION:
+   src/factchecker/modules/adaptive_judge_module.py
+
+📚 DOCUMENTATION:
+   src/factchecker/modules/README_ADAPTIVE_JUDGE.md
+   src/factchecker/modules/ADAPTIVE_JUDGE_FLOWCHART.txt
+   ADAPTIVE_JUDGE_SUMMARY.md
+   QUICK_START.md
+   MODULE_HIERARCHY.md
+   DELIVERABLES.md
+   FILE_TREE.txt (this file)
+
+💡 EXAMPLES:
+   examples/adaptive_judge_example.py
+
+🧪 TESTS:
+   tests/test_adaptive_judge_module.py
+
+✓ VERIFICATION:
+   verify_adaptive_judge.py
+
+🔌 INTEGRATION:
+   src/factchecker/modules/__init__.py (modified)
+
+
+════════════════════════════════════════════════════════════════════════════════
+Usage Flow
+════════════════════════════════════════════════════════════════════════════════
+
+1. First Time Users:
+   ┌─────────────────┐
+   │ QUICK_START.md  │ ← Start here for immediate usage
+   └─────────────────┘
+
+2. Understand How It Works:
+   ┌─────────────────────────────────────┐
+   │ ADAPTIVE_JUDGE_FLOWCHART.txt        │ ← Visual decision flow
+   └─────────────────────────────────────┘
+
+3. Deep Dive:
+   ┌─────────────────────────────────────┐
+   │ README_ADAPTIVE_JUDGE.md            │ ← Complete documentation
+   └─────────────────────────────────────┘
+
+4. Implementation Details:
+   ┌─────────────────────────────────────┐
+   │ ADAPTIVE_JUDGE_SUMMARY.md           │ ← Design decisions
+   └─────────────────────────────────────┘
+
+5. See Full Architecture:
+   ┌─────────────────────────────────────┐
+   │ MODULE_HIERARCHY.md                 │ ← All modules overview
+   └─────────────────────────────────────┘
+
+6. Try Examples:
+   ┌─────────────────────────────────────┐
+   │ examples/adaptive_judge_example.py  │ ← Working demos
+   └─────────────────────────────────────┘
+
+7. Verify Installation:
+   ┌─────────────────────────────────────┐
+   │ verify_adaptive_judge.py            │ ← Quick check
+   └─────────────────────────────────────┘
+
+
+════════════════════════════════════════════════════════════════════════════════
+Import Paths
+════════════════════════════════════════════════════════════════════════════════
+
+# Direct import
+from src.factchecker.modules.adaptive_judge_module import AdaptiveJudgeModule
+
+# Package import (recommended)
+from src.factchecker.modules import AdaptiveJudgeModule
+
+# All modules
+from src.factchecker.modules import (
+    AdaptiveJudgeModule,        # ← NEW
+    FactCheckerPipeline,
+    ClaimExtractorModule,
+    FireJudgeModule,
+    ResearchAgentModule,
+    AggregatorModule
+)
+
+
+════════════════════════════════════════════════════════════════════════════════
+Documentation Sizes
+════════════════════════════════════════════════════════════════════════════════
+
+File                                          Lines    Category
+────────────────────────────────────────────────────────────────────────────────
+adaptive_judge_module.py                        173    Implementation
+README_ADAPTIVE_JUDGE.md                        600+   Documentation
+ADAPTIVE_JUDGE_FLOWCHART.txt                    300+   Documentation
+ADAPTIVE_JUDGE_SUMMARY.md                       400+   Documentation
+QUICK_START.md                                  400+   Documentation
+MODULE_HIERARCHY.md                             450+   Documentation
+DELIVERABLES.md                                 300+   Documentation
+FILE_TREE.txt                                   150+   Documentation
+adaptive_judge_example.py                       186    Examples
+test_adaptive_judge_module.py                   331    Tests
+verify_adaptive_judge.py                        100    Verification
+────────────────────────────────────────────────────────────────────────────────
+TOTAL                                         ~3,390   lines
+
+
+════════════════════════════════════════════════════════════════════════════════
+Quick Commands
+════════════════════════════════════════════════════════════════════════════════
+
+# Verify installation (no API keys needed)
+python verify_adaptive_judge.py
+
+# View quick start guide
+cat QUICK_START.md
+
+# View decision flowchart
+cat src/factchecker/modules/ADAPTIVE_JUDGE_FLOWCHART.txt
+
+# Run examples (requires API keys)
+python examples/adaptive_judge_example.py
+
+# Run tests (requires pytest)
+pytest tests/test_adaptive_judge_module.py -v
+
+# Import in Python
+python -c "from src.factchecker.modules import AdaptiveJudgeModule; print('✅ OK')"
+
+
+════════════════════════════════════════════════════════════════════════════════
+Next Steps
+════════════════════════════════════════════════════════════════════════════════
+
+1. Read QUICK_START.md for immediate usage
+2. Run verify_adaptive_judge.py to confirm installation
+3. Check ADAPTIVE_JUDGE_FLOWCHART.txt to understand logic
+4. Review examples/adaptive_judge_example.py for patterns
+5. Refer to README_ADAPTIVE_JUDGE.md for complete documentation
+
+
+════════════════════════════════════════════════════════════════════════════════
