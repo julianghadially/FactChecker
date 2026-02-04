@@ -3,6 +3,7 @@
 import dspy
 from src.factchecker.simple.signatures.judge import Judge
 from src.factchecker.simple.signatures.web_augmented_judge import WebAugmentedJudge
+from src.factchecker.simple.signatures.query_generator import QueryGenerator
 from src.services.serper_service import SerperService
 from src.services.firecrawl_service import FirecrawlService
 import re
@@ -25,6 +26,7 @@ class JudgeModule(dspy.Module):
         super().__init__()
         self.judge = dspy.ChainOfThought(Judge)
         self.web_judge = dspy.ChainOfThought(WebAugmentedJudge)
+        self.query_generator = dspy.ChainOfThought(QueryGenerator)
         self.serper = SerperService()
         self.firecrawl = FirecrawlService()
 
@@ -110,29 +112,53 @@ class JudgeModule(dspy.Module):
         )
 
     def _gather_web_evidence(self, statement: str, num_results: int = 3) -> str:
-        """Gather evidence from web search and scraping.
+        """Gather evidence from web search and scraping with intelligent query generation.
+
+        Uses QueryGenerator to create optimized search queries that extract key entities
+        and formulate targeted queries for better search results.
 
         Args:
             statement: The statement to search for evidence about.
-            num_results: Number of top search results to scrape (default: 3).
+            num_results: Number of top search results to scrape per query (default: 3).
 
         Returns:
             Formatted evidence string combining search results and scraped content.
             Returns empty string if search/scraping fails.
         """
         try:
-            # Search for relevant pages
-            print(f"[JudgeModule] Triggering web search for: {statement}")
-            search_results = self.serper.search(query=statement, num_results=num_results)
+            # Step 1: Generate optimized search queries
+            print(f"[JudgeModule] Generating optimized queries for: {statement}")
+            query_result = self.query_generator(statement=statement)
 
-            if not search_results:
+            # Extract queries (limit to 3)
+            queries = query_result.queries[:3] if isinstance(query_result.queries, list) else [statement]
+            print(f"[JudgeModule] Generated queries: {queries}")
+            print(f"[JudgeModule] Query generation reasoning: {query_result.reasoning}")
+
+            # Step 2: Execute searches for each generated query
+            all_search_results = []
+            seen_urls = set()  # For deduplication
+
+            for query in queries:
+                print(f"[JudgeModule] Searching with query: {query}")
+                search_results = self.serper.search(query=query, num_results=num_results)
+
+                if search_results:
+                    # Deduplicate by URL
+                    for result in search_results:
+                        if result.link not in seen_urls:
+                            all_search_results.append(result)
+                            seen_urls.add(result.link)
+
+            if not all_search_results:
                 return ""
 
-            # Scrape top results
+            # Step 3: Scrape top results (limit to top num_results after deduplication)
             evidence_parts = []
-            evidence_parts.append("=== WEB SEARCH RESULTS ===\n")
+            evidence_parts.append("=== WEB SEARCH RESULTS ===")
+            evidence_parts.append(f"Generated {len(queries)} optimized queries: {', '.join(queries)}\n")
 
-            for i, result in enumerate(search_results[:num_results], 1):
+            for i, result in enumerate(all_search_results[:num_results], 1):
                 evidence_parts.append(f"\n--- Source {i}: {result.title} ---")
                 evidence_parts.append(f"URL: {result.link}")
                 evidence_parts.append(f"Snippet: {result.snippet}\n")

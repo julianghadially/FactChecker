@@ -1,0 +1,227 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                   QUERY GENERATOR - CODE FLOW DIAGRAM                         ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 1. USER STATEMENT SUBMISSION                                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+                    judge.forward(statement="Deutsche Bank upgraded 3M")
+                                      │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2. STAGE 1: LLM-ONLY JUDGMENT                                                │
+│    └─ self.judge(statement=statement)                                        │
+│       Result: confidence < 0.7 OR mentions "knowledge cutoff"                │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼ needs_web_search = True
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 3. STAGE 2: WEB EVIDENCE GATHERING                                           │
+│    └─ self._gather_web_evidence(statement)                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+        ┌─────────────────────────────┴─────────────────────────────┐
+        │                                                             │
+        ▼                                                             │
+┌──────────────────────────────────────────────────────┐              │
+│ 3.1. QUERY GENERATION (NEW!)                         │              │
+│                                                       │              │
+│   query_result = self.query_generator(               │              │
+│       statement="Deutsche Bank upgraded 3M"          │              │
+│   )                                                   │              │
+│                                                       │              │
+│   ┌─────────────────────────────────────────────┐   │              │
+│   │ QueryGenerator (ChainOfThought)             │   │              │
+│   │                                             │   │              │
+│   │ Input:                                      │   │              │
+│   │   statement: "Deutsche Bank upgraded 3M"    │   │              │
+│   │                                             │   │              │
+│   │ Processing:                                 │   │              │
+│   │   • Extract entities:                       │   │              │
+│   │     - Companies: Deutsche Bank, 3M          │   │              │
+│   │     - Action: upgraded                      │   │              │
+│   │     - Context: rating/analyst               │   │              │
+│   │   • Add temporal context: 2025              │   │              │
+│   │   • Formulate domain-specific queries       │   │              │
+│   │                                             │   │              │
+│   │ Output:                                     │   │              │
+│   │   reasoning: "Extracted key financial..."   │   │              │
+│   │   queries: [                                │   │              │
+│   │     "Deutsche Bank 3M rating 2025",         │   │              │
+│   │     "3M stock upgrade Deutsche Bank",       │   │              │
+│   │     "Deutsche Bank analyst ratings 2025"    │   │              │
+│   │   ]                                         │   │              │
+│   └─────────────────────────────────────────────┘   │              │
+│                                                       │              │
+│   queries = ["Deutsche Bank 3M rating 2025", ...]    │              │
+└──────────────────────────────────────────────────────┘              │
+                                      │                                │
+                                      ▼                                │
+┌──────────────────────────────────────────────────────┐              │
+│ 3.2. EXECUTE SEARCHES WITH DEDUPLICATION (NEW!)      │              │
+│                                                       │              │
+│   all_search_results = []                            │              │
+│   seen_urls = set()                                  │              │
+│                                                       │              │
+│   FOR EACH query in queries:                         │              │
+│     ┌─────────────────────────────────────────────┐ │              │
+│     │ Query 1: "Deutsche Bank 3M rating 2025"     │ │              │
+│     │   → Search API → Results:                   │ │              │
+│     │      - url1: bloomberg.com/db-3m-rating     │ │              │
+│     │      - url2: reuters.com/3m-upgrade         │ │              │
+│     │      - url3: marketwatch.com/db-ratings     │ │              │
+│     └─────────────────────────────────────────────┘ │              │
+│                                                       │              │
+│     ┌─────────────────────────────────────────────┐ │              │
+│     │ Query 2: "3M stock upgrade Deutsche Bank"   │ │              │
+│     │   → Search API → Results:                   │ │              │
+│     │      - url2: reuters.com/3m-upgrade (DUP!)  │ │              │
+│     │      - url4: wsj.com/3m-stock-news          │ │              │
+│     │      - url5: cnbc.com/deutsche-bank-3m      │ │              │
+│     └─────────────────────────────────────────────┘ │              │
+│                                                       │              │
+│     ┌─────────────────────────────────────────────┐ │              │
+│     │ Query 3: "Deutsche Bank analyst ratings"    │ │              │
+│     │   → Search API → Results:                   │ │              │
+│     │      - url1: bloomberg.com/db-3m... (DUP!)  │ │              │
+│     │      - url6: seekingalpha.com/db-coverage   │ │              │
+│     │      - url7: morningstar.com/db-research    │ │              │
+│     └─────────────────────────────────────────────┘ │              │
+│                                                       │              │
+│   Deduplicated Results:                              │              │
+│     [url1, url2, url3, url4, url5, url6, url7]       │              │
+│                                                       │              │
+└──────────────────────────────────────────────────────┘              │
+                                      │                                │
+                                      ▼                                │
+┌──────────────────────────────────────────────────────┐              │
+│ 3.3. SCRAPE TOP N RESULTS (EXISTING LOGIC)           │              │
+│                                                       │              │
+│   evidence_parts = []                                │              │
+│   evidence_parts.append(                             │              │
+│     "Generated 3 optimized queries: ..."             │              │
+│   )                                                   │              │
+│                                                       │              │
+│   FOR EACH result in all_search_results[:3]:         │              │
+│     scraped = self.firecrawl.scrape(                 │              │
+│         url=result.link,                             │              │
+│         max_length=3000                              │              │
+│     )                                                 │              │
+│     evidence_parts.append(scraped.markdown)          │              │
+│                                                       │              │
+│   return "\n".join(evidence_parts)                   │              │
+└──────────────────────────────────────────────────────┘              │
+                                      │                                │
+                                      │                                │
+        ┌─────────────────────────────┴─────────────────────────────┘
+        │
+        ▼ evidence = "=== WEB SEARCH RESULTS ===\nGenerated 3 queries...\n..."
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4. STAGE 2 CONTINUED: WEB-AUGMENTED JUDGMENT                                 │
+│    └─ self.web_judge(statement=statement, evidence=evidence)                 │
+│       Result: verdict, confidence, reasoning based on scraped evidence       │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 5. RETURN FINAL RESULT                                                       │
+│                                                                               │
+│   dspy.Prediction(                                                           │
+│       statement="Deutsche Bank upgraded 3M",                                 │
+│       overall_verdict="SUPPORTED",                                           │
+│       confidence=0.95,                                                       │
+│       reasoning="Based on evidence from Bloomberg, Reuters...",              │
+│       used_web_search=True,                                                  │
+│       evidence="=== WEB SEARCH RESULTS ===\n..."                            │
+│   )                                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                            KEY IMPROVEMENTS                                   ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+BEFORE (Verbatim Search):
+─────────────────────────────────────────────────────────────────────────────
+Statement → Single search query (verbatim) → Results → Scrape → Evidence
+            "Deutsche Bank upgraded 3M"
+
+Issues:
+  ✗ Generic results
+  ✗ Less authoritative sources
+  ✗ Single query may miss relevant information
+  ✗ Verbatim statements don't match how authoritative sources write
+
+
+AFTER (Intelligent Query Generation):
+─────────────────────────────────────────────────────────────────────────────
+Statement → QueryGenerator → Multiple optimized queries → Search each →
+"Deutsche Bank       ↓                                      ↓
+upgraded 3M"    Extract entities              "Deutsche Bank 3M rating 2025"
+                & formulate                   "3M stock upgrade Deutsche Bank"
+                targeted queries              "Deutsche Bank analyst ratings"
+                                                      ↓
+                                              Deduplicate → Scrape → Evidence
+
+Benefits:
+  ✓ Domain-aware queries
+  ✓ More authoritative sources (financial news, analyst reports)
+  ✓ Better coverage with multiple query angles
+  ✓ Efficient deduplication prevents redundant scraping
+  ✓ Transparent reasoning for debugging/auditing
+
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                         IMPLEMENTATION DETAILS                                ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+Files Modified:
+─────────────────────────────────────────────────────────────────────────────
+1. src/factchecker/simple/signatures/query_generator.py (NEW)
+   • QueryGenerator DSPy Signature
+   • Input: statement (str)
+   • Output: reasoning (str), queries (list[str])
+
+2. src/factchecker/simple/modules/judge_module.py (MODIFIED)
+   • Added: from src.factchecker.simple.signatures.query_generator import QueryGenerator
+   • Added: self.query_generator = dspy.ChainOfThought(QueryGenerator)
+   • Modified: _gather_web_evidence() method
+     - Step 1: Generate queries
+     - Step 2: Search & deduplicate
+     - Step 3: Scrape (existing logic)
+
+
+Deduplication Logic:
+─────────────────────────────────────────────────────────────────────────────
+seen_urls = set()
+for result in search_results:
+    if result.link not in seen_urls:
+        all_search_results.append(result)
+        seen_urls.add(result.link)
+
+This ensures:
+  • No URL is scraped multiple times
+  • Multiple queries can return overlapping sources
+  • Efficient use of API calls
+
+
+Evidence Format Enhancement:
+─────────────────────────────────────────────────────────────────────────────
+=== WEB SEARCH RESULTS ===
+Generated 3 optimized queries: Deutsche Bank 3M rating 2025, 3M stock upgrade Deutsche Bank, Deutsche Bank analyst ratings 2025
+
+--- Source 1: Bloomberg - Deutsche Bank Upgrades 3M Stock ---
+URL: https://bloomberg.com/...
+Snippet: Deutsche Bank raised its rating on 3M...
+Full Content (truncated):
+[Scraped markdown content...]
+
+
+Testing:
+─────────────────────────────────────────────────────────────────────────────
+# Test QueryGenerator independently
+python test_query_generator.py
+
+# Test full integration
+python test_judge_enhancement.py
