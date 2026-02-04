@@ -64,7 +64,7 @@ class JudgeModule(dspy.Module):
             True if web research should be triggered, False otherwise.
         """
         # Trigger if CONTAINS_UNSUPPORTED_CLAIMS with low confidence
-        if verdict == "CONTAINS_UNSUPPORTED_CLAIMS" and confidence < 0.6:
+        if verdict == "CONTAINS_UNSUPPORTED_CLAIMS" and confidence < 0.85:
             return True
 
         # Trigger if reasoning mentions knowledge limitations
