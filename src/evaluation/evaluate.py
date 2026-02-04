@@ -72,7 +72,7 @@ def run_evaluation(
     detailed_results = []
 
     examples = [
-        dspy.Example(statement=ex.claim, label=ex.label).with_inputs("statement")
+        dspy.Example(statement=ex.claim, label=ex.label, url=ex.url).with_inputs("statement", "url")
         for ex in dataset
     ]
 
