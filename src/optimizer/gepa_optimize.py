@@ -31,8 +31,9 @@ def load_dspy_examples(path: str, limit: Optional[int] = None) -> list[dspy.Exam
     examples = []
     for ex in dataset.examples:
         normalized_label = FacToolLabelSchema.normalize_ground_truth(ex.label)
+        urls = ex.urls if hasattr(ex, 'urls') else []
         examples.append(
-            dspy.Example(statement=ex.claim, label=normalized_label).with_inputs("statement")
+            dspy.Example(statement=ex.claim, label=normalized_label, urls=urls).with_inputs("statement", "urls")
         )
     return examples
 
@@ -67,7 +68,8 @@ def evaluate_program(program: dspy.Module, examples: list[dspy.Example], name: s
 
     for ex in tqdm(examples, desc=f"Evaluating {name}"):
         try:
-            pred = program(statement=ex.statement)
+            urls = ex.urls if hasattr(ex, 'urls') else []
+            pred = program(statement=ex.statement, urls=urls)
             predictions.append(pred.overall_verdict if hasattr(pred, 'overall_verdict') else str(pred))
         except Exception as e:
             print(f"Error: {e}")

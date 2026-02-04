@@ -72,7 +72,7 @@ def run_evaluation(
     detailed_results = []
 
     examples = [
-        dspy.Example(statement=ex.claim, label=ex.label).with_inputs("statement")
+        dspy.Example(statement=ex.claim, label=ex.label, urls=ex.urls if hasattr(ex, 'urls') else []).with_inputs("statement", "urls")
         for ex in dataset
     ]
 

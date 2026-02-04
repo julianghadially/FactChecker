@@ -31,11 +31,12 @@ class BaselineModel(dspy.Module):
         super().__init__()
         self.predictor = dspy.ChainOfThought(BaselineFactCheck)
 
-    def forward(self, statement: str) -> dict:
+    def forward(self, statement: str, urls: list[str] = None) -> dict:
         """Evaluate a claim using only LLM knowledge.
 
         Args:
             claim: The claim to evaluate.
+            urls: Optional URLs (ignored by baseline, included for compatibility).
 
         Returns:
             Dict with 'claim', 'verdict', and 'reasoning' keys.
