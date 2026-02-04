@@ -52,11 +52,12 @@ class FactCheckerPipeline(dspy.Module):
         )
         self.aggregator = AggregatorModule()
 
-    def forward(self, statement: str) -> dspy.Prediction:
+    def forward(self, statement: str, initial_evidence: str = "") -> dspy.Prediction:
         """Execute the full fact-checking pipeline.
 
         Args:
             statement: The statement to fact-check.
+            initial_evidence: Optional pre-existing evidence to seed all claim evaluations.
 
         Returns:
             FactCheckResult with all details including claim-level results.
@@ -68,7 +69,7 @@ class FactCheckerPipeline(dspy.Module):
         # Step 2: Evaluate each claim
         claim_results = []
         for claim in claims_prediction_obj.claims:
-            result = self.fire_judge(claim=claim)
+            result = self.fire_judge(claim=claim, initial_evidence=initial_evidence)
             claim_results.append(result)
 
         # Step 3: Aggregate verdicts

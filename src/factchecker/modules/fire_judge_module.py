@@ -33,16 +33,17 @@ class FireJudgeModule(dspy.Module):
         self.research_agent = research_agent
         self.max_iterations = max_iterations
 
-    def forward(self, claim: str) -> dspy.Prediction:
+    def forward(self, claim: str, initial_evidence: str = "") -> dspy.Prediction:
         """Evaluate a claim with iterative research.
 
         Args:
             claim: The factual claim to verify.
+            initial_evidence: Optional pre-existing evidence to seed the evaluation.
 
         Returns:
             JudgmentResult containing verdict, evidence, and metadata.
         """
-        evidence = ""
+        evidence = initial_evidence
         search_history: list[str] = []
 
         for iteration in range(self.max_iterations):
