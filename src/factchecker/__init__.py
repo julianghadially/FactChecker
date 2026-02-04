@@ -1,11 +1,9 @@
 """FactChecker - DSPy-based multi-hop fact verification system."""
 
-from .modules.fact_checker_pipeline import FactCheckerPipeline
-from .models.data_types import FactCheckResult, JudgmentResult, AggregationResult
+from .modules.judge_module import JudgeModule
+from .models.data_types import JudgmentResult
 
 __all__ = [
-    "FactCheckerPipeline",
-    "FactCheckResult",
+    "JudgeModule",
     "JudgmentResult",
-    "AggregationResult",
 ]

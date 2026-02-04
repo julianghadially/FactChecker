@@ -1,15 +1,5 @@
-"""DSPy modules for fact-checking operations."""
+"""Modules for the simple fact checker."""
 
-from .claim_extractor_module import ClaimExtractorModule
-from .research_agent_module import ResearchAgentModule
-from .fire_judge_module import FireJudgeModule
-from .aggregator_module import AggregatorModule
-from .fact_checker_pipeline import FactCheckerPipeline
+from src.factchecker.simple.modules.judge_module import JudgeModule
 
-__all__ = [
-    "ClaimExtractorModule",
-    "ResearchAgentModule",
-    "FireJudgeModule",
-    "AggregatorModule",
-    "FactCheckerPipeline",
-]
+__all__ = ["JudgeModule"]

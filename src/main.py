@@ -5,7 +5,7 @@ import dspy
 import mlflow
 
 from src.context_.context import openai_key, serper_key, firecrawl_key
-from src.factchecker.modules.fact_checker_pipeline import FactCheckerPipeline
+from src.factchecker import JudgeModule
 from src.baseline.baseline_model import BaselineModel
 from src.evaluation.evaluate import run_evaluation
 
@@ -33,7 +33,7 @@ def run_single_check(statement: str, model: str):
     """
     configure_dspy(model)
 
-    pipeline = FactCheckerPipeline()
+    pipeline = JudgeModule()
 
     print(f"\nFact-checking statement: {statement}\n")
     print("-" * 60)
@@ -68,7 +68,7 @@ def run_benchmark(sample_size: int, model: str, optimized_program_path: str = No
     """
     configure_dspy(model)
 
-    fact_checker = FactCheckerPipeline()
+    fact_checker = JudgeModule()
     # Load optimized program if path provided
     if optimized_program_path:
         print(f"Loading optimized program from: {optimized_program_path}")
