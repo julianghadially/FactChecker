@@ -1,7 +1,7 @@
 """Simple judge module - barebones fact checker without research."""
 
 import dspy
-from src.factchecker.simple.signatures.judge import Judge
+from src.factchecker.signatures.judge import Judge
 
 
 class JudgeModule(dspy.Module):
