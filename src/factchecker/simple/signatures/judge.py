@@ -15,6 +15,7 @@ class Judge(Signature):
     """
 
     statement: str = InputField(desc="The statement to evaluate for factual correctness")
+    evidence: str = InputField(desc="External evidence from web sources (leave empty if unavailable)", default="")
 
     reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(
