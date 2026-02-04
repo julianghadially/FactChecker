@@ -1,7 +1,7 @@
 """Simple judge signature for direct statement evaluation without research."""
 
 from dspy import Signature, InputField, OutputField
-from typing import Literal
+from typing import Literal, Optional
 
 
 class Judge(Signature):
@@ -15,6 +15,10 @@ class Judge(Signature):
     """
 
     statement: str = InputField(desc="The statement to evaluate for factual correctness")
+    context: Optional[str] = InputField(
+        default=None,
+        desc="Additional context from source URLs to aid verification"
+    )
 
     reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(
