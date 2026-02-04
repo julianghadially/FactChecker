@@ -5,9 +5,10 @@ from typing import Literal
 
 
 class Judge(Signature):
-    """Evaluate a statement's factual correctness without external research.
+    """Evaluate a statement's factual correctness with optional external evidence.
 
-    Assess whether the statement is factually accurate based on your knowledge.
+    Assess whether the statement is factually accurate based on your knowledge
+    and any provided evidence from external sources.
     Output one of three verdicts:
     - SUPPORTED: The statement is factually correct
     - CONTAINS_REFUTED_CLAIMS: The statement contains false information
@@ -15,6 +16,10 @@ class Judge(Signature):
     """
 
     statement: str = InputField(desc="The statement to evaluate for factual correctness")
+    evidence: str = InputField(
+        desc="Optional external evidence to help evaluate the statement. Empty string if no evidence provided.",
+        default=""
+    )
 
     reasoning: str = OutputField(desc="Explanation of why this verdict was chosen")
     verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"] = OutputField(
