@@ -5,6 +5,7 @@ from .fire_judge import FireJudge
 from .page_selector import PageSelector
 from .evidence_summarizer import EvidenceSummarizer
 from .aggregator import Aggregator
+from .context_enricher import ContextEnricher
 
 __all__ = [
     "ClaimExtractor",
@@ -12,4 +13,5 @@ __all__ = [
     "PageSelector",
     "EvidenceSummarizer",
     "Aggregator",
+    "ContextEnricher",
 ]
