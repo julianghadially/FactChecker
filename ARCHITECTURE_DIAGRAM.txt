@@ -1,0 +1,336 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║              ENHANCED JUDGEMODULE HYBRID ARCHITECTURE                     ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                          SYSTEM COMPONENTS                                │
+└───────────────────────────────────────────────────────────────────────────┘
+
+   ┌─────────────────┐
+   │  JudgeModule    │
+   │                 │
+   │  Components:    │
+   │  • judge        │──► Judge signature (LLM-only)
+   │  • web_judge    │──► WebAugmentedJudge signature (with evidence)
+   │  • serper       │──► SerperService (Google Search)
+   │  • firecrawl    │──► FirecrawlService (Web Scraping)
+   └─────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                        PROCESSING PIPELINE                                │
+└───────────────────────────────────────────────────────────────────────────┘
+
+                            ┌─────────────────┐
+                            │  Input: String  │
+                            │   "statement"   │
+                            └────────┬────────┘
+                                     │
+                                     ▼
+        ╔════════════════════════════════════════════════════════╗
+        ║         STAGE 1: LLM-ONLY JUDGMENT (Fast Path)         ║
+        ╚════════════════════════════════════════════════════════╝
+                                     │
+                 ┌───────────────────┴───────────────────┐
+                 │                                       │
+                 │   self.judge(statement=statement)     │
+                 │                                       │
+                 │   Uses: dspy.ChainOfThought(Judge)   │
+                 │                                       │
+                 └───────────────────┬───────────────────┘
+                                     │
+                             ┌───────▼──────┐
+                             │   Result 1   │
+                             │              │
+                             │ • verdict    │
+                             │ • confidence │
+                             │ • reasoning  │
+                             └───────┬──────┘
+                                     │
+                                     ▼
+        ┌────────────────────────────────────────────────────────┐
+        │         UNCERTAINTY DETECTION LAYER                    │
+        │                                                        │
+        │  ┌──────────────────────────────────────────────────┐ │
+        │  │ Trigger 1: Confidence Check                      │ │
+        │  │   if confidence < 0.7: needs_web_search = True   │ │
+        │  └──────────────────────────────────────────────────┘ │
+        │                                                        │
+        │  ┌──────────────────────────────────────────────────┐ │
+        │  │ Trigger 2: Reasoning Pattern Analysis            │ │
+        │  │   Checks for 9 uncertainty indicators:           │ │
+        │  │   • "knowledge cutoff"                           │ │
+        │  │   • "cutoff date"                                │ │
+        │  │   • "lack(ing)? information"                     │ │
+        │  │   • "unable to verify"                           │ │
+        │  │   • "cannot (confirm|verify)"                    │ │
+        │  │   • "don't have (access|information)"            │ │
+        │  │   • "no (current|recent|up-to-date) information" │ │
+        │  │   • "(as of|beyond) my (knowledge|training)"     │ │
+        │  │   • "needs more recent data"                     │ │
+        │  └──────────────────────────────────────────────────┘ │
+        └────────────────────┬────────────────┬──────────────────┘
+                             │                │
+                        NO   │                │   YES
+                   (High     │                │   (Uncertain)
+                 Confidence) │                │
+                             │                │
+                             ▼                ▼
+           ┌─────────────────────┐   ╔═══════════════════════════════════╗
+           │  RETURN FAST PATH   │   ║  STAGE 2: WEB-AUGMENTED JUDGMENT  ║
+           │      RESULT         │   ║        (Evidence Path)            ║
+           │                     │   ╚═══════════════════════════════════╝
+           │  Prediction(        │                    │
+           │    verdict=...,     │         ┌──────────▼──────────┐
+           │    confidence=...,  │         │ _gather_web_evidence│
+           │    reasoning=...,   │         │     (statement)     │
+           │    used_web_search= │         └──────────┬──────────┘
+           │      False,         │                    │
+           │    evidence=None    │      ┌─────────────┼─────────────┐
+           │  )                  │      │             │             │
+           └──────────┬──────────┘      │             │             │
+                      │                 ▼             ▼             ▼
+                      │        ┌─────────────┐  ┌──────────┐  ┌──────────┐
+                      │        │   SERPER    │  │ FIRECRAWL│  │ FIRECRAWL│
+                      │        │   SEARCH    │  │  SCRAPE  │  │  SCRAPE  │
+                      │        │             │  │ Result 1 │  │ Result 2 │
+                      │        │ Google API  │  │          │  │   ...    │
+                      │        │ Top 3 URLs  │  └────┬─────┘  └────┬─────┘
+                      │        └──────┬──────┘       │             │
+                      │               │              │             │
+                      │               └──────┬───────┴─────────────┘
+                      │                      │
+                      │           ┌──────────▼──────────┐
+                      │           │  FORMAT EVIDENCE    │
+                      │           │                     │
+                      │           │  Structure:         │
+                      │           │  • Title            │
+                      │           │  • URL              │
+                      │           │  • Snippet          │
+                      │           │  • Full Content     │
+                      │           │    (3000 chars max) │
+                      │           │                     │
+                      │           │  3 sources × 3KB =  │
+                      │           │  ~9KB total         │
+                      │           └──────────┬──────────┘
+                      │                      │
+                      │                      ▼
+                      │         ┌─────────────────────────┐
+                      │         │  WEB-AUGMENTED JUDGE    │
+                      │         │                         │
+                      │         │  self.web_judge(        │
+                      │         │    statement=...,       │
+                      │         │    evidence=...         │
+                      │         │  )                      │
+                      │         │                         │
+                      │         │  Uses:                  │
+                      │         │  dspy.ChainOfThought(   │
+                      │         │    WebAugmentedJudge    │
+                      │         │  )                      │
+                      │         └────────────┬────────────┘
+                      │                      │
+                      │              ┌───────▼──────┐
+                      │              │   Result 2   │
+                      │              │              │
+                      │              │ • verdict    │
+                      │              │ • confidence │
+                      │              │ • reasoning  │
+                      │              └───────┬──────┘
+                      │                      │
+                      │                      ▼
+                      │         ┌─────────────────────────┐
+                      │         │  RETURN EVIDENCE-BASED  │
+                      │         │       RESULT            │
+                      │         │                         │
+                      │         │  Prediction(            │
+                      │         │    verdict=...,         │
+                      │         │    confidence=...,      │
+                      │         │    reasoning=...,       │
+                      │         │    used_web_search=True,│
+                      │         │    evidence=...         │
+                      │         │  )                      │
+                      │         └────────────┬────────────┘
+                      │                      │
+                      └──────────┬───────────┘
+                                 │
+                                 ▼
+                        ┌────────────────┐
+                        │  Final Output  │
+                        │                │
+                        │ dspy.Prediction│
+                        └────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                       DECISION TREE VIEW                                  │
+└───────────────────────────────────────────────────────────────────────────┘
+
+                            statement
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │ LLM Judge (Stage 1)   │
+                    └───────────┬───────────┘
+                                │
+                    ┌───────────┴───────────┐
+                    │                       │
+           confidence >= 0.7        confidence < 0.7
+              AND no                   OR
+           uncertainty               uncertainty
+            keywords                  keywords
+                    │                       │
+                    ▼                       ▼
+        ┌─────────────────────┐   ┌──────────────────────┐
+        │   FAST PATH         │   │   EVIDENCE PATH      │
+        │                     │   │                      │
+        │ ⏱️  ~2 seconds      │   │ ⏱️  ~15 seconds      │
+        │ 💰 1 LLM call       │   │ 💰 2 LLM + 3 scrapes │
+        │ ✅ No web search    │   │ 🌐 Web search used   │
+        │                     │   │                      │
+        │ Used for:           │   │ Used for:            │
+        │ • Historical facts  │   │ • Recent events      │
+        │ • Well-known info   │   │ • Current news       │
+        │ • High confidence   │   │ • Low confidence     │
+        └─────────────────────┘   └──────────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                       DATA FLOW DIAGRAM                                   │
+└───────────────────────────────────────────────────────────────────────────┘
+
+INPUT:
+  statement: str
+  web_search_enabled: bool = True
+
+      │
+      ├──► STAGE 1: LLM-ONLY
+      │      Input:  statement
+      │      Output: verdict, confidence, reasoning
+      │
+      ├──► UNCERTAINTY DETECTION
+      │      Input:  confidence, reasoning
+      │      Output: needs_web_search (bool)
+      │
+      └──► STAGE 2 (conditional):
+             │
+             ├──► SERPER SEARCH
+             │      Input:  statement (as query)
+             │      Output: [SearchResult] (3 items)
+             │              • title
+             │              • link
+             │              • snippet
+             │
+             ├──► FIRECRAWL SCRAPE (×3)
+             │      Input:  url
+             │      Output: ScrapedPage
+             │              • url
+             │              • markdown (3000 chars)
+             │              • title
+             │              • success
+             │
+             ├──► FORMAT EVIDENCE
+             │      Input:  [SearchResult], [ScrapedPage]
+             │      Output: evidence (formatted string)
+             │
+             └──► WEB JUDGE
+                    Input:  statement, evidence
+                    Output: verdict, confidence, reasoning
+
+OUTPUT:
+  Prediction(
+    statement: str,
+    overall_verdict: str,
+    confidence: float,
+    reasoning: str,
+    used_web_search: bool,
+    evidence: str | None
+  )
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                     PERFORMANCE CHARACTERISTICS                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+PATH 1: FAST (LLM-ONLY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Latency:     ~2 seconds
+  API Calls:   1 × LLM (Judge)
+  Cost:        $ (1 LLM call)
+  Accuracy:    High (for known facts)
+  Triggered:   confidence >= 0.7 AND no uncertainty keywords
+
+PATH 2: EVIDENCE (WEB-AUGMENTED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Latency:     ~15 seconds
+  API Calls:   2 × LLM (Judge + WebJudge)
+               1 × Serper Search
+               3 × Firecrawl Scrape
+  Cost:        $$$ (2 LLM + 4 external API calls)
+  Accuracy:    Very High (evidence-based)
+  Triggered:   confidence < 0.7 OR uncertainty keywords detected
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                          ERROR HANDLING                                   │
+└───────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────┐
+  │ _gather_web_evidence() Failure Handling │
+  └─────────────────────────────────────────┘
+         │
+         ├──► Serper Search Fails
+         │      Return: empty string ("")
+         │      Effect: Falls back to LLM-only result
+         │
+         ├──► Firecrawl Scrape Fails (one URL)
+         │      Return: "[Could not scrape content: error]"
+         │      Effect: Uses other sources, continues
+         │
+         ├──► All Scrapes Fail
+         │      Return: Evidence with snippets only
+         │      Effect: Limited evidence, lower confidence
+         │
+         └──► Exception Raised
+                Catch: try/except block
+                Return: empty string ("")
+                Effect: Falls back to LLM-only result
+
+  GRACEFUL DEGRADATION: Never crashes, always returns something!
+
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│                   CONFIDENCE SCORE EVOLUTION                              │
+└───────────────────────────────────────────────────────────────────────────┘
+
+  SCENARIO: "Donald Trump won the 2024 election"
+
+  Stage 1 (LLM-only):
+    confidence = 0.3 (low) ← Knowledge cutoff issue
+    reasoning = "I don't have information beyond my cutoff..."
+                          ↓
+                  TRIGGERS WEB SEARCH
+                          ↓
+  Stage 2 (Web-augmented):
+    evidence = [NYTimes, CNN, Reuters articles confirming win]
+    confidence = 0.9 (high) ← Evidence-based
+    reasoning = "Based on multiple credible sources..."
+
+  CONFIDENCE BOOST: 0.3 → 0.9 (+0.6) ✅
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║                        ARCHITECTURE SUMMARY                               ║
+║                                                                           ║
+║  ✅ Hybrid two-stage design (LLM-first, web fallback)                     ║
+║  ✅ Intelligent triggering (confidence + reasoning analysis)              ║
+║  ✅ Robust evidence gathering (multiple sources, full content)            ║
+║  ✅ Graceful error handling (never crashes)                               ║
+║  ✅ Transparent decision making (flags + evidence)                        ║
+║  ✅ Performance optimized (fast path for known facts)                     ║
+║  ✅ Production-ready (backward compatible, well-tested)                   ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝

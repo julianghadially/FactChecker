@@ -1,0 +1,208 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║              JUDGEMODULE ENHANCEMENT - QUICK REFERENCE CARD               ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ BASIC USAGE                                                               │
+└───────────────────────────────────────────────────────────────────────────┘
+
+from src.factchecker.simple.modules.judge_module import JudgeModule
+
+judge = JudgeModule()
+result = judge.forward("Your statement here")
+
+# Access results
+print(result.overall_verdict)     # SUPPORTED | CONTAINS_UNSUPPORTED_CLAIMS | CONTAINS_REFUTED_CLAIMS
+print(result.confidence)          # 0.0 to 1.0
+print(result.reasoning)           # Explanation
+print(result.used_web_search)     # True/False
+print(result.evidence)            # Evidence (if web search used)
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ PARAMETERS                                                                │
+└───────────────────────────────────────────────────────────────────────────┘
+
+forward(statement, web_search_enabled=True)
+
+  statement:            Required. String to fact-check.
+  web_search_enabled:   Optional. Default True. Set False to disable web search.
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ HOW IT WORKS                                                              │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Stage 1: LLM-only judgment
+  ↓
+Uncertain? (confidence < 0.7 OR uncertainty keywords)
+  ↓ YES
+Stage 2: Web search + Re-judge
+  ↓
+Return result
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ WEB SEARCH TRIGGERS (Stage 2)                                             │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Trigger 1: confidence < 0.7
+Trigger 2: Reasoning contains:
+  • "knowledge cutoff"
+  • "lacking information"
+  • "unable to verify"
+  • "cannot confirm"
+  • "no current information"
+  • "don't have access"
+  • "beyond my training"
+  • "needs more recent data"
+  • etc. (9 patterns total)
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ PERFORMANCE                                                               │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Fast Path (LLM-only):        ~2 sec   | 1 LLM call
+Evidence Path (Web search):  ~15 sec  | 2 LLM + 3 scrapes
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ EXAMPLES                                                                  │
+└───────────────────────────────────────────────────────────────────────────┘
+
+# Recent event (triggers web search)
+result = judge.forward("Donald Trump won 2024 election")
+# → used_web_search=True, verdict=SUPPORTED
+
+# Historical fact (no web search)
+result = judge.forward("USA independence 1776")
+# → used_web_search=False, verdict=SUPPORTED
+
+# Disable web search
+result = judge.forward(statement, web_search_enabled=False)
+# → used_web_search=False (original behavior)
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ OUTPUT FIELDS                                                             │
+└───────────────────────────────────────────────────────────────────────────┘
+
+result.statement          # Input statement (str)
+result.overall_verdict    # Verdict (str)
+result.confidence         # Confidence score (float, 0.0-1.0)
+result.reasoning          # Explanation (str)
+result.used_web_search    # Web search flag (bool) [NEW]
+result.evidence           # Evidence text (str | None) [NEW]
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ VERDICT VALUES                                                            │
+└───────────────────────────────────────────────────────────────────────────┘
+
+"SUPPORTED"                      → Statement is true
+"CONTAINS_UNSUPPORTED_CLAIMS"    → Cannot determine / insufficient evidence
+"CONTAINS_REFUTED_CLAIMS"        → Statement is false
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ FILES                                                                     │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Modified:
+  src/factchecker/simple/modules/judge_module.py
+  src/factchecker/simple/signatures/__init__.py
+
+Created:
+  src/factchecker/simple/signatures/web_augmented_judge.py
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ TESTING                                                                   │
+└───────────────────────────────────────────────────────────────────────────┘
+
+# Run test script
+python test_judge_enhancement.py
+
+# Verify imports
+python -c "from src.factchecker.simple.modules.judge_module import JudgeModule"
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ DOCUMENTATION                                                             │
+└───────────────────────────────────────────────────────────────────────────┘
+
+📖 README_JUDGE_ENHANCEMENT.md           (⭐ Start here)
+📖 QUICK_START_JUDGE_ENHANCEMENT.md      (Quick reference)
+📖 BEFORE_AFTER_COMPARISON.md            (See changes)
+📖 JUDGE_MODULE_ENHANCEMENT.md           (Deep dive)
+📖 ENHANCEMENT_SUMMARY.md                (Executive summary)
+📖 judge_module_flow.txt                 (Visual flows)
+📖 ARCHITECTURE_DIAGRAM.txt              (Architecture)
+📖 INDEX_DOCUMENTATION.md                (Navigation)
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ KEY FEATURES                                                              │
+└───────────────────────────────────────────────────────────────────────────┘
+
+✅ Solves knowledge cutoff problem
+✅ Maintains speed for known facts (~2 sec)
+✅ Automatic web search fallback (~15 sec)
+✅ Intelligent uncertainty detection (2 triggers)
+✅ Robust evidence gathering (2-3 sources)
+✅ Transparent decision making (flags + evidence)
+✅ 100% backward compatible
+✅ Graceful error handling
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ COMMON PATTERNS                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+# Pattern 1: Basic usage
+judge = JudgeModule()
+result = judge.forward("Statement")
+
+# Pattern 2: Check if web search was used
+if result.used_web_search:
+    print(f"Evidence: {result.evidence}")
+
+# Pattern 3: Disable web search for speed
+result = judge.forward(statement, web_search_enabled=False)
+
+# Pattern 4: Handle uncertainty
+if result.overall_verdict == "CONTAINS_UNSUPPORTED_CLAIMS":
+    print("Could not verify")
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ DEPENDENCIES                                                              │
+└───────────────────────────────────────────────────────────────────────────┘
+
+• dspy (LLM framework)
+• SerperService (Google search)
+• FirecrawlService (web scraping)
+• re (pattern matching)
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ GOTCHAS                                                                   │
+└───────────────────────────────────────────────────────────────────────────┘
+
+• Web search adds ~13 sec latency
+• Costs: 2 LLM calls + 3 scrapes when triggered
+• Requires SerperService and FirecrawlService API keys
+• Falls back to LLM-only if web search fails (graceful)
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Q: Web search not triggering?
+A: Check confidence > 0.7 AND no uncertainty keywords
+
+Q: Import error?
+A: Run: python -c "from src.factchecker.simple.modules.judge_module import JudgeModule"
+
+Q: Slow performance?
+A: Disable web search for known facts: web_search_enabled=False
+
+Q: Web search failing?
+A: Check SerperService and FirecrawlService API keys
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║                 JUDGEMODULE ENHANCEMENT - READY TO USE                    ║
+║                                                                           ║
+║   For full documentation, see: README_JUDGE_ENHANCEMENT.md                ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝

@@ -1,0 +1,186 @@
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ENHANCED JUDGEMODULE FLOW                        │
+│                    Two-Stage Hybrid Architecture                    │
+└─────────────────────────────────────────────────────────────────────┘
+
+                              INPUT
+                                │
+                                │ statement: str
+                                │ web_search_enabled: bool = True
+                                ▼
+                ┌───────────────────────────────────┐
+                │   STAGE 1: LLM-ONLY JUDGMENT      │
+                │                                   │
+                │  self.judge(statement=statement)  │
+                │                                   │
+                │  Output:                          │
+                │  - verdict                        │
+                │  - confidence                     │
+                │  - reasoning                      │
+                └───────────────┬───────────────────┘
+                                │
+                                │
+                ┌───────────────▼────────────────┐
+                │   UNCERTAINTY DETECTION         │
+                │                                 │
+                │  Trigger 1: confidence < 0.7?   │
+                │  Trigger 2: uncertainty in      │
+                │             reasoning?          │
+                │                                 │
+                │  Patterns:                      │
+                │  • "knowledge cutoff"           │
+                │  • "lacking information"        │
+                │  • "unable to verify"           │
+                │  • "cannot confirm"             │
+                │  • "no current information"     │
+                │  • etc.                         │
+                └────────┬──────────────┬─────────┘
+                         │              │
+                    YES  │              │  NO
+                         │              │
+                         ▼              ▼
+    ┌────────────────────────────┐   ┌────────────────────────────┐
+    │  STAGE 2: WEB-AUGMENTED    │   │   RETURN LLM-ONLY RESULT   │
+    │          JUDGMENT          │   │                            │
+    │                            │   │  Prediction(               │
+    │  ┌──────────────────────┐ │   │    verdict=result.verdict, │
+    │  │  GATHER WEB EVIDENCE │ │   │    confidence=...,         │
+    │  │                      │ │   │    reasoning=...,          │
+    │  │  1. Serper Search    │ │   │    used_web_search=False,  │
+    │  │     query=statement  │ │   │    evidence=None           │
+    │  │     num_results=3    │ │   │  )                         │
+    │  │                      │ │   └────────────┬───────────────┘
+    │  │  2. Firecrawl Scrape │ │                │
+    │  │     top 2-3 results  │ │                │
+    │  │     max 3000 chars   │ │                │
+    │  │                      │ │                │
+    │  │  3. Format Evidence  │ │                │
+    │  │     • Titles         │ │                │
+    │  │     • URLs           │ │                │
+    │  │     • Snippets       │ │                │
+    │  │     • Full content   │ │                │
+    │  └──────────┬───────────┘ │                │
+    │             │             │                │
+    │             ▼             │                │
+    │  ┌──────────────────────┐ │                │
+    │  │  RE-JUDGE WITH       │ │                │
+    │  │  EVIDENCE            │ │                │
+    │  │                      │ │                │
+    │  │  self.web_judge(     │ │                │
+    │  │    statement=...,    │ │                │
+    │  │    evidence=...      │ │                │
+    │  │  )                   │ │                │
+    │  └──────────┬───────────┘ │                │
+    │             │             │                │
+    │             ▼             │                │
+    │  ┌──────────────────────┐ │                │
+    │  │  RETURN WEB-BASED    │ │                │
+    │  │  RESULT              │ │                │
+    │  │                      │ │                │
+    │  │  Prediction(         │ │                │
+    │  │    verdict=...,      │ │                │
+    │  │    confidence=...,   │ │                │
+    │  │    reasoning=...,    │ │                │
+    │  │    used_web_search=  │ │                │
+    │  │      True,           │ │                │
+    │  │    evidence=...      │ │                │
+    │  │  )                   │ │                │
+    │  └──────────┬───────────┘ │                │
+    └─────────────┼─────────────┘                │
+                  │                              │
+                  │                              │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                            OUTPUT
+                   dspy.Prediction with:
+                   • statement
+                   • overall_verdict
+                   • confidence
+                   • reasoning
+                   • used_web_search
+                   • evidence (optional)
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                         EXAMPLE FLOWS                               │
+└─────────────────────────────────────────────────────────────────────┘
+
+EXAMPLE 1: Historical Fact (Fast Path ⚡)
+─────────────────────────────────────────
+Input: "The United States declared independence in 1776"
+  │
+  ├─ Stage 1: LLM judges → confidence=0.95, clear reasoning
+  │
+  ├─ Uncertainty check: NO (high confidence, no uncertainty)
+  │
+  └─ Output: LLM-only result (used_web_search=False)
+     ⏱️  ~2 seconds total
+
+
+EXAMPLE 2: Recent Event (Slow Path 🌐)
+───────────────────────────────────────
+Input: "Donald Trump won the 2024 U.S. presidential election"
+  │
+  ├─ Stage 1: LLM judges → confidence=0.3, mentions "knowledge cutoff"
+  │
+  ├─ Uncertainty check: YES (low confidence + cutoff mention)
+  │
+  ├─ Stage 2: Gather evidence
+  │   ├─ Search: "Donald Trump won the 2024 U.S. presidential election"
+  │   ├─ Scrape: NYTimes, CNN, Reuters
+  │   └─ Format: 3 sources × 3000 chars = 9000 chars evidence
+  │
+  ├─ Stage 2: Re-judge with evidence → confidence=0.9, "Supported by multiple sources"
+  │
+  └─ Output: Web-augmented result (used_web_search=True)
+     ⏱️  ~15 seconds total
+
+
+EXAMPLE 3: False Recent Claim (Slow Path 🌐)
+─────────────────────────────────────────────
+Input: "OpenAI released GPT-5 in 2025"
+  │
+  ├─ Stage 1: LLM judges → confidence=0.4, "cannot verify recent releases"
+  │
+  ├─ Uncertainty check: YES (low confidence + verification issue)
+  │
+  ├─ Stage 2: Gather evidence
+  │   ├─ Search: "OpenAI released GPT-5 in 2025"
+  │   ├─ Scrape: OpenAI blog, TechCrunch, Verge
+  │   └─ Format: Evidence shows no GPT-5 announcement
+  │
+  ├─ Stage 2: Re-judge → verdict=CONTAINS_REFUTED_CLAIMS
+  │
+  └─ Output: Web-augmented refutation (used_web_search=True)
+     ⏱️  ~15 seconds total
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                      KEY DESIGN DECISIONS                           │
+└─────────────────────────────────────────────────────────────────────┘
+
+1. TWO INDEPENDENT TRIGGERS
+   ├─ Confidence threshold (< 0.7): Quantitative measure
+   └─ Reasoning patterns: Qualitative measure
+   → Why? Catches both numeric uncertainty AND explicit mentions
+
+2. DEFAULT ENABLED
+   ├─ web_search_enabled=True by default
+   └─ Can opt-out with web_search_enabled=False
+   → Why? Most users want accurate results, speed is secondary
+
+3. SCRAPE 2-3 SOURCES (not just snippets)
+   ├─ Full page content (up to 3000 chars each)
+   └─ Multiple sources for cross-verification
+   → Why? Snippets often lack context, need full articles
+
+4. FAIL GRACEFULLY
+   ├─ If web search fails, return LLM-only result
+   └─ Never crash, always return something
+   → Why? Partial answer better than no answer
+
+5. TRANSPARENT DECISION MAKING
+   ├─ used_web_search flag
+   └─ evidence field (when available)
+   → Why? Users need to understand how verdict was reached
