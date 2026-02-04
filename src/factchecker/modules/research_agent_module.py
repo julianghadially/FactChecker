@@ -36,22 +36,73 @@ class ResearchAgentModule(dspy.Module):
         self.max_page_visits = max_page_visits
         self.page_selector = dspy.ChainOfThought(PageSelector)
         self.evidence_summarizer = dspy.ChainOfThought(EvidenceSummarizer)
+        self.priority_urls = []  # Will be set by forward() if provided
 
-    def forward(self, claim: str, query: str) -> str:
+    def forward(self, claim: str, query: str, priority_urls: list[str] = None) -> str:
         """Research a claim by searching and visiting relevant pages.
+
+        Priority URLs (if provided) are scraped first before performing web searches,
+        allowing the system to leverage provided evidence sources.
 
         Args:
             claim: The claim being fact-checked.
             query: Search query to execute.
+            priority_urls: Optional list of URLs to scrape first before web search.
 
         Returns:
             Aggregated evidence from visited pages as a formatted string.
         """
-        # Execute search
+        visited_urls: list[str] = []
+        all_evidence: list[str] = []
+
+        # First, process priority URLs if provided
+        if priority_urls:
+            print(f"Processing {len(priority_urls)} priority URLs before web search...")
+            for url in priority_urls[:self.max_page_visits]:  # Limit priority URLs to max_page_visits
+                if url in visited_urls:
+                    continue
+
+                visited_urls.append(url)
+
+                # Scrape the priority URL
+                scraped = self.firecrawl.scrape(url)
+                if not scraped.success:
+                    all_evidence.append(
+                        f"[Failed to scrape priority URL {url}: {scraped.error}]"
+                    )
+                    continue
+
+                # Extract relevant evidence
+                summary = self.evidence_summarizer(
+                    claim=claim,
+                    page_content=scraped.markdown,
+                    source_url=url
+                )
+
+                all_evidence.append(
+                    f"Source: {url} (priority)\n"
+                    f"Stance: {summary.evidence_stance}\n"
+                    f"Evidence: {summary.relevant_evidence}"
+                )
+
+                # Early exit if we found strong evidence from priority URLs
+                if summary.evidence_stance in ["supports", "refutes"]:
+                    print(f"Found {summary.evidence_stance} evidence in priority URL, continuing to web search...")
+
+        # If we've used all page visits on priority URLs, return what we have
+        if len(visited_urls) >= self.max_page_visits:
+            evidence = "\n\n".join(all_evidence) if all_evidence else "No relevant evidence found in priority URLs."
+            return dspy.Prediction(evidence=evidence)
+
+        # Execute search for additional sources
         search_results = self.serper.search(query, num_results=10)
 
         if not search_results:
-            return "No search results found."
+            if all_evidence:
+                # Return evidence from priority URLs
+                evidence = "\n\n".join(all_evidence)
+                return dspy.Prediction(evidence=evidence)
+            return dspy.Prediction(evidence="No search results found.")
 
         # Convert to dict format for signature
         results_for_llm = [
@@ -59,10 +110,9 @@ class ResearchAgentModule(dspy.Module):
             for r in search_results
         ]
 
-        visited_urls: list[str] = []
-        all_evidence: list[str] = []
-
-        for _ in range(self.max_page_visits):
+        # Continue with remaining page visits from web search
+        remaining_visits = self.max_page_visits - len(visited_urls)
+        for _ in range(remaining_visits):
             # LLM selects next page to visit
             selection = self.page_selector(
                 claim=claim,

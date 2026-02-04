@@ -5,6 +5,7 @@ from .research_agent_module import ResearchAgentModule
 from .fire_judge_module import FireJudgeModule
 from .aggregator_module import AggregatorModule
 from .fact_checker_pipeline import FactCheckerPipeline
+from .temporal_router_module import TemporalRouterModule
 
 __all__ = [
     "ClaimExtractorModule",
@@ -12,4 +13,5 @@ __all__ = [
     "FireJudgeModule",
     "AggregatorModule",
     "FactCheckerPipeline",
+    "TemporalRouterModule",
 ]

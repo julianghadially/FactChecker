@@ -52,23 +52,31 @@ class FactCheckerPipeline(dspy.Module):
         )
         self.aggregator = AggregatorModule()
 
-    def forward(self, statement: str) -> dspy.Prediction:
+    def forward(self, statement: str, priority_urls: list[str] = None) -> dspy.Prediction:
         """Execute the full fact-checking pipeline.
 
         Args:
             statement: The statement to fact-check.
+            priority_urls: Optional list of URLs to use as priority evidence sources.
 
         Returns:
             FactCheckResult with all details including claim-level results.
         """
         start_time = time.time()
+
+        # Store priority URLs in research agent for this pipeline execution
+        if priority_urls:
+            self.research_agent.priority_urls = priority_urls
+        else:
+            self.research_agent.priority_urls = []
+
         # Step 1: Extract claims
         claims = self.claim_extractor(statement=statement)
         claims_prediction_obj = self.claim_extractor(statement=statement)
         # Step 2: Evaluate each claim
         claim_results = []
         for claim in claims_prediction_obj.claims:
-            result = self.fire_judge(claim=claim)
+            result = self.fire_judge(claim=claim, priority_urls=priority_urls)
             claim_results.append(result)
 
         # Step 3: Aggregate verdicts

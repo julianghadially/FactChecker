@@ -33,11 +33,12 @@ class FireJudgeModule(dspy.Module):
         self.research_agent = research_agent
         self.max_iterations = max_iterations
 
-    def forward(self, claim: str) -> dspy.Prediction:
+    def forward(self, claim: str, priority_urls: list[str] = None) -> dspy.Prediction:
         """Evaluate a claim with iterative research.
 
         Args:
             claim: The factual claim to verify.
+            priority_urls: Optional list of URLs to use as priority evidence sources.
 
         Returns:
             JudgmentResult containing verdict, evidence, and metadata.
@@ -65,11 +66,14 @@ class FireJudgeModule(dspy.Module):
             # If we need more research and have a new query
             if result.next_search and result.next_search not in search_history:
                 search_history.append(result.next_search)
+                # Pass priority URLs only on first iteration
+                urls_to_use = priority_urls if iteration == 0 else None
                 new_evidence = self.research_agent(
                     claim=claim,
-                    query=result.next_search
+                    query=result.next_search,
+                    priority_urls=urls_to_use
                 )
-                evidence += f"\n\n--- Search: {result.next_search} ---\n{new_evidence}"
+                evidence += f"\n\n--- Search: {result.next_search} ---\n{new_evidence.evidence}"
 
         # Exhausted iterations without verdict - default to not_supported
         return dspy.Prediction(

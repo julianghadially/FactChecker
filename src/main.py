@@ -5,7 +5,7 @@ import dspy
 import mlflow
 
 from src.context_.context import openai_key, serper_key, firecrawl_key
-from src.factchecker.modules.fact_checker_pipeline import FactCheckerPipeline
+from src.factchecker.modules.temporal_router_module import TemporalRouterModule
 from src.baseline.baseline_model import BaselineModel
 from src.evaluation.evaluate import run_evaluation
 
@@ -33,27 +33,31 @@ def run_single_check(statement: str, model: str):
     """
     configure_dspy(model)
 
-    pipeline = FactCheckerPipeline()
+    router = TemporalRouterModule()
 
     print(f"\nFact-checking statement: {statement}\n")
     print("-" * 60)
 
-    result = pipeline(statement=statement)
+    result = router(statement=statement)
 
-    print(f"\nClaims extracted: {len(result.claims)}")
-    for i, claim in enumerate(result.claims, 1):
-        cr = result.claim_results[i - 1]
-        print(f"\n  {i}. {claim}")
-        print(f"     Verdict: {cr.verdict}")
-        print(f"     Searches performed: {len(cr.search_queries)}")
-        if cr.search_queries:
-            for q in cr.search_queries:
-                print(f"       - {q}")
+    # If routed to pipeline, show claim details
+    if hasattr(result, 'claims') and result.claims:
+        print(f"\nClaims extracted: {len(result.claims)}")
+        for i, claim in enumerate(result.claims, 1):
+            cr = result.claim_results[i - 1]
+            print(f"\n  {i}. {claim}")
+            print(f"     Verdict: {cr.verdict}")
+            print(f"     Searches performed: {len(cr.search_queries)}")
+            if cr.search_queries:
+                for q in cr.search_queries:
+                    print(f"       - {q}")
 
     print("\n" + "=" * 60)
     print(f"OVERALL VERDICT: {result.overall_verdict}")
     print(f"Confidence: {result.confidence:.0%}")
     print(f"Reasoning: {result.reasoning}")
+    print(f"Route used: {result.route_decision}")
+    print(f"Route reason: {result.route_reason}")
     print("=" * 60)
 
 
@@ -68,7 +72,7 @@ def run_benchmark(sample_size: int, model: str, optimized_program_path: str = No
     """
     configure_dspy(model)
 
-    fact_checker = FactCheckerPipeline()
+    fact_checker = TemporalRouterModule()
     # Load optimized program if path provided
     if optimized_program_path:
         print(f"Loading optimized program from: {optimized_program_path}")
