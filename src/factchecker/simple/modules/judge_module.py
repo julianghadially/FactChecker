@@ -3,6 +3,7 @@
 import dspy
 import re
 from src.factchecker.simple.signatures.judge import Judge
+from src.factchecker.simple.signatures.query_rewriter import QueryRewriter
 from src.services.serper_service import SerperService
 from src.services.firecrawl_service import FirecrawlService
 
@@ -41,6 +42,7 @@ class JudgeModule(dspy.Module):
         """Initialize the two-pass judge module."""
         super().__init__()
         self.judge = dspy.ChainOfThought(Judge)
+        self.query_rewriter = dspy.ChainOfThought(QueryRewriter)
         self.serper = SerperService()
         self.firecrawl = FirecrawlService()
 
@@ -82,8 +84,11 @@ class JudgeModule(dspy.Module):
             Formatted evidence string from web sources.
         """
         try:
-            # Execute one search query using the statement itself
-            search_results = self.serper.search(query=statement, num_results=2)
+            # Rewrite the query to handle negative assertions and optimize search
+            rewritten_query = self.query_rewriter(statement=statement).search_query
+
+            # Execute one search query using the rewritten query
+            search_results = self.serper.search(query=rewritten_query, num_results=2)
 
             if not search_results:
                 return ""
