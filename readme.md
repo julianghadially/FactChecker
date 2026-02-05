@@ -11,9 +11,12 @@ src/
 │   └── firecrawl_service.py   # Page scraping via Firecrawl
 ├── factchecker/
 │   ├── signatures/            # DSPy signatures (input/output specs)
-│   │   ├── judge.py
+│   │   ├── judge.py           # Verdict signature for statement evaluation
+│   │   └── research_signature.py  # Query generation signature
 │   ├── modules/               # DSPy modules (execution logic)
-│   │   └── judge_module.py
+│   │   ├── judge_module.py    # Simple fact checker without research
+│   │   ├── research_module.py # Research query generation module
+│   │   └── factchecker_pipeline.py  # Complete pipeline (research + judge)
 │   └── models/                # Data types
 │       └── data_types.py
 ├── baseline/                  # Simple LLM baseline for comparison
@@ -24,6 +27,14 @@ src/
 │   └── evaluate.py            # Comparison script
 └── main.py                    # CLI entry point
 ```
+
+## Architecture
+
+**JudgeModule**: Evaluates statements directly without external research. Fast but limited to LLM knowledge.
+
+**ResearchModule**: Generates targeted search queries for a statement. Currently returns placeholder evidence; future versions will integrate with SERPER/Firecrawl.
+
+**FactCheckerPipeline**: Orchestrates research and judgment phases. Runs them sequentially and combines results.
 
 ## Key Resources
 - **DSPy docs**: https://dspy.ai/
