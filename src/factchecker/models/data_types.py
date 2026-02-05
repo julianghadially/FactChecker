@@ -1,7 +1,7 @@
 """Shared data types for the fact-checker system."""
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Optional
 
 
 @dataclass
@@ -35,3 +35,15 @@ class FactCheckResult:
     overall_verdict: Literal["SUPPORTED", "CONTAINS_UNSUPPORTED_CLAIMS", "CONTAINS_REFUTED_CLAIMS"]
     confidence: float
     reasoning: str
+
+
+@dataclass
+class ResearchResult:
+    """Result of web research for a statement."""
+
+    statement: str
+    search_queries: list[str]
+    sources: list[dict]  # List of {url, title, snippet, content}
+    evidence_summary: str
+    success: bool
+    error: Optional[str] = None
