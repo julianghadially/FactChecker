@@ -11,3 +11,5 @@ mlartifacts/*
 results/old/*
 results/optimization/gepa_optimization*
 *.sqlite
+.venv
+.venv
