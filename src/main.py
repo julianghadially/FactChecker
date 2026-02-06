@@ -5,7 +5,7 @@ import dspy
 import mlflow
 
 from src.context_.context import openai_key, serper_key, firecrawl_key
-from src.factchecker import JudgeModule
+from src.factchecker import JudgeModule, FactCheckerPipeline
 from src.baseline.baseline_model import BaselineModel
 from src.evaluation.evaluate import run_evaluation
 
@@ -24,31 +24,50 @@ def configure_dspy(model: str = "openai/gpt-5-mini"):
     )
 
 
-def run_single_check(statement: str, model: str):
+def run_single_check(statement: str, model: str, use_research: bool = False):
     """Run fact-checking on a single statement.
 
     Args:
         statement: The statement to fact-check.
         model: Model to use for evaluation.
+        use_research: Whether to use FactCheckerPipeline with research (default: False).
     """
     configure_dspy(model)
 
-    pipeline = JudgeModule()
+    if use_research:
+        pipeline = FactCheckerPipeline()
+        print(f"\nUsing research-enhanced pipeline")
+    else:
+        pipeline = JudgeModule()
+        print(f"\nUsing simple judge module")
 
     print(f"\nFact-checking statement: {statement}\n")
     print("-" * 60)
 
     result = pipeline(statement=statement)
 
-    print(f"\nClaims extracted: {len(result.claims)}")
-    for i, claim in enumerate(result.claims, 1):
-        cr = result.claim_results[i - 1]
-        print(f"\n  {i}. {claim}")
-        print(f"     Verdict: {cr.verdict}")
-        print(f"     Searches performed: {len(cr.search_queries)}")
-        if cr.search_queries:
-            for q in cr.search_queries:
-                print(f"       - {q}")
+    # Display research queries if using research pipeline
+    if use_research and hasattr(result, 'search_queries'):
+        print(f"\nResearch Queries Generated: {len(result.search_queries)}")
+        for i, query in enumerate(result.search_queries, 1):
+            print(f"  {i}. {query}")
+        if hasattr(result, 'research_reasoning'):
+            print(f"\nResearch Strategy: {result.research_reasoning}")
+        if hasattr(result, 'evidence_summary'):
+            print(f"\nEvidence Summary: {result.evidence_summary}")
+        print()
+
+    # Display claims if available (future feature)
+    if hasattr(result, 'claims') and result.claims:
+        print(f"\nClaims extracted: {len(result.claims)}")
+        for i, claim in enumerate(result.claims, 1):
+            cr = result.claim_results[i - 1]
+            print(f"\n  {i}. {claim}")
+            print(f"     Verdict: {cr.verdict}")
+            print(f"     Searches performed: {len(cr.search_queries)}")
+            if cr.search_queries:
+                for q in cr.search_queries:
+                    print(f"       - {q}")
 
     print("\n" + "=" * 60)
     print(f"OVERALL VERDICT: {result.overall_verdict}")
@@ -132,6 +151,11 @@ def main():
         default="data/FactChecker_news_claims.csv",
         help="Path to dataset file (JSON, JSONL, or CSV). Default: data/FactChecker_news_claims.csv"
     )
+    parser.add_argument(
+        "--use-research",
+        action="store_true",
+        help="Use research-enhanced FactCheckerPipeline instead of simple JudgeModule (default: False)"
+    )
 
     args = parser.parse_args()
 
@@ -153,7 +177,7 @@ def main():
     if args.mode == "check":
         if not args.statement:
             parser.error("--statement is required for 'check' mode")
-        run_single_check(args.statement, args.model)
+        run_single_check(args.statement, args.model, args.use_research)
 
     elif args.mode == "evaluate":
         run_benchmark(args.sample_size, args.model, optimized_program_path, args.dataset_path)
