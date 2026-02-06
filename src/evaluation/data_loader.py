@@ -174,6 +174,10 @@ class HoverExample:
     label: str  # Actual label from dataset
     supporting_facts: list[tuple[str, int]]
     num_hops: int
+    # Context metadata (empty string if not available)
+    topic: str = ""
+    url: str = ""
+    date_generated: str = ""
 
 
 @dataclass
@@ -282,13 +286,14 @@ def load_csv_dataset(
     with open(file_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for idx, row in enumerate(reader):
-            # CSV format: topic, claim, label, url, date_generalReviewed
+            # CSV format: topic, claim, label, url, date_generated, Reviewed
             data.append({
                 "uid": f"csv_{idx}",
                 "claim": row.get("claim", ""),
                 "label": row.get("label", "").strip().lower(),  # Normalize to lowercase
                 "topic": row.get("topic", ""),
                 "url": row.get("url", ""),
+                "date_generated": row.get("date_generated", ""),
             })
 
     # Detect label schema from data
@@ -312,7 +317,10 @@ def load_csv_dataset(
             claim=item["claim"],
             label=item["label"],
             supporting_facts=[],  # CSV doesn't have supporting facts
-            num_hops=0  # CSV doesn't have num_hops
+            num_hops=0,  # CSV doesn't have num_hops
+            topic=item.get("topic", ""),
+            url=item.get("url", ""),
+            date_generated=item.get("date_generated", "")
         ))
 
     if limit:

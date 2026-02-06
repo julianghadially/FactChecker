@@ -9,9 +9,14 @@ class BaselineFactCheck(dspy.Signature):
 
     Evaluate the claim using only your training data knowledge, without
     access to web search or external information sources.
+    Context information (topic, url, date_generated) may be provided to help
+    understand the claim's domain and timeframe. These fields may be empty.
     """
 
     claim: str = dspy.InputField(desc="A factual claim to evaluate")
+    topic: str = dspy.InputField(desc="The topic/domain of the claim (may be empty)")
+    url: str = dspy.InputField(desc="Reference URL for the claim (may be empty)")
+    date_generated: str = dspy.InputField(desc="Date when the claim was created (may be empty)")
 
     reasoning: str = dspy.OutputField(desc="Step-by-step reasoning about the claim")
     verdict: Literal["SUPPORTED", "NOT_ENOUGH_INFO", "REFUTED"] = dspy.OutputField(
@@ -31,18 +36,32 @@ class BaselineModel(dspy.Module):
         super().__init__()
         self.predictor = dspy.ChainOfThought(BaselineFactCheck)
 
-    def forward(self, statement: str) -> dict:
+    def forward(
+        self,
+        statement: str,
+        topic: str = "",
+        url: str = "",
+        date_generated: str = ""
+    ) -> dict:
         """Evaluate a claim using only LLM knowledge.
 
         Args:
-            claim: The claim to evaluate.
+            statement: The claim to evaluate.
+            topic: Optional topic/domain context (default: "").
+            url: Optional reference URL (default: "").
+            date_generated: Optional creation date (default: "").
 
         Returns:
             Dict with 'claim', 'verdict', and 'reasoning' keys.
         """
         # technically could convert statement to claims for a full baseline, But the data sets are one claim at a time so it's OK.
         claim = statement
-        result = self.predictor(claim=claim)
+        result = self.predictor(
+            claim=claim,
+            topic=topic,
+            url=url,
+            date_generated=date_generated
+        )
         return {
             "claim": claim,
             "verdict": result.verdict,
