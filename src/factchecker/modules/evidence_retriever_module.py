@@ -52,7 +52,7 @@ class EvidenceRetrieverModule(dspy.Module):
                 # Scrape top N results
                 for result in results[:self.max_results_per_query]:
                     try:
-                        scraped = self.firecrawl.scrape(result.link)
+                        scraped = self.firecrawl.scrape(result.link, skip_pdfs=False)
 
                         if scraped.success and scraped.markdown:
                             # Add evidence with clear source attribution
