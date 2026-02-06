@@ -1,5 +1,7 @@
-"""Signatures for the simple fact checker."""
+"""Signatures for the fact checker."""
 
 from src.factchecker.signatures.judge import Judge
+from src.factchecker.signatures.search_query_generator import SearchQueryGenerator
+from src.factchecker.signatures.evidence_aware_judge import EvidenceAwareJudge
 
-__all__ = ["Judge"]
+__all__ = ["Judge", "SearchQueryGenerator", "EvidenceAwareJudge"]
