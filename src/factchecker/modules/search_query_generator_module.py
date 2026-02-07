@@ -19,18 +19,35 @@ class SearchQueryGeneratorModule(dspy.Module):
         super().__init__()
         self.generator = dspy.ChainOfThought(SearchQueryGenerator)
 
-    def forward(self, statement: str) -> dspy.Prediction:
+    def forward(
+        self,
+        statement: str,
+        claim_types: list[str] = None,
+        search_strategy: str = None,
+    ) -> dspy.Prediction:
         """Generate search queries for a statement.
 
         Args:
             statement: The statement to generate queries for.
+            claim_types: Optional list of claim types from ClaimTypeAnalyzer.
+            search_strategy: Optional search strategy recommendations.
 
         Returns:
             dspy.Prediction with:
                 - queries: List of 1-3 search query strings
                 - reasoning: Explanation of the query strategy
         """
-        result = self.generator(statement=statement)
+        # Use defaults if not provided for backward compatibility
+        if claim_types is None:
+            claim_types = []
+        if search_strategy is None:
+            search_strategy = ""
+
+        result = self.generator(
+            statement=statement,
+            claim_types=claim_types,
+            search_strategy=search_strategy,
+        )
 
         return dspy.Prediction(
             queries=result.queries,

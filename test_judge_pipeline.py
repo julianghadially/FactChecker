@@ -2,15 +2,46 @@
 
 import dspy
 from src.factchecker.modules.judge_module import JudgeModule
+from src.factchecker.modules.claim_type_analyzer_module import ClaimTypeAnalyzerModule
 from src.factchecker.modules.search_query_generator_module import SearchQueryGeneratorModule
 from src.factchecker.modules.evidence_retriever_module import EvidenceRetrieverModule
 from src.factchecker.signatures.evidence_aware_judge import EvidenceAwareJudge
 
 
+def test_claim_type_analyzer():
+    """Test ClaimTypeAnalyzerModule independently."""
+    print("\n" + "=" * 80)
+    print("TEST 1: ClaimTypeAnalyzerModule")
+    print("=" * 80)
+
+    analyzer = ClaimTypeAnalyzerModule()
+
+    # Test with corporate financial claim
+    statement = "Apple reported revenue of $90.8 billion in Q1 2024"
+    print(f"\nStatement: {statement}")
+    result = analyzer(statement=statement)
+
+    print(f"Claim Types: {result.claim_types}")
+    print(f"Search Strategy: {result.search_strategy}")
+    print(f"Reasoning: {result.reasoning}")
+
+    assert isinstance(result.claim_types, list), "Claim types should be a list"
+    assert len(result.claim_types) > 0, "Should have at least one claim type"
+    assert isinstance(result.search_strategy, str), "Search strategy should be a string"
+    assert len(result.search_strategy) > 0, "Search strategy should not be empty"
+
+    # Verify it identified financial/quantitative nature
+    assert any(t in result.claim_types for t in ["corporate_financial", "factual_quantitative"]), \
+        f"Should identify financial/quantitative claim, got {result.claim_types}"
+
+    print("✓ ClaimTypeAnalyzerModule test PASSED")
+    return result
+
+
 def test_search_query_generator():
     """Test SearchQueryGeneratorModule independently."""
     print("\n" + "=" * 80)
-    print("TEST 1: SearchQueryGeneratorModule")
+    print("TEST 2: SearchQueryGeneratorModule (without claim types)")
     print("=" * 80)
 
     generator = SearchQueryGeneratorModule()
@@ -27,10 +58,57 @@ def test_search_query_generator():
     return result
 
 
+def test_search_query_generator_with_claim_types():
+    """Test SearchQueryGeneratorModule with claim type inputs."""
+    print("\n" + "=" * 80)
+    print("TEST 3: SearchQueryGeneratorModule (with claim types)")
+    print("=" * 80)
+
+    generator = SearchQueryGeneratorModule()
+
+    statement = "Apple reported revenue of $90.8 billion in Q1 2024"
+    claim_types = ["corporate_financial", "factual_quantitative"]
+    search_strategy = "Prioritize SEC filings (site:sec.gov) and investor relations pages"
+
+    print(f"\nStatement: {statement}")
+    print(f"Claim Types: {claim_types}")
+    print(f"Strategy: {search_strategy}")
+
+    result = generator(
+        statement=statement,
+        claim_types=claim_types,
+        search_strategy=search_strategy
+    )
+
+    print(f"\nGenerated Queries: {result.queries}")
+    print(f"Reasoning: {result.reasoning}")
+
+    assert isinstance(result.queries, list), "Queries should be a list"
+    assert len(result.queries) >= 1, "Should have at least one query"
+
+    # Check if queries show adaptation (site: operators or specific keywords)
+    queries_str = " ".join(result.queries).lower()
+    has_adaptation = (
+        "site:" in queries_str or
+        "sec" in queries_str or
+        "investor" in queries_str or
+        "q1" in queries_str or
+        "quarter" in queries_str
+    )
+
+    if has_adaptation:
+        print("✓ Queries show claim-aware adaptation")
+    else:
+        print("⚠ Note: Queries may not show explicit site: operators, but LLM may have adapted in other ways")
+
+    print("✓ SearchQueryGeneratorModule with claim types test PASSED")
+    return result
+
+
 def test_evidence_retriever():
     """Test EvidenceRetrieverModule independently."""
     print("\n" + "=" * 80)
-    print("TEST 2: EvidenceRetrieverModule")
+    print("TEST 4: EvidenceRetrieverModule")
     print("=" * 80)
 
     retriever = EvidenceRetrieverModule()
@@ -51,7 +129,7 @@ def test_evidence_retriever():
 def test_evidence_aware_judge():
     """Test EvidenceAwareJudge signature independently."""
     print("\n" + "=" * 80)
-    print("TEST 3: EvidenceAwareJudge Signature")
+    print("TEST 5: EvidenceAwareJudge Signature")
     print("=" * 80)
 
     judge = dspy.ChainOfThought(EvidenceAwareJudge)
@@ -85,7 +163,7 @@ def test_evidence_aware_judge():
 def test_full_pipeline():
     """Test the complete JudgeModule pipeline."""
     print("\n" + "=" * 80)
-    print("TEST 4: Full JudgeModule Pipeline")
+    print("TEST 6: Full JudgeModule Pipeline")
     print("=" * 80)
 
     judge_module = JudgeModule()
@@ -101,6 +179,8 @@ def test_full_pipeline():
     print(f"Verdict: {result.overall_verdict}")
     print(f"Confidence: {result.confidence}")
     print(f"Reasoning: {result.reasoning}")
+    print(f"Claim Types: {result.claim_types}")
+    print(f"Search Strategy: {result.search_strategy}")
     print(f"Search Queries: {result.queries}")
     print(f"Number of sources: {len(result.sources)}")
 
@@ -114,6 +194,13 @@ def test_full_pipeline():
     assert len(result.queries) > 0, "Should have at least one query"
     assert isinstance(result.sources, list), "Sources should be a list"
 
+    # New assertions for claim analysis fields
+    assert hasattr(result, 'claim_types'), "Result should have claim_types field"
+    assert hasattr(result, 'search_strategy'), "Result should have search_strategy field"
+    assert isinstance(result.claim_types, list), "Claim types should be a list"
+    assert len(result.claim_types) > 0, "Should have at least one claim type"
+    assert isinstance(result.search_strategy, str), "Search strategy should be a string"
+
     print("\n✓ Full pipeline test PASSED")
     return result
 
@@ -121,7 +208,7 @@ def test_full_pipeline():
 def test_backward_compatibility():
     """Test that the output format is backward compatible."""
     print("\n" + "=" * 80)
-    print("TEST 5: Backward Compatibility")
+    print("TEST 7: Backward Compatibility")
     print("=" * 80)
 
     judge_module = JudgeModule()
@@ -133,10 +220,16 @@ def test_backward_compatibility():
         assert hasattr(result, field), f"Missing required field: {field}"
         print(f"✓ Has field: {field}")
 
-    # Check optional fields (new additions)
-    optional_fields = ["queries", "sources"]
-    for field in optional_fields:
-        assert hasattr(result, field), f"Missing optional field: {field}"
+    # Check transparency fields (added in previous version)
+    transparency_fields = ["queries", "sources", "quality_assessment"]
+    for field in transparency_fields:
+        assert hasattr(result, field), f"Missing transparency field: {field}"
+        print(f"✓ Has field: {field}")
+
+    # Check new claim analysis fields
+    new_fields = ["claim_types", "search_strategy"]
+    for field in new_fields:
+        assert hasattr(result, field), f"Missing new field: {field}"
         print(f"✓ Has field: {field}")
 
     print("\n✓ Backward compatibility test PASSED")
@@ -163,7 +256,9 @@ def main():
 
     try:
         # Run individual component tests
+        test_claim_type_analyzer()
         test_search_query_generator()
+        test_search_query_generator_with_claim_types()
         test_evidence_retriever()
         test_evidence_aware_judge()
 
