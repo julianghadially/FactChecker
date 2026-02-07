@@ -174,6 +174,9 @@ class HoverExample:
     label: str  # Actual label from dataset
     supporting_facts: list[tuple[str, int]]
     num_hops: int
+    topic: Optional[str] = None
+    url: Optional[str] = None
+    date_generated: Optional[str] = None
 
 
 @dataclass
@@ -249,7 +252,10 @@ def load_dataset(
             claim=claim,
             label=label,
             supporting_facts=[(sf[0], sf[1]) if isinstance(sf, (list, tuple)) and len(sf) >= 2 else ("", 0) for sf in supporting_facts],
-            num_hops=num_hops
+            num_hops=num_hops,
+            topic=item.get("topic") if item.get("topic") else None,
+            url=item.get("url") if item.get("url") else None,
+            date_generated=item.get("date_generated") if item.get("date_generated") else None
         ))
 
     if limit:
@@ -312,7 +318,10 @@ def load_csv_dataset(
             claim=item["claim"],
             label=item["label"],
             supporting_facts=[],  # CSV doesn't have supporting facts
-            num_hops=0  # CSV doesn't have num_hops
+            num_hops=0,  # CSV doesn't have num_hops
+            topic=item.get("topic") if item.get("topic") else None,
+            url=item.get("url") if item.get("url") else None,
+            date_generated=item.get("date_generated") if item.get("date_generated") else None
         ))
 
     if limit:
