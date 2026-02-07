@@ -11,8 +11,10 @@ class EvidenceRetrieverModule(dspy.Module):
     Takes search queries as input and:
     1. Searches the web using SerperService (5 results per query)
     2. Scrapes the top 3-5 results using FirecrawlService
-    3. Collects markdown content from successful scrapes
-    4. Returns combined evidence with source attribution
+    3. Returns structured source data (url, title, markdown, success) for each source
+
+    The structured output allows downstream modules (like SourcePrioritizationModule)
+    to intelligently rank and concatenate sources based on relevance.
 
     This is the second stage of the evidence-aware fact-checking pipeline.
     """
@@ -38,10 +40,8 @@ class EvidenceRetrieverModule(dspy.Module):
 
         Returns:
             dspy.Prediction with:
-                - evidence: Combined markdown content from all scraped pages (with source attribution)
-                - sources: List of dicts with {url, title, success} for each attempted scrape
+                - sources: List of dicts with {url, title, markdown, success} for each attempted scrape
         """
-        all_evidence = []
         all_sources = []
 
         for query in queries:
@@ -55,12 +55,11 @@ class EvidenceRetrieverModule(dspy.Module):
                         scraped = self.firecrawl.scrape(result.link)
 
                         if scraped.success and scraped.markdown:
-                            # Add evidence with clear source attribution
-                            evidence_chunk = f"## Source: {result.title}\nURL: {result.link}\n\n{scraped.markdown}\n\n---\n\n"
-                            all_evidence.append(evidence_chunk)
+                            # Store structured source data with markdown content
                             all_sources.append({
                                 "url": result.link,
                                 "title": result.title,
+                                "markdown": scraped.markdown,
                                 "success": True
                             })
                         else:
@@ -68,6 +67,7 @@ class EvidenceRetrieverModule(dspy.Module):
                             all_sources.append({
                                 "url": result.link,
                                 "title": result.title,
+                                "markdown": "",
                                 "success": False
                             })
                     except Exception as scrape_error:
@@ -76,6 +76,7 @@ class EvidenceRetrieverModule(dspy.Module):
                         all_sources.append({
                             "url": result.link,
                             "title": result.title,
+                            "markdown": "",
                             "success": False
                         })
 
@@ -84,17 +85,6 @@ class EvidenceRetrieverModule(dspy.Module):
                 print(f"Failed to search for '{query}': {search_error}")
                 continue
 
-        # Combine all evidence and truncate if needed
-        combined_evidence = "".join(all_evidence)
-
-        if len(combined_evidence) > self.max_evidence_length:
-            combined_evidence = combined_evidence[:self.max_evidence_length] + "\n\n[Evidence truncated due to length...]"
-
-        # If no evidence was gathered, provide informative message
-        if not combined_evidence.strip():
-            combined_evidence = "No evidence could be retrieved from web sources."
-
         return dspy.Prediction(
-            evidence=combined_evidence,
             sources=all_sources,
         )
