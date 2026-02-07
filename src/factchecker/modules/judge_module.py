@@ -5,6 +5,7 @@ from src.factchecker.signatures.evidence_aware_judge import EvidenceAwareJudge
 from src.factchecker.modules.search_query_generator_module import SearchQueryGeneratorModule
 from src.factchecker.modules.evidence_retriever_module import EvidenceRetrieverModule
 from src.factchecker.modules.evidence_quality_assessor_module import EvidenceQualityAssessorModule
+from src.factchecker.modules.evidence_analysis_module import EvidenceAnalysisModule
 
 
 class JudgeModule(dspy.Module):
@@ -15,11 +16,15 @@ class JudgeModule(dspy.Module):
     2. EvidenceRetriever: Searches the web and scrapes content to gather evidence
     2.5. EvidenceQualityAssessor: Evaluates if evidence is sufficient; generates follow-up queries if needed
     3. EvidenceRetriever (follow-up): Re-runs with targeted queries if initial evidence is insufficient
-    4. EvidenceAwareJudge: Evaluates the statement using the gathered evidence
+    3.5. EvidenceAnalysisModule: Performs structured analysis (fact extraction, contradiction detection, numerical computation)
+    4. EvidenceAwareJudge: Evaluates the statement using the structured analysis
 
     This adaptive architecture ensures the system retrieves targeted, relevant evidence
     for specific claims (like corporate agreements, technical specifications) rather than
     giving up when initial broad searches return off-topic results or failed scrapes.
+
+    The evidence analysis stage adds systematic reasoning to handle claims requiring
+    arithmetic (e.g., summing donations) or detecting single contradictory facts.
     """
 
     def __init__(self):
@@ -28,6 +33,7 @@ class JudgeModule(dspy.Module):
         self.query_generator = SearchQueryGeneratorModule()
         self.evidence_retriever = EvidenceRetrieverModule()
         self.quality_assessor = EvidenceQualityAssessorModule()
+        self.evidence_analyzer = EvidenceAnalysisModule()
         self.judge = dspy.ChainOfThought(EvidenceAwareJudge)
 
     def forward(self, statement: str) -> dspy.Prediction:
@@ -45,6 +51,7 @@ class JudgeModule(dspy.Module):
                 - queries: List of all search queries used, including follow-ups (for transparency)
                 - sources: List of source URLs consulted (for transparency)
                 - quality_assessment: Assessment of evidence quality (for debugging)
+                - evidence_analysis: Structured analysis with facts, contradictions, and computations (for transparency)
         """
         # Stage 1: Generate initial search queries
         query_result = self.query_generator(statement=statement)
@@ -73,8 +80,13 @@ class JudgeModule(dspy.Module):
             all_queries.extend(quality_result.followup_queries)
             all_sources.extend(followup_evidence_result.sources)
 
-        # Stage 4: Judge the statement using all gathered evidence
-        judgment = self.judge(statement=statement, evidence=combined_evidence)
+        # Stage 3.5: Analyze evidence to extract facts, detect contradictions, and compute values
+        analysis_result = self.evidence_analyzer(statement=statement, evidence=combined_evidence)
+
+        # Stage 4: Judge the statement using the structured analysis
+        # Pass the synthesis to the judge alongside the raw evidence for comprehensive reasoning
+        enhanced_evidence = f"{combined_evidence}\n\n## Structured Analysis\n\n{analysis_result.synthesis}"
+        judgment = self.judge(statement=statement, evidence=enhanced_evidence)
 
         # Return prediction with original format plus transparency fields
         return dspy.Prediction(
@@ -86,4 +98,10 @@ class JudgeModule(dspy.Module):
             queries=all_queries,
             sources=all_sources,
             quality_assessment=quality_result.quality_assessment,
+            evidence_analysis={
+                "extracted_facts": analysis_result.extracted_facts,
+                "logical_contradictions": analysis_result.logical_contradictions,
+                "numerical_computations": analysis_result.numerical_computations,
+                "synthesis": analysis_result.synthesis,
+            },
         )
