@@ -42,7 +42,9 @@ class EvidenceRetrieverModule(dspy.Module):
                 - sources: List of dicts with {url, title, success} for each attempted scrape
         """
         all_evidence = []
-        all_sources = []
+        successful_sources = []
+        failed_sources = []
+        seen_urls = set()  # Track URLs across all queries to avoid duplicates
 
         for query in queries:
             try:
@@ -51,6 +53,14 @@ class EvidenceRetrieverModule(dspy.Module):
 
                 # Scrape top N results
                 for result in results[:self.max_results_per_query]:
+                    # Skip URLs that have already been attempted
+                    if result.link in seen_urls:
+                        print(f"Skipping duplicate URL: {result.link}")
+                        continue
+
+                    # Mark URL as seen
+                    seen_urls.add(result.link)
+
                     try:
                         scraped = self.firecrawl.scrape(result.link)
 
@@ -58,14 +68,14 @@ class EvidenceRetrieverModule(dspy.Module):
                             # Add evidence with clear source attribution
                             evidence_chunk = f"## Source: {result.title}\nURL: {result.link}\n\n{scraped.markdown}\n\n---\n\n"
                             all_evidence.append(evidence_chunk)
-                            all_sources.append({
+                            successful_sources.append({
                                 "url": result.link,
                                 "title": result.title,
                                 "success": True
                             })
                         else:
                             # Track failed scrapes
-                            all_sources.append({
+                            failed_sources.append({
                                 "url": result.link,
                                 "title": result.title,
                                 "success": False
@@ -73,7 +83,7 @@ class EvidenceRetrieverModule(dspy.Module):
                     except Exception as scrape_error:
                         # Handle individual scrape failures gracefully
                         print(f"Failed to scrape {result.link}: {scrape_error}")
-                        all_sources.append({
+                        failed_sources.append({
                             "url": result.link,
                             "title": result.title,
                             "success": False
@@ -90,9 +100,19 @@ class EvidenceRetrieverModule(dspy.Module):
         if len(combined_evidence) > self.max_evidence_length:
             combined_evidence = combined_evidence[:self.max_evidence_length] + "\n\n[Evidence truncated due to length...]"
 
+        # Add failed sources summary at the end for transparency
+        if failed_sources:
+            failed_summary = "\n\n## Failed to Retrieve\nThe following sources could not be scraped:\n"
+            for source in failed_sources:
+                failed_summary += f"- {source['title']} ({source['url']})\n"
+            combined_evidence += failed_summary
+
         # If no evidence was gathered, provide informative message
-        if not combined_evidence.strip():
+        if not all_evidence:
             combined_evidence = "No evidence could be retrieved from web sources."
+
+        # Combine sources with successful ones first for prioritization
+        all_sources = successful_sources + failed_sources
 
         return dspy.Prediction(
             evidence=combined_evidence,
