@@ -7,15 +7,16 @@ from src.factchecker.modules.evidence_retriever_module import EvidenceRetrieverM
 
 
 class JudgeModule(dspy.Module):
-    """Evidence-aware fact checker with web search and evidence retrieval pipeline.
+    """Evidence-aware fact checker with two-phase search and evidence retrieval pipeline.
 
-    This module implements a multi-stage fact-checking pipeline:
-    1. SearchQueryGenerator: Generates 1-3 targeted search queries for the statement
-    2. EvidenceRetriever: Searches the web and scrapes content to gather evidence
+    This module implements a multi-stage fact-checking pipeline with prioritized search:
+    1. SearchQueryGenerator: Generates two types of queries (primary source + general)
+    2. EvidenceRetriever: Implements prioritized retrieval (primary sources first, then general)
     3. EvidenceAwareJudge: Evaluates the statement using the gathered evidence
 
-    This allows the system to verify recent events and specific claims beyond
-    the LLM's knowledge cutoff by consulting authoritative web sources.
+    The two-phase approach prioritizes authoritative primary sources (official sites,
+    index providers, government sites) before falling back to general searches,
+    improving evidence quality and relevance.
     """
 
     def __init__(self):
@@ -26,7 +27,7 @@ class JudgeModule(dspy.Module):
         self.judge = dspy.ChainOfThought(EvidenceAwareJudge)
 
     def forward(self, statement: str) -> dspy.Prediction:
-        """Evaluate a statement for factual correctness using web evidence.
+        """Evaluate a statement for factual correctness using two-phase web evidence retrieval.
 
         Args:
             statement: The statement to evaluate.
@@ -37,14 +38,18 @@ class JudgeModule(dspy.Module):
                 - overall_verdict: SUPPORTED | CONTAINS_UNSUPPORTED_CLAIMS | CONTAINS_REFUTED_CLAIMS
                 - confidence: Float between 0.0 and 1.0
                 - reasoning: Explanation of the verdict citing evidence
-                - queries: List of search queries used (for transparency)
-                - sources: List of source URLs consulted (for transparency)
+                - primary_source_queries: List of site-specific queries used (for transparency)
+                - general_queries: List of general queries used (for transparency)
+                - sources: List of source URLs consulted with query_type (for transparency)
         """
-        # Stage 1: Generate search queries
+        # Stage 1: Generate search queries (two-phase strategy)
         query_result = self.query_generator(statement=statement)
 
-        # Stage 2: Retrieve evidence from web sources
-        evidence_result = self.evidence_retriever(queries=query_result.queries)
+        # Stage 2: Retrieve evidence from web sources (prioritized retrieval)
+        evidence_result = self.evidence_retriever(
+            primary_source_queries=query_result.primary_source_queries,
+            general_queries=query_result.general_queries
+        )
 
         # Stage 3: Judge the statement using evidence
         judgment = self.judge(statement=statement, evidence=evidence_result.evidence)
@@ -56,6 +61,7 @@ class JudgeModule(dspy.Module):
             confidence=judgment.confidence,
             reasoning=judgment.reasoning,
             # Additional fields for transparency and debugging
-            queries=query_result.queries,
+            primary_source_queries=query_result.primary_source_queries,
+            general_queries=query_result.general_queries,
             sources=evidence_result.sources,
         )

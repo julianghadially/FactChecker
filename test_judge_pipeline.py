@@ -16,12 +16,16 @@ def test_search_query_generator():
     generator = SearchQueryGeneratorModule()
     result = generator(statement="The Eiffel Tower is 330 meters tall and was completed in 1889")
 
-    print(f"Queries: {result.queries}")
+    print(f"Primary Source Queries: {result.primary_source_queries}")
+    print(f"General Queries: {result.general_queries}")
     print(f"Reasoning: {result.reasoning}")
 
-    assert isinstance(result.queries, list), "Queries should be a list"
-    assert 1 <= len(result.queries) <= 3, f"Should have 1-3 queries, got {len(result.queries)}"
-    assert all(isinstance(q, str) for q in result.queries), "All queries should be strings"
+    assert isinstance(result.primary_source_queries, list), "Primary source queries should be a list"
+    assert isinstance(result.general_queries, list), "General queries should be a list"
+    assert 1 <= len(result.primary_source_queries) <= 2, f"Should have 1-2 primary queries, got {len(result.primary_source_queries)}"
+    assert 1 <= len(result.general_queries) <= 2, f"Should have 1-2 general queries, got {len(result.general_queries)}"
+    assert all(isinstance(q, str) for q in result.primary_source_queries), "All primary queries should be strings"
+    assert all(isinstance(q, str) for q in result.general_queries), "All general queries should be strings"
 
     print("✓ SearchQueryGeneratorModule test PASSED")
     return result
@@ -34,7 +38,10 @@ def test_evidence_retriever():
     print("=" * 80)
 
     retriever = EvidenceRetrieverModule()
-    result = retriever(queries=["Eiffel Tower height meters official"])
+    result = retriever(
+        primary_source_queries=["site:toureiffel.paris Eiffel Tower height meters"],
+        general_queries=["Eiffel Tower height meters official"]
+    )
 
     print(f"Evidence length: {len(result.evidence)} characters")
     print(f"Number of sources: {len(result.sources)}")
@@ -43,6 +50,9 @@ def test_evidence_retriever():
 
     assert len(result.evidence) > 0, "Evidence should not be empty"
     assert isinstance(result.sources, list), "Sources should be a list"
+    # Check that sources have query_type field
+    if len(result.sources) > 0:
+        assert "query_type" in result.sources[0], "Sources should have query_type field"
 
     print("✓ EvidenceRetrieverModule test PASSED")
     return result
@@ -101,7 +111,8 @@ def test_full_pipeline():
     print(f"Verdict: {result.overall_verdict}")
     print(f"Confidence: {result.confidence}")
     print(f"Reasoning: {result.reasoning}")
-    print(f"Search Queries: {result.queries}")
+    print(f"Primary Source Queries: {result.primary_source_queries}")
+    print(f"General Queries: {result.general_queries}")
     print(f"Number of sources: {len(result.sources)}")
 
     # Assertions
@@ -110,8 +121,9 @@ def test_full_pipeline():
         f"Invalid verdict: {result.overall_verdict}"
     assert 0.0 <= result.confidence <= 1.0, f"Confidence should be between 0 and 1"
     assert len(result.reasoning) > 0, "Reasoning should not be empty"
-    assert isinstance(result.queries, list), "Queries should be a list"
-    assert len(result.queries) > 0, "Should have at least one query"
+    assert isinstance(result.primary_source_queries, list), "Primary source queries should be a list"
+    assert isinstance(result.general_queries, list), "General queries should be a list"
+    assert len(result.primary_source_queries) > 0 or len(result.general_queries) > 0, "Should have at least one query"
     assert isinstance(result.sources, list), "Sources should be a list"
 
     print("\n✓ Full pipeline test PASSED")
@@ -134,7 +146,7 @@ def test_backward_compatibility():
         print(f"✓ Has field: {field}")
 
     # Check optional fields (new additions)
-    optional_fields = ["queries", "sources"]
+    optional_fields = ["primary_source_queries", "general_queries", "sources"]
     for field in optional_fields:
         assert hasattr(result, field), f"Missing optional field: {field}"
         print(f"✓ Has field: {field}")

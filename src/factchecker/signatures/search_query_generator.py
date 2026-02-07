@@ -4,24 +4,31 @@ from dspy import Signature, InputField, OutputField
 
 
 class SearchQueryGenerator(Signature):
-    """Generate targeted search queries to gather evidence for fact-checking a statement.
+    """Generate targeted search queries using a two-phase strategy for fact-checking.
 
-    Analyze the statement and generate 1-3 specific, diverse search queries that will
-    help verify or refute the claims made. Queries should:
-    - Target different aspects or components of the statement
-    - Be specific enough to find relevant, authoritative sources
-    - Include relevant keywords, dates, names, or specific claims
-    - Avoid redundancy - each query should explore a different angle
+    Analyze the statement and generate TWO types of queries:
+
+    1. PRIMARY SOURCE QUERIES (1-2 queries): Site-specific queries targeting authoritative
+       primary sources using the site: operator. These should target:
+       - Official organization websites (e.g., company investor relations, government sites)
+       - Index providers and financial institutions (e.g., S&P Global, MSCI)
+       - Industry authorities and regulatory bodies
+       - Official biographies and institutional pages
+       Example: "site:spglobal.com S&P 500 Dividend Aristocrats constituents list Caterpillar"
+
+    2. GENERAL QUERIES (1-2 queries): Broader queries for context and verification.
+       These provide supporting evidence and cross-validation from news, analysis, etc.
+       Example: "Caterpillar S&P 500 Dividend Aristocrats member history"
 
     Example:
-    Statement: "The Eiffel Tower is 330 meters tall and was completed in 1889."
+    Statement: "Caterpillar is part of the S&P 500 Dividend Aristocrats index."
     Good queries:
-    - "Eiffel Tower official height meters"
-    - "Eiffel Tower construction completion date 1889"
-    - "Eiffel Tower exact measurements"
+    Primary source: ["site:spglobal.com S&P 500 Dividend Aristocrats constituents list Caterpillar"]
+    General: ["Caterpillar S&P 500 Dividend Aristocrats member history"]
     """
 
     statement: str = InputField(desc="The statement to fact-check")
 
-    reasoning: str = OutputField(desc="Explanation of the query strategy and what each query aims to verify")
-    queries: list[str] = OutputField(desc="1-3 targeted search queries to gather evidence (list of strings)")
+    reasoning: str = OutputField(desc="Explanation of the two-phase query strategy and what each query aims to verify")
+    primary_source_queries: list[str] = OutputField(desc="1-2 site-specific queries targeting authoritative primary sources using site: operator (list of strings)")
+    general_queries: list[str] = OutputField(desc="1-2 broader queries for context and verification (list of strings)")
