@@ -30,6 +30,63 @@ class EvidenceRetrieverModule(dspy.Module):
         self.max_results_per_query = max_results_per_query
         self.max_evidence_length = max_evidence_length
 
+    def forward_from_urls(self, urls: list[str]) -> dspy.Prediction:
+        """Retrieve evidence by directly scraping provided URLs (no search).
+
+        Args:
+            urls: List of URL strings to scrape directly.
+
+        Returns:
+            dspy.Prediction with:
+                - evidence: Combined markdown content from all scraped URLs (with source attribution)
+                - sources: List of dicts with {url, title, success} for each attempted scrape
+        """
+        all_evidence = []
+        all_sources = []
+
+        for url in urls:
+            try:
+                scraped = self.firecrawl.scrape(url, skip_pdfs=False)
+
+                if scraped.success and scraped.markdown:
+                    # Add evidence with clear source attribution
+                    # Use URL as title if no title is available from scrape metadata
+                    title = getattr(scraped, 'title', None) or url
+                    evidence_chunk = f"## Source: {title}\nURL: {url}\n\n{scraped.markdown}\n\n---\n\n"
+                    all_evidence.append(evidence_chunk)
+                    all_sources.append({
+                        "url": url,
+                        "title": title,
+                        "success": True
+                    })
+                else:
+                    # Track failed scrapes
+                    all_sources.append({
+                        "url": url,
+                        "title": url,
+                        "success": False
+                    })
+            except Exception as scrape_error:
+                # Handle individual scrape failures gracefully
+                print(f"Failed to scrape {url}: {scrape_error}")
+                all_sources.append({
+                    "url": url,
+                    "title": url,
+                    "success": False
+                })
+
+        # Combine all evidence
+        combined_evidence = "".join(all_evidence)
+
+        # If no evidence was gathered, provide informative message
+        if not combined_evidence.strip():
+            combined_evidence = "No evidence could be retrieved from provided URLs."
+
+        return dspy.Prediction(
+            evidence=combined_evidence,
+            sources=all_sources,
+        )
+
     def forward(self, queries: list[str]) -> dspy.Prediction:
         """Retrieve evidence from the web for given search queries.
 
