@@ -47,6 +47,32 @@ class WebQueryModule(dspy.Module):
         return self.query_generator(question = question)
 ```
 
+## FactChecker Pipeline Architecture
+
+The FactChecker uses a multi-stage pipeline approach:
+
+### Current Implementation
+
+1. **ResearchModule** - Generates 2-3 targeted search queries
+   - Location: `src/factchecker/modules/research_module.py`
+   - Signature: `Research` (statement, topic → search_queries, reasoning)
+   - Evidence gathering is currently a placeholder
+
+2. **JudgeModule** - Evaluates statements using LLM knowledge
+   - Location: `src/factchecker/modules/judge_module.py`
+   - Signature: `Judge` (statement → verdict, confidence, reasoning)
+
+3. **FactCheckerPipeline** - Combines ResearchModule → JudgeModule
+   - Location: `src/factchecker/modules/factchecker_pipeline.py`
+   - Sequential execution, unified results
+   - Currently no evidence flow between stages
+
+### Future Enhancements
+- Integrate SERPER API to execute search queries
+- Integrate Firecrawl to scrape and extract evidence
+- Pass evidence to enhanced judge signature
+- Implement iterative multi-hop research
+
 ## Naming conventions
 - Use Pascal case for signatures and modules.
 - Add Module at the end of all module classes
