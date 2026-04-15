@@ -12,9 +12,8 @@ class FactCheckerProgram:
     def __init__(
         self,
         model: str = "openai/gpt-5-mini",
-        max_tokens: int = 4000,
     ):
-        self.lm = dspy.LM(model, max_tokens=max_tokens)
+        self.lm = dspy.LM(model)
         dspy.configure(lm=self.lm)
 
         self.judge = JudgeModule()
