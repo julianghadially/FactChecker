@@ -3,7 +3,6 @@
 import dspy
 from src.factchecker.simple.signatures.judge import Judge
 
-
 class JudgeModule(dspy.Module):
     """Barebones fact checker that judges statements without research.
 
