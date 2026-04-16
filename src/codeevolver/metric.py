@@ -1,14 +1,30 @@
 """Metric function for CodeEvolver GEPA optimization.
 
-Re-exports the same metric used in gepa_optimize.py for consistency.
+Inlines the scoring logic from gepa_metric, adapted for the ASA interface
+where `output` is the pipeline prediction and `label` is a bare string.
 """
 
-from src.optimizer.gepa_optimize import gepa_metric
+from src.evaluation.data_loader import FacToolLabelSchema
 
 
 def asa_metric(output, label):
-    """Wrapper around gepa_metric for the ASA interface."""
-    return gepa_metric(pred=output, gold=label)
+    """Score a single prediction against a ground-truth label.
+
+    Handles both dict-style and object-style pipeline outputs.
+    """
+    pred_label = (
+        output.get("overall_verdict")
+        if isinstance(output, dict)
+        else getattr(output, "overall_verdict", None)
+    )
+    pred_label = FacToolLabelSchema.normalize_prediction(pred_label)
+    gold_label = FacToolLabelSchema.normalize_ground_truth(label)
+
+    if pred_label == gold_label:
+        return 1.0
+    if pred_label == "UNKNOWN":
+        return 0.5
+    return 0.0
 
 
 metric = asa_metric
