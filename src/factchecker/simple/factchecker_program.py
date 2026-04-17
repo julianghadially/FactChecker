@@ -2,6 +2,7 @@ from openinference.instrumentation.dspy import DSPyInstrumentor
 DSPyInstrumentor().instrument()
 
 import dspy
+from src.codeevolver.filtered_span_processor import install_filter
 from src.factchecker.simple.modules.judge_module import JudgeModule
 
 
@@ -18,6 +19,8 @@ class FactCheckerProgram:
     ):
         self.lm = dspy.LM(model)
         dspy.configure(lm=self.lm)
+
+        install_filter()
 
         self.judge = JudgeModule()
 
