@@ -76,6 +76,7 @@ multiprocess==0.70.18
 nest-asyncio==1.6.0
 numpy==2.3.5
 openai==2.9.0
+openinference-instrumentation-dspy
 opentelemetry-api==1.39.0
 opentelemetry-proto==1.39.0
 opentelemetry-sdk==1.39.0

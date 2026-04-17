@@ -1,3 +1,6 @@
+from openinference.instrumentation.dspy import DSPyInstrumentor
+DSPyInstrumentor().instrument()
+
 import dspy
 from src.factchecker.simple.modules.judge_module import JudgeModule
 

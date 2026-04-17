@@ -1,5 +1,8 @@
 """Fact checker pipeline module orchestrating the complete fact-checking flow."""
 
+from openinference.instrumentation.dspy import DSPyInstrumentor
+DSPyInstrumentor().instrument()
+
 import dspy
 import time
 from src.factchecker.models.data_types import FactCheckResult
