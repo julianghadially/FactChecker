@@ -18,7 +18,7 @@ class JudgeModule(dspy.Module):
         super().__init__()
         self.judge = dspy.ChainOfThought(Judge)
         # Few-shot demonstrations covering all three verdict classes
-        self.judge.demos = [
+        self.judge.predict.demos = [
             {
                 "statement": "Coffee is generally grown in tropical and subtropical regions.",
                 "reasoning": (
